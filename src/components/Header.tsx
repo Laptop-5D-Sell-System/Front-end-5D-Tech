@@ -2,7 +2,19 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { LogOut, Search, ShoppingBasket, UserRound, UserRoundPlus, ShoppingBag, History, Headset, ChevronDown } from 'lucide-react';
+import {
+    LogOut,
+    Search,
+    ShoppingBasket,
+    UserRound,
+    UserRoundPlus,
+    ShoppingBag,
+    History,
+    Headset,
+    ChevronDown,
+    LogIn,
+    UserPlus,
+} from 'lucide-react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import {
     DropdownMenu,
@@ -15,12 +27,13 @@ import {
 
 import '../styles/Header.scss';
 import { Separator } from './ui/separator';
+import { Button } from './ui/button';
 
 export default function Header() {
     const [showSearch, setShowSearch] = useState(false);
 
     return (
-        <div className="header shadow fixed top-0 left-0 z-50 w-full bg-white/30 backdrop-blur-md shadow">
+        <div className="header shadow fixed top-0 left-0 z-50 w-full bg-white/80 backdrop-blur-sm shadow">
             {/* Băng dôn chạy */}
             <div className="marquee-container">
                 <ul className="marquee text-white flex justtify-around">
@@ -49,12 +62,10 @@ export default function Header() {
                         Giới Thiệu
                     </Link>
                     <li className="header_menu_item text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer relative get_menu_secondary">
-                        Sản Phẩm{' '}
-                        <ChevronDown className="ml-1" strokeWidth={1} />
-
+                        Sản Phẩm <ChevronDown className="ml-1" strokeWidth={1} />
                         {/* Menu secondary */}
-                        <div className="menu_secondary w-[600px] lg:w-[800px] xl:w-[1000px] absolute top-full left-0 bg-white shadow-sm p-5 hidden z-50">
-                            <ul className="menu_secondary_list w-2/5">
+                        <div className="menu_secondary w-[700px] lg:w-[800px] xl:w-[1000px] absolute top-full left-0 bg-white shadow-md rounded-sm p-5 hidden z-50">
+                            <ul className="menu_secondary_list w-1/5">
                                 <li className="menu_secondary_item font-semibold mb-4">Máy tính</li>
                                 <li className="menu_secondary_item mb-4">
                                     <a
@@ -81,7 +92,7 @@ export default function Header() {
                                     </a>
                                 </li>
                             </ul>
-                            <ul className="menu_secondary_list w-2/5">
+                            <ul className="menu_secondary_list w-1/5">
                                 <li className="menu_secondary_item font-semibold mb-4">Phụ Kiện</li>
                                 <li className="menu_secondary_item mb-4">
                                     <a
@@ -116,8 +127,22 @@ export default function Header() {
                                     </a>
                                 </li>
                             </ul>
-                            <div className="relative w-full w-1/5 h-[250px]">
-                                <Image src="/images/banner-1.jpg" alt="Banner" fill className="object-cover" priority />
+                            <div className="relative w-3/5 h-[300px] overflow-hidden group">
+                                {/* Nội dung trên ảnh */}
+                                <div className="about_menu_secondary absolute top-8 left-4 z-50">
+                                    <p className="text-red-500 text-sm mb-4">Mua ngay với 29.000.000 ₫</p>
+                                    <h2 className="font-bold text-2xl mb-4">Dell XPS 13 9340</h2>
+                                    <Button>Mua Ngay</Button>
+                                </div>
+
+                                {/* Ảnh với hiệu ứng zoom */}
+                                <Image
+                                    src="/images/laptop.jpeg"
+                                    alt="Banner"
+                                    fill
+                                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                    priority
+                                />
                             </div>
                         </div>
                     </li>
@@ -162,13 +187,13 @@ export default function Header() {
                             <DropdownMenuTrigger className="cursor-pointer outline-none">
                                 <UserRound />
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className='mt-[32px]'>
+                            <DropdownMenuContent className="mt-[32px]">
                                 <DropdownMenuLabel>Xin chào, Nguyễn Thái Dương</DropdownMenuLabel>
-                                
+
                                 {/* Edit information */}
-                                <Link href='/edit-information'>
+                                <Link href="/edit-information">
                                     <DropdownMenuItem>
-                                        <UserRoundPlus/>
+                                        <UserRoundPlus />
                                         Chỉnh sửa thông tin
                                     </DropdownMenuItem>
                                 </Link>
@@ -176,7 +201,7 @@ export default function Header() {
                                 {/* Cart */}
                                 <Link href="/cart">
                                     <DropdownMenuItem>
-                                        <ShoppingBag/>
+                                        <ShoppingBag />
                                         Giỏ hàng của bạn
                                     </DropdownMenuItem>
                                 </Link>
@@ -184,24 +209,44 @@ export default function Header() {
                                 {/* History */}
                                 <Link href="/history">
                                     <DropdownMenuItem>
-                                        <History/>
+                                        <History />
                                         Lịch sửa mua hàng
                                     </DropdownMenuItem>
                                 </Link>
-                                
+
                                 {/* Support */}
                                 <Link href="/support">
                                     <DropdownMenuItem>
-                                        <Headset/>
+                                        <Headset />
                                         Hỗ trợ khách hàng
                                     </DropdownMenuItem>
                                 </Link>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem>
-                                    <LogOut />Logout
+                                    <LogOut />
+                                    Logout
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
+
+                        {/* <DropdownMenu>
+                            <DropdownMenuTrigger className="cursor-pointer outline-none">
+                                <UserRound />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className='mt-[32px]'>
+                                <Link href="/signup">
+                                    <DropdownMenuItem>
+                                        <UserPlus/>Đăng ký
+                                    </DropdownMenuItem>
+                                </Link>
+                                <DropdownMenuSeparator />
+                                <Link href="/login">
+                                    <DropdownMenuItem>
+                                        <LogIn />Đăng nhập
+                                    </DropdownMenuItem>
+                                </Link>
+                            </DropdownMenuContent>
+                        </DropdownMenu> */}
                     </li>
 
                     <li>
@@ -209,9 +254,9 @@ export default function Header() {
                             <SheetTrigger>
                                 <ShoppingBasket className="cursor-pointer" />
                             </SheetTrigger>
-                            <SheetContent className='gap-0'>
+                            <SheetContent className="gap-0">
                                 <SheetHeader>
-                                    <SheetTitle className='text-xl'>Giỏ hàng của bạn</SheetTitle>
+                                    <SheetTitle className="text-xl">Giỏ hàng của bạn</SheetTitle>
                                 </SheetHeader>
                                 <Separator />
                                 <SheetDescription>
