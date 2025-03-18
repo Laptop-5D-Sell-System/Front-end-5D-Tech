@@ -220,8 +220,31 @@ export default function Home() {
                         <p>KHUYẾN MÃI LỚN</p>
                         <h2>Sản Phẩm Nổi Bật</h2>
                     </div>
-                    <div className="">
-                        
+                    <div className="featured_products_list">
+                        <div className="featured_products_item">
+                            <div className="featured_products_img">
+                                <div className="featured_products_sale">
+                                    -40%
+                                </div>
+                                <Image src="/images/laptop.jpeg" alt="laptop" width={200} height={100} />
+                            </div>
+                            <div className="featured_products_category">
+                                Máy tính
+                            </div>
+                            <div className="featured_products_name">
+                                Dell XPS 13 9340
+                            </div>
+                            <div className="featured_products_rate">
+                                x x x x x
+                            </div>
+                            <div className="featured_products_quantity">
+                                Có sẵn: 8/40
+                            </div>
+                            <div className="featured_products_price">
+                                <div className="old_price">31.000.000 đ</div>
+                                <div className="new_price">29.000.000 đ</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
