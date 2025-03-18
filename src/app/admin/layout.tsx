@@ -1,43 +1,30 @@
-import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
-import { Montserrat } from 'next/font/google';
-import '../globals.css';
-import HeaderAdmin from '@/components/HeaderAdmin';
-import SlidebarAdmin from '@/components/SlidebarAdmin';
+import { Menubar, MenubarContent, MenubarMenu, MenubarTrigger } from "@radix-ui/react-menubar";
+import { ThemeProvider } from "../../components/ui/theme-provider";
+import { ModeToggle } from "./manage/mode";
 
-const geistSans = Geist({
-    variable: '--font-geist-sans',
-    subsets: ['latin'],
-});
-
-const montserrat = Montserrat({
-    variable: '--font-montserrat',
-    subsets: ['latin'],
-    weight: ['400', '500', '600', '700'],
-});
-
-const geistMono = Geist_Mono({
-    variable: '--font-geist-mono',
-    subsets: ['latin'],
-});
-
-export const metadata: Metadata = {
-    title: 'Admin 5D - Tech',
-};
-
-export default function AdminLayout({
-    children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
+export default function AdminLayOut() {
     return (
-        <html lang="en">
-            <head>
-                <meta charSet="utf-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <title>{`${metadata.title}`}</title>
-            </head>
-            <body className={`${montserrat.variable} antialiased`}>{children}</body>
+        <html lang="en" suppressHydrationWarning>
+            <body>
+                <div className="flex w-full justify-between items-center">
+                <div className="grid grid-cols-4 gap-4 w-full">
+                    <a href="/admin/manage/products">Sản Phẩm</a>
+                    <a href="/admin/manage/products">Sản Phẩm</a>
+                    <a href="/admin/manage/products">Sản Phẩm</a>
+                    <a href="/admin/manage/products">Sản Phẩm</a>
+                </div>
+
+                    <ThemeProvider
+                        attribute="class"
+                        defaultTheme="system"
+                        enableSystem
+                        disableTransitionOnChange
+                    >      
+                    <ModeToggle />
+                    </ThemeProvider>
+                </div>
+               
+            </body>
         </html>
     );
 }
