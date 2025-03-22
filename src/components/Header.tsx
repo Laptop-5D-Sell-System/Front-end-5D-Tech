@@ -183,70 +183,66 @@ export default function Header() {
                     </li>
 
                     <li className="cursor-pointer">
-                        <DropdownMenu>
+                        {/* <DropdownMenu>
                             <DropdownMenuTrigger className="cursor-pointer outline-none">
                                 <UserRound />
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="mt-[32px]">
                                 <DropdownMenuLabel>Xin chào, Nguyễn Thái Dương</DropdownMenuLabel>
 
-                                {/* Edit information */}
                                 <Link href="/edit-information">
                                     <DropdownMenuItem>
-                                        <UserRoundPlus />
+                                        <UserRoundPlus stroke="black" />
                                         Chỉnh sửa thông tin
                                     </DropdownMenuItem>
                                 </Link>
 
-                                {/* Cart */}
                                 <Link href="/cart">
                                     <DropdownMenuItem>
-                                        <ShoppingBag />
+                                        <ShoppingBag stroke="black" />
                                         Giỏ hàng của bạn
                                     </DropdownMenuItem>
                                 </Link>
 
-                                {/* History */}
                                 <Link href="/history">
                                     <DropdownMenuItem>
-                                        <History />
+                                        <History stroke="black" />
                                         Lịch sửa mua hàng
                                     </DropdownMenuItem>
                                 </Link>
 
-                                {/* Support */}
                                 <Link href="/support">
                                     <DropdownMenuItem>
-                                        <Headset />
+                                        <Headset stroke="black" />
                                         Hỗ trợ khách hàng
                                     </DropdownMenuItem>
                                 </Link>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem>
-                                    <LogOut />
+                                    <LogOut stroke="black" />
                                     Logout
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
-                        </DropdownMenu>
+                        </DropdownMenu> */}
 
-                        {/* <DropdownMenu>
+                        <DropdownMenu>
                             <DropdownMenuTrigger className="cursor-pointer outline-none">
                                 <UserRound />
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className='mt-[32px]'>
                                 <Link href="/signup">
-                                    <DropdownMenuItem>
-                                        <UserPlus/>Đăng ký
+                                    <DropdownMenuItem className='cursor-pointer'>
+                                        <UserPlus stroke="black"/>Đăng ký
                                     </DropdownMenuItem>
                                 </Link>
                                 <DropdownMenuSeparator />
                                 <Link href="/login">
-                                    <DropdownMenuItem>
-                                        <LogIn />Đăng nhập
+                                    <DropdownMenuItem className='cursor-pointer'>
+                                        <LogIn stroke="black" />Đăng nhập
                                     </DropdownMenuItem>
                                 </Link>
                             </DropdownMenuContent>
-                        </DropdownMenu> */}
+                        </DropdownMenu>
                     </li>
 
                     <li>

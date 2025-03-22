@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Montserrat } from 'next/font/google';
 import '../globals.css';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -34,9 +36,13 @@ export default function LoginLayout({
                 <meta charSet="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <title>{`${metadata.title}`}</title>
+                <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
             </head>
             <body className={`${montserrat.variable} antialiased`}>
+                <Header />
+                <div className="main" style={{ marginTop: '116px' }}></div>
                 {children}
+                <Footer />
             </body>
         </html>
     );
