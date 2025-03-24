@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -14,6 +14,7 @@ import {
     ChevronDown,
     LogIn,
     UserPlus,
+    SearchCheck,
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import {
@@ -31,6 +32,15 @@ import { Button } from './ui/button';
 
 export default function Header() {
     const [showSearch, setShowSearch] = useState(false);
+    const [searchText, setSearchText] = useState('');
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchText(e.target.value);
+    };
+
+    const handleClearSearch = () => {
+        setSearchText('');
+    };
 
     return (
         <div className="header shadow fixed top-0 left-0 z-50 w-full bg-white/80 backdrop-blur-sm shadow">
@@ -169,11 +179,19 @@ export default function Header() {
                             <h2 className="header_logo text-2xl font-bold text-red-500 text-center w-1/5">
                                 <span className="bg-red-500 text-white p-2 rounded-md">5D</span> - Tech
                             </h2>
-                            <input
-                                type="text"
-                                placeholder="Search..."
-                                className="w-[400px] border outline-none p-1 pl-3"
-                            />
+                            <div className="flex items-center justify-between w-[500px] border outline-none pl-3">
+                                <input
+                                    type="text"
+                                    placeholder="Search..."
+                                    value={searchText}
+                                    onChange={handleInputChange}
+                                    className="outline-none w-[430px]"
+                                />
+                                {searchText && (
+                                    <Button variant="ghost" onClick={handleClearSearch} className='text-lg hover:bg-transparent cursor-pointer'>&times;</Button>
+                                )}
+                                <Button className='rounded-none cursor-pointer w-[70px]'><Search /></Button>
+                            </div>
                             <div className="w-1/5 flex items-center justify-center">
                                 <div className="close-btn" onClick={() => setShowSearch(false)}>
                                     &times;
