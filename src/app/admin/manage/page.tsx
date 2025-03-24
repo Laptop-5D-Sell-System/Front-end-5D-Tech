@@ -1,33 +1,14 @@
-"use client";
 
-import {
-    Menubar,
-    MenubarMenu,
-    MenubarTrigger,
-    MenubarContent
-  } from "@/components/ui/menubar"
+import Link from "next/link";
 
-  
+export default function ManageUser () {
+    return (
+        <div className="">
+            <h1>Trang quản lý sản phẩm</h1>
+            <Link href="/admin">
+                Về Trang admin
+            </Link>
+        </div>
+    )
 
-export default function AdminDashBoard() {
-
-
-  return (
-      <Menubar>
-          <MenubarMenu>
-              <MenubarTrigger>Sản Phẩm</MenubarTrigger>
-              <MenubarContent>     
-                    
-                </MenubarContent>
-          </MenubarMenu>
-          <MenubarMenu>
-              <MenubarTrigger>Đơn Hàng</MenubarTrigger>
-              
-          </MenubarMenu>
-          <MenubarMenu>
-              <MenubarTrigger>Quản Lý</MenubarTrigger>
-              
-          </MenubarMenu>
-      </Menubar>
-  );
 }

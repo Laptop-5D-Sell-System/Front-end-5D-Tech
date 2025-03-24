@@ -1,29 +1,46 @@
-import { Menubar, MenubarContent, MenubarMenu, MenubarTrigger } from "@radix-ui/react-menubar";
-import { ThemeProvider } from "../../components/ui/theme-provider";
-import { ModeToggle } from "./manage/mode";
+'use client';
 
-export default function AdminLayOut() {
+import * as React from 'react';
+import NavLinks from '@/components/nav-links';
+import MobileNavLinks from '@/components/mobile-nav-links';
+import { ThemeProvider } from '@/components/ui/theme-provider';
+import { ModeToggle } from '@/components/mode';
+import DropdownAvatar from '@/components/dropdown-avatar';
+import '../globals.css';
+
+export default function Layout({
+    children,
+}: Readonly<{
+    children?: React.ReactNode;
+}>) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body>
-                <div className="flex w-full justify-between items-center">
-                <div className="grid grid-cols-4 gap-4 w-full">
-                    <a href="/admin/manage/products">Sản Phẩm</a>
-                    <a href="/admin/manage/products">Sản Phẩm</a>
-                    <a href="/admin/manage/products">Sản Phẩm</a>
-                    <a href="/admin/manage/products">Sản Phẩm</a>
-                </div>
+            <body className="flex min-h-screen w-full flex-col bg-muted/40">
+                <NavLinks />
 
-                    <ThemeProvider
-                        attribute="class"
-                        defaultTheme="system"
-                        enableSystem
-                        disableTransitionOnChange
-                    >      
-                    <ModeToggle />
-                    </ThemeProvider>
+
+                <div className="flex sm:gap-4 sm:py-4 sm:pl-14 w-full">
+                    <header className="sticky top-0 z-30 flex items-center border-b  px-4 sm:static w-full">
+                        <div className="sm:hidden flex items-center">
+                            <MobileNavLinks />
+                        </div>
+
+                        <div className="ml-auto flex items-center gap-4">
+                            <ThemeProvider
+                                attribute="class"
+                                defaultTheme="system"
+                                enableSystem
+                                disableTransitionOnChange
+                            >
+                                <ModeToggle />
+                            </ThemeProvider>
+                            <DropdownAvatar />
+                        </div>
+                    </header>
                 </div>
-               
+                {children}
+
+>>>>>>> 9a0156f (upgrade 2 product display)
             </body>
         </html>
     );
