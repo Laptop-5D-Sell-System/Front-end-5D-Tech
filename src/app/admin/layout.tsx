@@ -1,43 +1,47 @@
-import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
-import { Montserrat } from 'next/font/google';
+'use client';
+
+import * as React from 'react';
+import NavLinks from '@/components/nav-links';
+import MobileNavLinks from '@/components/mobile-nav-links';
+import { ThemeProvider } from '@/components/ui/theme-provider';
+import { ModeToggle } from '@/components/mode';
+import DropdownAvatar from '@/components/dropdown-avatar';
 import '../globals.css';
-import HeaderAdmin from '@/components/HeaderAdmin';
-import SlidebarAdmin from '@/components/SlidebarAdmin';
 
-const geistSans = Geist({
-    variable: '--font-geist-sans',
-    subsets: ['latin'],
-});
-
-const montserrat = Montserrat({
-    variable: '--font-montserrat',
-    subsets: ['latin'],
-    weight: ['400', '500', '600', '700'],
-});
-
-const geistMono = Geist_Mono({
-    variable: '--font-geist-mono',
-    subsets: ['latin'],
-});
-
-export const metadata: Metadata = {
-    title: 'Admin 5D - Tech',
-};
-
-export default function AdminLayout({
+export default function Layout({
     children,
 }: Readonly<{
-    children: React.ReactNode;
+    children?: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
-            <head>
-                <meta charSet="utf-8" />
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <title>{`${metadata.title}`}</title>
-            </head>
-            <body className={`${montserrat.variable} antialiased`}>{children}</body>
+        <html lang="en" suppressHydrationWarning>
+            <body className="flex min-h-screen w-full flex-col bg-muted/40">
+                <NavLinks />
+
+
+                <div className="flex sm:gap-4 sm:py-4 sm:pl-14 w-full">
+                    <header className="sticky top-0 z-30 flex items-center border-b  px-4 sm:static w-full">
+                        <div className="sm:hidden flex items-center">
+                            <MobileNavLinks />
+                        </div>
+
+                        <div className="ml-auto flex items-center gap-4">
+                            <ThemeProvider
+                                attribute="class"
+                                defaultTheme="system"
+                                enableSystem
+                                disableTransitionOnChange
+                            >
+                                <ModeToggle />
+                            </ThemeProvider>
+                            <DropdownAvatar />
+                        </div>
+                    </header>
+                </div>
+                {children}
+
+>>>>>>> 9a0156f (upgrade 2 product display)
+            </body>
         </html>
     );
 }

@@ -1,6 +1,7 @@
+
 import Link from "next/link";
 
-export default function ManageProduct () {
+export default function ManageUser () {
     return (
         <div className="">
             <h1>Trang quản lý sản phẩm</h1>
@@ -9,4 +10,5 @@ export default function ManageProduct () {
             </Link>
         </div>
     )
+
 }
