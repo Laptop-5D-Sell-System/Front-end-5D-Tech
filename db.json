@@ -244,6 +244,14 @@
       "password": "111111",
       "confirmPassword": "111111",
       "avatar": ""
+    },
+    {
+      "id": "1742817051340",
+      "username": "Dương VQ",
+      "email": "iwsbci@gmail.com",
+      "password": "123456789",
+      "confirmPassword": "123456789",
+      "avatar": "blob:http://localhost:3000/e11d9d9e-f1de-462d-abb4-65aa9df59db2"
     }
   ],
   "Products": [

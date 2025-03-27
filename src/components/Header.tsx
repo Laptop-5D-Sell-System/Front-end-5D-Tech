@@ -30,6 +30,7 @@ import {
 import '../styles/Header.scss';
 import { Separator } from './ui/separator';
 import { Button } from './ui/button';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
     const [showSearch, setShowSearch] = useState(false);
@@ -43,6 +44,15 @@ export default function Header() {
         setSearchText('');
     };
 
+    // Handle search
+    const [searchTerm, setSearchTerm] = useState('');
+    const router = useRouter(); // Next.js router
+
+    const handleSearch = () => {
+        if(searchTerm.trim()) {
+            router.push(`/search?q=${searchTerm}`);
+        }
+    }
     return (
         <div className="header shadow fixed top-0 left-0 z-50 w-full bg-white/80 backdrop-blur-sm shadow">
             {/* Băng dôn chạy */}
@@ -184,14 +194,14 @@ export default function Header() {
                                 <input
                                     type="text"
                                     placeholder="Search..."
-                                    value={searchText}
-                                    onChange={handleInputChange}
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
                                     className="outline-none w-[430px]"
                                 />
-                                {searchText && (
-                                    <Button variant="ghost" onClick={handleClearSearch} className='text-lg hover:bg-transparent cursor-pointer'>&times;</Button>
+                                {searchTerm && (
+                                    <Button variant="ghost" onClick={() => setSearchTerm('')} className='text-lg hover:bg-transparent cursor-pointer'>&times;</Button>
                                 )}
-                                <Button className='rounded-none cursor-pointer w-[70px]'><Search /></Button>
+                                <Button className='rounded-none cursor-pointer w-[70px]' onClick={handleSearch}><Search /></Button>
                             </div>
                             <div className="w-1/5 flex items-center justify-center">
                                 <div className="close-btn" onClick={() => setShowSearch(false)}>
