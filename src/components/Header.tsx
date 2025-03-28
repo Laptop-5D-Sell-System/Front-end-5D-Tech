@@ -258,7 +258,7 @@ export default function Header() {
                                     </DropdownMenuItem>
                                 </Link>
                                 <DropdownMenuSeparator />
-                                <Link href="/login">
+                                <Link href="/auth/login">
                                     <DropdownMenuItem className='cursor-pointer'>
                                         <LogIn stroke="black" />Đăng nhập
                                     </DropdownMenuItem>
