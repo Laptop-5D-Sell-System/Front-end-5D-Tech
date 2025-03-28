@@ -1,8 +1,12 @@
 import React, { useState } from "react";
+import { useCart } from "@/context/CartContext";
 import { Dialog } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
 import { ShoppingBasket, ShoppingCart } from "lucide-react";
 import Image from "next/image";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Link from "next/link";
 
 interface Product {
     id: number;
@@ -34,6 +38,7 @@ interface ModalProps {
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
     const [quantity, setQuantity] = useState(1);
+    const { addToCart } = useCart();
     
     const handleIncrease = () => {
         if(product && quantity < product.available) {
@@ -46,6 +51,22 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
             setQuantity(quantity - 1);
         }
     }
+
+    const handleAddToCart = () => {
+        if(product) {
+            addToCart({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                quantity: quantity,
+                image: product.image
+            });
+            toast.success("Đã thêm vào giỏ hàng", {
+                closeButton: true,
+            });
+            onClose();
+        }
+    }
     return (
         <Dialog open={isOpen} onClose={onClose} className="fixed inset-0 z-50">
             {/* Nền mờ */}
@@ -53,7 +74,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
                 className={`fixed inset-0 bg-gray-800/50 transition-opacity duration-500 ${isOpen ? "opacity-100" : "opacity-0"}`} 
                 aria-hidden="true"
             ></div>
-
             {/* Nội dung Modal */}
             <div className="fixed inset-0 flex items-center justify-center p-4">
                 <Dialog.Panel 
@@ -72,7 +92,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
                                 <div className="ml-4">
                                     <p className="text-2xl text-red-500 font-[500] mb-2">{product.name}</p>
                                     <div className="featured_products_price flex gap-2 mb-2">
-                                        <div className="new_price text-red-500">{product.price} ₫</div>
+                                        <div className="new_price text-red-500">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}</div>
                                         <div className="old_price text-gray-500 text-sm line-through">{product.oldPrice} ₫</div>
                                     </div>
                                     <p className="text-gray-500 text-sm w-90 mb-2">{product.description}</p>
@@ -114,9 +134,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
                                     </div>
                                     
                                     {/* Nút thêm vào giỏ hàng */}
-                                    <Button className="hover:bg-red-500 rounded text-white mt-4 w-full transition-all duration-300 cursor-pointer">Xem chi tiết sản phẩm</Button>
+                                    <Link href={`/product-detail?id=${product.id}`}>
+                                        <Button className="hover:bg-red-500 rounded text-white mt-4 w-full transition-all duration-300 cursor-pointer">Xem chi tiết sản phẩm</Button>
+                                    </Link>
                                     <div className="flex gap-2 mt-2 w-full">
-                                        <Button variant="outline" className="flex-1 rounded border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-300 cursor-pointer">
+                                        <Button onClick={handleAddToCart} variant="outline" className="flex-1 rounded border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-300 cursor-pointer">
                                             <ShoppingCart size={16} className="mr-2" />
                                             Thêm vào giỏ
                                         </Button>

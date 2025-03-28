@@ -20,6 +20,7 @@ import axios from 'axios';
 import { Button } from '../../components/ui/button';
 import Image from 'next/image';
 import Modal from '../../components/Modal';
+import Link from 'next/link';
 
 interface Product {
     id: number;
@@ -33,21 +34,11 @@ interface Product {
     quantity: number;
     description: string;
     image: string;
+    processWidth?: number;
 }
 
 
 export default function Home() {
-    // Handle process width
-    const [processWidth, setProcessWidth] = useState(0);
-
-    useEffect(() => {
-        const available = 8;
-        const total = 40;
-        const percent = (available / total) * 100;
-
-        setTimeout(() => setProcessWidth(percent), 300);
-    }, []);
-
     // Handle dialog
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalContent, setModalContent] = useState<'Cart' | 'View'>('Cart');
@@ -73,9 +64,15 @@ export default function Home() {
         const fetchProducts = async () => {
             try {
                 const response = await axios.get('/api/products');
-                console.log(response.data);
-                
-                setProducts(response.data.slice(0, 8));
+                const fetchedProducts: Product[] = response.data;
+
+                // Cập nhật processWidth dựa trên available và quantity
+                const updatedProducts = fetchedProducts.map(product => {
+                    const percent = product.quantity > 0 ? (product.available / product.quantity) * 100 : 0;
+                    return { ...product, processWidth: percent };
+                });
+
+                setProducts(updatedProducts.slice(0, 8));
             }
             catch (error) {
                 console.error(error);
@@ -225,13 +222,15 @@ export default function Home() {
                         <p className="text-gray-500 font-light text-sm mb-8">
                             Electronics stores are renowned for being the first to <br /> showcase new gadgets and devices.
                         </p>
-                        <Button className="bg-red-500 text-white hover:bg-black hover:text-white transition-all duration-500 cursor-pointer">
-                            Khám Phá Ngay <ArrowRight />
-                        </Button>
+                        <Link href={'/product-list'}>
+                            <Button className="bg-red-500 text-white hover:bg-black hover:text-white transition-all duration-500 cursor-pointer">
+                                Khám Phá Ngay <ArrowRight />
+                            </Button>
+                        </Link>
                     </div>
                     <div className="w-6/10">
                         <div className="menu_category_list grid grid-cols-4 grid-rows-2 gap-6">
-                            <div className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
+                            <Link href={'/product-list'} className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
                                 <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
                                 <div className="relative z-10 transition-all duration-300 group-hover:text-white">
                                     <div className="icon border border-red-500 w-[50px] h-[50px] mx-auto mb-2 rounded-full flex items-center justify-center transition-all duration-300 group-hover:text-red-500 group-hover:bg-white">
@@ -242,8 +241,8 @@ export default function Home() {
                                         8 sản phẩm
                                     </p>
                                 </div>
-                            </div>
-                            <div className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
+                            </Link>
+                            <Link href={'/product-list'} className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
                                 <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
                                 <div className="relative z-10 transition-all duration-300 group-hover:text-white">
                                     <div className="icon border border-red-500 w-[50px] h-[50px] mx-auto mb-2 rounded-full flex items-center justify-center transition-all duration-300 group-hover:text-red-500 group-hover:bg-white">
@@ -256,8 +255,8 @@ export default function Home() {
                                         3 sản phẩm
                                     </p>
                                 </div>
-                            </div>
-                            <div className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
+                            </Link>
+                            <Link href={'/product-list'} className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
                                 <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
                                 <div className="relative z-10 transition-all duration-300 group-hover:text-white">
                                     <div className="icon border border-red-500 w-[50px] h-[50px] mx-auto mb-2 rounded-full flex items-center justify-center transition-all duration-300 group-hover:text-red-500 group-hover:bg-white">
@@ -268,8 +267,8 @@ export default function Home() {
                                         5 sản phẩm
                                     </p>
                                 </div>
-                            </div>
-                            <div className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
+                            </Link>
+                            <Link href={'/product-list'} className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
                                 <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
                                 <div className="relative z-10 transition-all duration-300 group-hover:text-white">
                                     <div className="icon border border-red-500 w-[50px] h-[50px] mx-auto mb-2 rounded-full flex items-center justify-center transition-all duration-300 group-hover:text-red-500 group-hover:bg-white">
@@ -280,8 +279,8 @@ export default function Home() {
                                         7 sản phẩm
                                     </p>
                                 </div>
-                            </div>
-                            <div className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
+                            </Link>
+                            <Link href={'/product-list'} className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
                                 <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
                                 <div className="relative z-10 transition-all duration-300 group-hover:text-white">
                                     <div className="icon border border-red-500 w-[50px] h-[50px] mx-auto mb-2 rounded-full flex items-center justify-center transition-all duration-300 group-hover:text-red-500 group-hover:bg-white">
@@ -292,8 +291,8 @@ export default function Home() {
                                         5 sản phẩm
                                     </p>
                                 </div>
-                            </div>
-                            <div className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
+                            </Link>
+                            <Link href={'/product-list'} className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
                                 <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
                                 <div className="relative z-10 transition-all duration-300 group-hover:text-white">
                                     <div className="icon border border-red-500 w-[50px] h-[50px] mx-auto mb-2 rounded-full flex items-center justify-center transition-all duration-300 group-hover:text-red-500 group-hover:bg-white">
@@ -306,8 +305,8 @@ export default function Home() {
                                         8 sản phẩm
                                     </p>
                                 </div>
-                            </div>
-                            <div className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
+                            </Link>
+                            <Link href={'/product-list'} className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
                                 <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
                                 <div className="relative z-10 transition-all duration-300 group-hover:text-white">
                                     <div className="icon border border-red-500 w-[50px] h-[50px] mx-auto mb-2 rounded-full flex items-center justify-center transition-all duration-300 group-hover:text-red-500 group-hover:bg-white">
@@ -318,8 +317,8 @@ export default function Home() {
                                         4 sản phẩm
                                     </p>
                                 </div>
-                            </div>
-                            <div className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
+                            </Link>
+                            <Link href={'/product-list'} className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
                                 <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
                                 <div className="relative z-10 transition-all duration-300 group-hover:text-white">
                                     <div className="icon border border-red-500 w-[50px] h-[50px] mx-auto mb-2 rounded-full flex items-center justify-center transition-all duration-300 group-hover:text-red-500 group-hover:bg-white">
@@ -330,7 +329,7 @@ export default function Home() {
                                         8 sản phẩm
                                     </p>
                                 </div>
-                            </div>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -399,7 +398,7 @@ export default function Home() {
                             <h2 className="font-semibold text-3xl">Sản Phẩm Nổi Bật</h2>
                         </div>
                         {/* List items */}
-                        <div className="featured_products_list grid grid-cols-4 gap-5 mt-[50px]">
+                        <div className="featured_products_list grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 mt-[50px]">
                             {products.map((product) => (
                                 <div key={product.id} className="featured_products_item group rounded border overflow-hidden">
                                     {/* Img item */}
@@ -413,6 +412,7 @@ export default function Home() {
                                             alt={product.name}
                                             fill
                                             quality={100}
+                                            loading="lazy"
                                             className="object-cover overflow-hidden transition-transform duration-500 group-hover:scale-110"
                                         />
 
@@ -433,45 +433,49 @@ export default function Home() {
                                     </div>
 
                                     {/* Content item */}
-                                    <div className="p-4">
-                                        <div className="featured_products_category mb-2 text-gray-500 text-sm">
-                                            {product.category}
+                                    <Link href={`/product-detail?id=${product.id}`}>
+                                        <div className="p-4">
+                                            <div className="featured_products_category mb-2 text-gray-500 text-sm">
+                                                {product.category}
+                                            </div>
+                                            <div className="featured_products_name h-[50px] text-sm">
+                                                {product.name}
+                                            </div>
+                                            <div className="featured_products_rate flex items-center my-2 text-yellow-300">
+                                                {Array.from({ length: 5 }, (_, index) => (
+                                                    <Star
+                                                        key={index}
+                                                        size={16}
+                                                        fill="currentColor"
+                                                        stroke="currentColor"
+                                                        className="mr-1"
+                                                    />
+                                                ))}
+                                            </div>
+                                            <div className="featured_products_quantity text-sm mb-2">
+                                                Có sẵn: <span className="text-red-500">{product.available}/{product.quantity}</span>
+                                            </div>
+                                            <div className="w-full bg-gray-200 h-1 mb-4">
+                                                <div
+                                                    className="bg-red-500 h-1 transition-all duration-500"
+                                                    style={{ width: `${product.processWidth}%` }}
+                                                ></div>
+                                            </div>
+                                            <div className="featured_products_price flex gap-2">
+                                                <div className="new_price text-red-500">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}</div>
+                                                <div className="old_price text-gray-500 text-sm line-through">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.oldPrice)}</div>
+                                            </div>
                                         </div>
-                                        <div className="featured_products_name h-[50px] text-sm">
-                                            {product.name}
-                                        </div>
-                                        <div className="featured_products_rate flex items-center my-2 text-yellow-300">
-                                            {Array.from({ length: 5 }, (_, index) => (
-                                                <Star
-                                                    key={index}
-                                                    size={16}
-                                                    fill="currentColor"
-                                                    stroke="currentColor"
-                                                    className="mr-1"
-                                                />
-                                            ))}
-                                        </div>
-                                        <div className="featured_products_quantity text-sm mb-2">
-                                            Có sẵn: <span className="text-red-500">{product.available}/{product.quantity}</span>
-                                        </div>
-                                        <div className="w-full bg-gray-200 h-1 mb-4">
-                                            <div
-                                                className="bg-red-500 h-1 transition-all duration-500"
-                                                style={{ width: `${processWidth}%` }}
-                                            ></div>
-                                        </div>
-                                        <div className="featured_products_price flex gap-2">
-                                            <div className="new_price text-red-500">{product.price} ₫</div>
-                                            <div className="old_price text-gray-500 text-sm line-through">{product.oldPrice} ₫</div>
-                                        </div>
-                                    </div>
+                                    </Link>
                                 </div>
                             ))}
                         </div>
                         <div className="btn w-full text-center mt-5">
-                            <Button className="cursor-pointer bg-red-500 border border-red-500 hover:bg-white hover:text-red-500 transition-all duration-300">
-                                Xem Thêm <ArrowRight />
-                            </Button>
+                            <Link href={`/product-list`}>
+                                <Button className="cursor-pointer mt-[50px] bg-red-500 border border-red-500 hover:bg-white hover:text-red-500 transition-all duration-300">
+                                    Xem Thêm <ArrowRight />
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </div>

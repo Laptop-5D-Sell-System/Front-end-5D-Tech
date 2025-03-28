@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import { useCart } from '@/context/CartContext';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -16,8 +17,9 @@ import {
     
     UserPlus,
     SearchCheck,
+    Trash2,
 } from 'lucide-react';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -44,6 +46,10 @@ export default function Header() {
             router.push(`/search?q=${searchTerm}`);
         }
     }
+
+    // handle cart
+    const { cart, removeFromCart } = useCart();
+
     return (
         <div className="header shadow fixed top-0 left-0 z-50 w-full bg-white/80 backdrop-blur-sm shadow">
             {/* Băng dôn chạy */}
@@ -73,7 +79,7 @@ export default function Header() {
                     >
                         Giới Thiệu
                     </Link>
-                    <li className="header_menu_item text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer relative get_menu_secondary">
+                    <Link href={'/product-list'} className="header_menu_item text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer relative get_menu_secondary">
                         Sản Phẩm <ChevronDown className="ml-1" strokeWidth={1} />
                         {/* Menu secondary */}
                         <div className="menu_secondary w-[700px] lg:w-[800px] xl:w-[1000px] absolute top-full left-0 bg-white shadow-md rounded-sm p-5 hidden z-50">
@@ -157,7 +163,7 @@ export default function Header() {
                                 />
                             </div>
                         </div>
-                    </li>
+                    </Link>
                     <Link
                         href="/contact"
                         className="header_menu_item text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer"
@@ -277,9 +283,67 @@ export default function Header() {
                                     <SheetTitle className="text-xl">Giỏ hàng của bạn</SheetTitle>
                                 </SheetHeader>
                                 <Separator />
-                                <SheetDescription>
-                                    <p>Giỏ hàng của bạn đang trống</p>
-                                </SheetDescription>
+                                <div className="px-4 pt-2">
+                                    {cart.length > 0 ? (
+                                        <ul className="space-y-4">
+                                            {cart.map((item) => (
+                                                <li key={item.id} className="flex items-center gap-4 border-b pb-2">
+                                                    <Image
+                                                        src={item.image}
+                                                        alt={item.name}
+                                                        width={100}
+                                                        height={70}
+                                                        className="object-cover"
+                                                    />
+                                                    <div className="flex-1">
+                                                        <p className="text-sm font-medium">{item.name}</p>
+                                                        <p className="text-sm text-gray-500">
+                                                            Số lượng: {item.quantity}  
+                                                        </p>
+                                                        <p className='text-sm text-red-500'>
+                                                            Giá tiền: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
+                                                        </p>
+                                                    </div>
+                                                    <Button
+                                                        variant="outline"
+                                                        className="text-red-500 hover:bg-red-500 hover:text-white transition-all duration-300 border-red-500 cursor-pointer"
+                                                        onClick={() => removeFromCart(item.id)}
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </Button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p>Giỏ hàng của bạn đang trống</p>
+                                    )}
+                                </div>
+                                {/* Tính tổng tiền */}
+                                <div className="mt-auto border-t p-1 pt-4">
+                                    <p className="text-lg flex items-center justify-between">
+                                        <span>
+                                            Tổng tiền:{" "}
+                                        </span>
+                                        <span className="text-red-500">
+                                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                                                cart.reduce((total, item) => total + item.price * item.quantity, 0)
+                                            )}
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <div className='mt-2 flex items-center justify-between gap-1 p-1'>
+                                    <Link href="/cart">
+                                        <Button className="rounded-none w-[208px] cursor-pointer hover:bg-red-500 transition-all duration-300">
+                                            Xem giỏ hàng
+                                        </Button>
+                                    </Link>
+                                    <Link href="/checkout">
+                                        <Button className="rounded-none w-[208px] cursor-pointer hover:bg-red-500 transition-all duration-300">
+                                            Thanh toán
+                                        </Button>
+                                    </Link>
+                                </div>
                             </SheetContent>
                         </Sheet>
                     </li>
