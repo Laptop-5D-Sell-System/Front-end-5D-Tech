@@ -34,15 +34,6 @@ import { useRouter } from 'next/navigation';
 
 export default function Header() {
     const [showSearch, setShowSearch] = useState(false);
-    const [searchText, setSearchText] = useState('');
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchText(e.target.value);
-    };
-
-    const handleClearSearch = () => {
-        setSearchText('');
-    };
 
     // Handle search
     const [searchTerm, setSearchTerm] = useState('');
@@ -187,9 +178,11 @@ export default function Header() {
                         <div
                             className={`search_container flex items-center justify-between ${showSearch ? 'show' : ''}`}
                         >
-                            <h2 className="header_logo text-2xl font-bold text-red-500 text-center w-1/5">
-                                <span className="bg-red-500 text-white p-2 rounded-md">5D</span> - Tech
-                            </h2>
+                                <h2 className="header_logo text-2xl font-bold text-red-500 text-center w-1/5">
+                            <Link href="/">
+                                    <span className="bg-red-500 text-white p-2 rounded-md">5D</span> - Tech
+                            </Link>
+                                </h2>
                             <div className="flex items-center justify-between w-[500px] border outline-none pl-3">
                                 <input
                                     type="text"
@@ -201,7 +194,7 @@ export default function Header() {
                                 {searchTerm && (
                                     <Button variant="ghost" onClick={() => setSearchTerm('')} className='text-lg hover:bg-transparent cursor-pointer'>&times;</Button>
                                 )}
-                                <Button className='rounded-none cursor-pointer w-[70px]' onClick={handleSearch}><Search /></Button>
+                                <Button className='rounded-none cursor-pointer w-[70px] outline-none' onClick={handleSearch}><Search /></Button>
                             </div>
                             <div className="w-1/5 flex items-center justify-center">
                                 <div className="close-btn" onClick={() => setShowSearch(false)}>

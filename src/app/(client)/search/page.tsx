@@ -3,10 +3,8 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Eye, ShoppingCart, Star } from 'lucide-react';
-import Link from 'next/link';
 import Image from 'next/image';
 import Modal from '@/components/Modal';
-import { set } from 'zod';
 import axios from 'axios';
 
 interface Product {
@@ -31,31 +29,22 @@ export default function Search() {
 
     useEffect(() => {
         const fetchProducts = async () => {
+            setLoading(true);
             try {
-                const response = await axios.get('/api/products');
-                setProducts(response.data);
+                // Gọi API tìm kiếm
+                const response = await axios.get(`http://localhost:8080/search/${query}`);
+                setProducts(response.data?.pros || []); 
             } catch (error) {
-                console.log(error);
+                console.error('Error fetching products:', error);
             } finally {
                 setLoading(false);
             }
         };
-        fetchProducts();
-    }, []);
 
-    // handle filter products
-    const filteredProducts = products.filter((product) => product.name.toLowerCase().includes(query.toLowerCase()));
-
-    // Handle process width
-    const [processWidth, setProcessWidth] = useState(0);
-
-    useEffect(() => {
-        const available = 8;
-        const total = 40;
-        const percent = (available / total) * 100;
-
-        setTimeout(() => setProcessWidth(percent), 300);
-    }, []);
+        if (query) {
+            fetchProducts();
+        }
+    }, [query]); // Gọi lại khi `query` thay đổi
 
     // Handle dialog
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -74,13 +63,14 @@ export default function Search() {
         setIsModalOpen(false);
         setSelectedProduct(null);
     };
+
     return (
         <div className="pt-5">
             <div className="px-[100px]">
-                <div className="">Kết quả tìm kiếm cho: </div>
+                <div className="">Kết quả tìm kiếm cho: {query}</div>
                 {loading ? (
                     <p>Đang tải...</p>
-                ) : filteredProducts.length > 0 ? (
+                ) : products.length > 0 ? (
                     <div className="featured_products_list grid grid-cols-4 gap-5 mt-[50px]">
                         {products.map((product) => (
                             <div key={product.id} className="featured_products_item group rounded border overflow-hidden">
@@ -136,12 +126,6 @@ export default function Search() {
                                         <span className="text-red-500">
                                             {product.available}/{product.quantity}
                                         </span>
-                                    </div>
-                                    <div className="w-full bg-gray-200 h-1 mb-4">
-                                        <div
-                                            className="bg-red-500 h-1 transition-all duration-500"
-                                            style={{ width: `${processWidth}%` }}
-                                        ></div>
                                     </div>
                                     <div className="featured_products_price flex gap-2">
                                         <div className="new_price text-red-500">{product.price} ₫</div>

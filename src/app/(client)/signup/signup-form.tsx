@@ -3,92 +3,109 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import './Signup.scss';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
-import { Eye, Lock, LogIn, Mail } from 'lucide-react';
+import { Mail, Lock, LogIn } from 'lucide-react';
 
-const formSchema = z.object({
-    username: z.string().min(2).max(50),
-    email: z.string().email(),
-    password: z.string().min(8),
-    confirmPassword: z.string().min(8),
+// Schema validation
+const RegisterBody = z.object({
+    email: z.string().email('Email không hợp lệ'),
+    password_hash: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+type RegisterBodyType = z.infer<typeof RegisterBody>;
 
 export default function SignupForm() {
-    // 1. Define your form.
-    const form = useForm<FormValues>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<RegisterBodyType>({
+        resolver: zodResolver(RegisterBody),
         defaultValues: {
             email: '',
-            password: '',
-            confirmPassword: '',
+            password_hash: '',
         },
     });
 
-    // 2. Define a submit handler.
-    function onSubmit(values: FormValues) {
-        console.log(values);
+    async function onSubmit(values: RegisterBodyType) {
+        console.log("Dữ liệu gửi đi:", values);
+        try {
+            const response = await fetch('https://localhost:44303/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(values),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Đăng ký thành công:', data);
+        } catch (error) {
+            console.error('Error fetching signup:', error);
+            alert('Đăng ký thất bại. Vui lòng thử lại.');
+        }
     }
+
     return (
         <div className="mt-[160px] pt-[40px] w-[400px] mx-auto border border-gray-200 p-8 rounded-lg">
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                    <h2 className='text-center text-red-500 font-semibold text-2xl'>Đăng Ký Tài Khoản</h2>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" noValidate>
+                    <h2 className="text-center text-red-500 font-semibold text-2xl">Đăng Ký Tài Khoản</h2>
+
+                    {/* Email Field */}
                     <FormField
                         control={form.control}
-                        name="username"
+                        name="email"
                         render={({ field }) => (
-                            <FormItem className='mb-4'>
+                            <FormItem className="mb-4">
                                 <FormControl>
                                     <div className="flex items-center border border-gray-200 p-1">
-                                        <Mail size={20} className='text-gray-400 ml-2' />
-                                        <Input placeholder="Nhập email của bạn" {...field} />
+                                        <Mail size={20} className="text-gray-400 ml-2" />
+                                        <Input placeholder="Nhập email của bạn" type="email" {...field} />
                                     </div>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
+
+                    {/* Password Field */}
                     <FormField
                         control={form.control}
-                        name="password"
+                        name="password_hash"
                         render={({ field }) => (
-                            <FormItem className='mb-4'>
+                            <FormItem className="mb-4">
                                 <FormControl>
                                     <div className="flex items-center border border-gray-200 p-1">
-                                        <Lock size={20} className='text-gray-400 ml-2' />
-                                        <Input placeholder="Nhập mật khẩu của bạn" {...field} />
+                                        <Lock size={20} className="text-gray-400 ml-2" />
+                                        <Input
+                                            placeholder="Nhập mật khẩu của bạn"
+                                            type="password"
+                                            {...field}
+                                            onChange={(e) => field.onChange(e.target.value)} // Cập nhật giá trị
+                                        />
                                     </div>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                    <FormField
-                        control={form.control}
-                        name="confirmPassword"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                    <div className="flex items-center border border-gray-200 p-1">
-                                        <Eye size={20} className='text-gray-400 ml-2' />
-                                        <Input placeholder="Nhập lại mật khẩu" {...field} />
-                                    </div>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <Button type="submit" className='w-full cursor-pointer hover:bg-red-500 transition-all duration-300 mb-4'>Đăng Ký</Button>
-                    <Separator className='m-0' />
-                    <p className='text-center text-gray-500 text-sm mt-4 mb-4'>Đã có tài khoản?</p>
+
+                    <Button
+                        type="submit"
+                        className="w-full cursor-pointer hover:bg-red-500 transition-all duration-300 mb-4"
+                    >
+                        Đăng Ký
+                    </Button>
+                    <Separator className="m-0" />
+                    <p className="text-center text-gray-500 text-sm mt-4 mb-4">Đã có tài khoản?</p>
                     <Link href="/login">
-                        <Button className='w-full cursor-pointer hover:bg-red-500 transition-all duration-300'><LogIn /> Đăng Nhập</Button>
+                        <Button className="w-full cursor-pointer hover:bg-red-500 transition-all duration-300">
+                            <LogIn /> Đăng Nhập
+                        </Button>
                     </Link>
                 </form>
             </Form>
