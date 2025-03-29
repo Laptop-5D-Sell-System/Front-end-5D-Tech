@@ -4,7 +4,11 @@ import { Montserrat } from 'next/font/google';
 import '@/app/globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+
+import AppProvider from '@/components/app-provider';
+
 import { CartProvider } from '@/context/CartContext';
+
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -40,12 +44,20 @@ export default function LoginLayout({
                 <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
             </head>
             <body className={`${montserrat.variable} antialiased`}>
+
+                <AppProvider>
+
                 <CartProvider>
+
                     <Header />
                     <div className="main" style={{ marginTop: '116px' }}></div>
                     {children}
                     <Footer />
-                </CartProvider>
+                    </CartProvider>
+
+                </AppProvider>
+
+
             </body>
         </html>
     );

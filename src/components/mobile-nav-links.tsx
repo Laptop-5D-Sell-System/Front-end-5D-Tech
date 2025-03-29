@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { PanelLeft, Package2, AlignJustify } from 'lucide-react';
+import {  Package2, AlignJustify } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import menuItems from '@/app/admin/menu-items';
 import { cn } from '@/lib/utils';
+import menuItems from './menu-items';
 
 export default function MobileNavLinks() {
     const pathname = usePathname();

@@ -23,11 +23,10 @@ export async function POST(request: NextRequest) {
     const accessToken = response.payload.token;
     const refreshToken = response.payload.refreshToken;
 
-
     const res = new NextResponse(
       JSON.stringify({ 
-        message: "Đăng nhập thành công!",
-        token: accessToken,
+        message: "Đăng nhập thành công    !",
+        token: refreshToken,
         refreshToken: refreshToken
       }),
       { status: 200, headers: { "Content-Type": "application/json" } }
@@ -49,11 +48,11 @@ export async function POST(request: NextRequest) {
       maxAge: 60 * 60, // 1 giờ
     });
 
-    console.log("✅ Cookie đã được thiết lập:", res);
+    console.log("Cookie đã được thiết lập:", res);
 
     return res;
   } catch (error) {
-    console.error("❌ Lỗi khi đăng nhập:", error);
+    console.error(" Lỗi khi đăng nhập:", error);
 
     return new NextResponse(
       JSON.stringify({ message: "Có lỗi xảy ra", error: (error as Error).message }),

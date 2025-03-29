@@ -2,9 +2,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 
 
 import { Accounts_table } from './account-table';
-import { AddUser } from './add-user';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+
 
 export default function Accounts() {
     return (
