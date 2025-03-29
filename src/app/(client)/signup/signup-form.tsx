@@ -102,7 +102,7 @@ export default function SignupForm() {
                     </Button>
                     <Separator className="m-0" />
                     <p className="text-center text-gray-500 text-sm mt-4 mb-4">Đã có tài khoản?</p>
-                    <Link href="/login">
+                    <Link href="/auth/login">
                         <Button className="w-full cursor-pointer hover:bg-red-500 transition-all duration-300">
                             <LogIn /> Đăng Nhập
                         </Button>

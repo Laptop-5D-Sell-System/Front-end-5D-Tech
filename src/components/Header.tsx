@@ -86,63 +86,63 @@ export default function Header() {
                             <ul className="menu_secondary_list w-1/5">
                                 <li className="menu_secondary_item font-semibold mb-4">Máy tính</li>
                                 <li className="menu_secondary_item mb-4">
-                                    <a
+                                    <Link
                                         href=""
                                         className="hover:text-red-500 hover:tracking-wide transition-all duration-150 font-xl"
                                     >
                                         Mackbook
-                                    </a>
+                                    </Link>
                                 </li>
                                 <li className="menu_secondary_item mb-4">
-                                    <a
+                                    <Link
                                         href=""
                                         className="hover:text-red-500 hover:tracking-wide transition-all duration-150 font-xl"
                                     >
                                         Thinkbook
-                                    </a>
+                                    </Link>
                                 </li>
                                 <li className="menu_secondary_item mb-4">
-                                    <a
+                                    <Link
                                         href=""
                                         className="hover:text-red-500 hover:tracking-wide transition-all duration-150 font-xl"
                                     >
                                         Asus Gaming
-                                    </a>
+                                    </Link>
                                 </li>
                             </ul>
                             <ul className="menu_secondary_list w-1/5">
                                 <li className="menu_secondary_item font-semibold mb-4">Phụ Kiện</li>
                                 <li className="menu_secondary_item mb-4">
-                                    <a
+                                    <Link
                                         href=""
                                         className="hover:text-red-500 hover:tracking-wide transition-all duration-150 font-xl"
                                     >
                                         Màn hình
-                                    </a>
+                                    </Link>
                                 </li>
                                 <li className="menu_secondary_item mb-4">
-                                    <a
+                                    <Link
                                         href=""
                                         className="hover:text-red-500 hover:tracking-wide transition-all duration-150 font-xl"
                                     >
                                         Tai nghe
-                                    </a>
+                                    </Link>
                                 </li>
                                 <li className="menu_secondary_item mb-4">
-                                    <a
+                                    <Link
                                         href=""
                                         className="hover:text-red-500 hover:tracking-wide transition-all duration-150 font-xl"
                                     >
                                         Lót chuột
-                                    </a>
+                                    </Link>
                                 </li>
                                 <li className="menu_secondary_item mb-4">
-                                    <a
+                                    <Link
                                         href=""
                                         className="hover:text-red-500 hover:tracking-wide transition-all duration-150 font-xl"
                                     >
                                         Bàn phím
-                                    </a>
+                                    </Link>
                                 </li>
                             </ul>
                             <div className="relative w-3/5 h-[300px] overflow-hidden group">

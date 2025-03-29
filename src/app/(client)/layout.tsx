@@ -6,6 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { CartProvider } from '@/context/CartContext';
 import { ToastContainer } from 'react-toastify';
+import ChatBot from '@/components/chat-bot';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -45,7 +46,7 @@ export default function ClientLayout({
                     <Header />
                     <div className="main" style={{ marginTop: '116px' }}></div>
                     {children}
-
+                    <ChatBot />
                     <Footer />
                     <ToastContainer position="top-right" autoClose={3000} />
                 </CartProvider>
