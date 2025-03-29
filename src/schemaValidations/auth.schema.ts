@@ -1,4 +1,3 @@
-import { RoleValues } from '@/constants/type'
 import z from 'zod'
 
 export const RegisterBody = z
@@ -36,15 +35,29 @@ export const RegisterRes = z.object({
 
 export type RegisterResType = z.TypeOf<typeof RegisterRes>
 
-export const LoginBody = z
-  .object({
+export const LoginBody = z.object({
     email: z.string().email(),
-    password_hash: z.string().min(8).max(100)
+    password_hash: z.string().min(8).max(100),
+    data: z.object({
+      token: z.string(), 
+      httpStatus: z.number()
+    })
   })
   .strict()
 
   export type LoginBodyType = z.TypeOf<typeof LoginBody>;
   
+
+  export const LogoutBody = z.object({
+    data: z.object({
+      token: z.string(), 
+      refreshToken: z.string(),
+      httpStatus: z.number()
+    })
+  })
+  .strict()
+
+  export type LogoutBodyType = z.TypeOf<typeof LogoutBody>;
 
   export const LoginRes = z.object({
     data: z.object({
@@ -52,8 +65,20 @@ export const LoginBody = z
       httpStatus: z.number()
       
     }),
-    message: z.string(), // Thông điệp trả về (chuỗi)
+    message: z.string(),
   });
+
+  export const LogoutRes = z.object({
+    data: z.object({
+      token: z.string(), 
+      refreshToken: z.string(),
+      httpStatus: z.number()
+      
+    }),
+    message: z.string(),
+  });
+
+export type LogoutResType = z.TypeOf<typeof LogoutRes>;
 
 export type LoginResType = z.TypeOf<typeof LoginRes>;
 

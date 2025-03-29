@@ -30,46 +30,29 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@radix-ui/react-dropdown-menu';
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogTitle,
-    DialogTrigger,
-} from '@radix-ui/react-dialog';
-import { DialogHeader } from '@/components/ui/dialog';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogTitle,
-} from '@radix-ui/react-alert-dialog';
-import { AlertDialogFooter, AlertDialogHeader } from '@/components/ui/alert-dialog';
-import EditAccount from './edit-user';
 
-interface Payment {
+import envConfig from '../../../../config';
+
+interface accounts {
     id: string;
     avatar: string;
     email: string;
-    username: string;
+    role: string;
 }
 
 const AccountTableContext = createContext<{
     setAccountIdEdit: (value: string) => void;
     accountIdEdit: string | undefined;
-    setAcountDelete: (value: Payment | null) => void;
-    accountDelete: Payment | null;
+    setAcountDelete: (value: accounts | null) => void;
+    accountDelete: accounts | null;
 }>({
     setAccountIdEdit: (value: string) => {},
     accountIdEdit: undefined,
     accountDelete: null,
-    setAcountDelete: (value: Payment | null) => {},
+    setAcountDelete: (value: accounts | null) => {},
 });
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<accounts>[] = [
     {
         id: 'stt',
         header: 'STT',
@@ -103,15 +86,15 @@ export const columns: ColumnDef<Payment>[] = [
         ),
         cell: ({ row }) => <div className="lowercase">{row.getValue('email')}</div>,
     },
-    {
-        accessorKey: 'username',
-        header: 'Username',
-    },
+    // {
+    //     accessorKey: 'username',
+    //     header: 'Username',
+    // },
     {
         id: 'actions',
         enableHiding: false,
         cell: ({ row }) => {
-            const payment = row.original;
+            const accounts = row.original;
             // const { setAccountIdEdit, setAcountDelete } = useContext(AccountTableContext);
             // const openEditAccount = () => {
             //     setAccountIdEdit(row.original.id);
@@ -133,7 +116,7 @@ export const columns: ColumnDef<Payment>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 shadow-md rounded-lg bg-gray-900 border">
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(payment.email)}
+                            onClick={() => navigator.clipboard.writeText(accounts.email)}
                             className="hover:bg-gray-600 transition duration-200 p-2 rounded-md"
                         >
                             📋 Sao Chép Email
@@ -200,11 +183,11 @@ export function Accounts_table() {
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
     const [accountIdEdit, setAccountIdEdit] = useState<string | undefined>();
-    const [accountDelete, setAcountDelete] = useState<Payment | null>(null);
-    const [data, setData] = React.useState<Payment[]>([]);
+    const [accountDelete, setAcountDelete] = useState<accounts | null>(null);
+    const [data, setData] = React.useState<accounts[]>([]);
     const [loading, setLoading] = React.useState(true);
     React.useEffect(() => {
-        fetch('http://localhost:4000/Account')
+        fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/get-accounts`)
             .then((res) => res.json())
             .then((data) => {
                 setData(data);

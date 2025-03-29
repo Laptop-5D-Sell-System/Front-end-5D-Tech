@@ -1,11 +1,11 @@
 "use client";
 
 import * as React from "react";
-import DropdownAvatar from "./dropdown-avatar";
+import DropdownAvatar from "../../../components/dropdown-avatar";
 // import NavLinks from "../nav-links";
-import MobileNavLinks from "./mobile-nav-links";
-import { ModeToggle } from "./mode";
 import { ThemeProvider } from "../../../components/ui/theme-provider";
+import MobileNavLinks from "@/components/mobile-nav-links";
+import { ModeToggle } from "@/components/mode";
 
 export default function Layout({
   children,

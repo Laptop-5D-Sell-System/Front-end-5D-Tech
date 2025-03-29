@@ -4,6 +4,7 @@ import { Montserrat } from 'next/font/google';
 import '../globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import AppProvider from '@/components/app-provider';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -39,11 +40,12 @@ export default function ClientLayout({
                 <title>{`${metadata.title}`}</title>
             </head>
             <body className={`${montserrat.variable} antialiased`}>
-                <Header />
-                <div className="main" style={{ marginTop: '116px' }}></div>
-                {children}
+                    <Header />
+                    <div className="main" style={{ marginTop: '116px' }}></div>
+                    {children}
+                    
+                    <Footer />
                 
-                <Footer />
             </body>
         </html>
     );

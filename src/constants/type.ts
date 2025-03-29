@@ -4,10 +4,10 @@ export const TokenType = {
     RefreshToken: 'RefreshToken',
     TableToken: 'TableToken',
   } as const;
+
   
   export const Role = {
     admin: 'admin',
-
     user: 'user',
   } as const;
   
