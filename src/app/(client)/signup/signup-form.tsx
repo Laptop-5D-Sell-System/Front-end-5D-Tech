@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 import { Mail, Lock, LogIn } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 // Schema validation
 const RegisterBody = z.object({
@@ -18,6 +20,7 @@ const RegisterBody = z.object({
 type RegisterBodyType = z.infer<typeof RegisterBody>;
 
 export default function SignupForm() {
+    const router = useRouter();
     const form = useForm<RegisterBodyType>({
         resolver: zodResolver(RegisterBody),
         defaultValues: {
@@ -42,7 +45,8 @@ export default function SignupForm() {
             }
 
             const data = await response.json();
-            console.log('Đăng ký thành công:', data);
+            toast.success("Đăng ký thành công!");
+            router.push('/login');
         } catch (error) {
             console.error('Error fetching signup:', error);
             alert('Đăng ký thất bại. Vui lòng thử lại.');
@@ -102,7 +106,7 @@ export default function SignupForm() {
                     </Button>
                     <Separator className="m-0" />
                     <p className="text-center text-gray-500 text-sm mt-4 mb-4">Đã có tài khoản?</p>
-                    <Link href="/auth/login">
+                    <Link href="/login">
                         <Button className="w-full cursor-pointer hover:bg-red-500 transition-all duration-300">
                             <LogIn /> Đăng Nhập
                         </Button>

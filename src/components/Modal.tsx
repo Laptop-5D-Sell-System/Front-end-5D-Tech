@@ -90,12 +90,12 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
                             <div className="flex justify-between">
                                 <Image src={product.image} alt={product.name} width={320} height={150} quality={100} className="object-cover h-[200px]" />
                                 <div className="ml-4">
-                                    <p className="text-2xl text-red-500 font-[500] mb-2">{product.name}</p>
+                                    <span className="text-2xl text-red-500 font-[500] mb-2">{product.name}</span>
                                     <div className="featured_products_price flex gap-2 mb-2">
                                         <div className="new_price text-red-500">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}</div>
                                         <div className="old_price text-gray-500 text-sm line-through">{product.oldPrice} ₫</div>
                                     </div>
-                                    <p className="text-gray-500 text-sm w-90 mb-2">{product.description}</p>
+                                    <span className="text-gray-500 text-sm w-90 mb-2">{product.description}</span>
                                     <ul>
                                         <li className="text-gray-500 text-sm">Thông tin sản phẩm:</li>
                                         <li className="text-gray-500 text-sm list-disc ml-4">CPU: <span className="text-red-500">{product.cpu}</span></li>

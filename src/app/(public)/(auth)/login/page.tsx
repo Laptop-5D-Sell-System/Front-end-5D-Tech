@@ -1,5 +1,3 @@
-
-
 'use client';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,6 +9,8 @@ import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 import { Mail, Lock, LogIn } from 'lucide-react';
 import envConfig from '../../../../../config';
+import Cookies from 'js-cookie'; 
+import { useRouter } from 'next/navigation';
 
 // Schema validation
 const LoginBody = z.object({
@@ -21,6 +21,7 @@ const LoginBody = z.object({
 type LoginBodyType = z.infer<typeof LoginBody>;
 
 export default function Login() {
+  const router = useRouter();
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
     defaultValues: {
@@ -50,13 +51,10 @@ export default function Login() {
       localStorage.setItem("refreshToken", refreshToken);
 
       console.log('Đăng nhập thành công:', data);
-      
-
-
 
       // Chuyển hướng đến trang chính
-      // router.push('/');
-    } catch (error) {
+      router.push('/');
+    } catch (error:any) {
       console.error('Error logging in:', error);
       alert(error.message || 'Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.');
     }

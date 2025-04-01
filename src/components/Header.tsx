@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -14,12 +14,19 @@ import {
     Headset,
     ChevronDown,
     LogIn,
-    
     UserPlus,
     SearchCheck,
     Trash2,
 } from 'lucide-react';
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from '@/components/ui/sheet';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -35,20 +42,39 @@ import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
 
 export default function Header() {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
+    const router = useRouter();
+
+    // Kiểm tra token trong localStorage
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            setIsLoggedIn(true);
+        } else {
+            setIsLoggedIn(false);
+        }
+    }, []);
+
+    const handleLogout = () => {
+        // Xóa token khi đăng xuất
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        setIsLoggedIn(false);
+        router.push('/login'); // Điều hướng đến trang đăng nhập
+    };
 
     // Handle search
     const [searchTerm, setSearchTerm] = useState('');
-    const router = useRouter(); // Next.js router
 
     const handleSearch = () => {
-        if(searchTerm.trim()) {
+        if (searchTerm.trim()) {
             router.push(`/search?q=${searchTerm}`);
         }
-    }
+    };
 
     // handle cart
-    const { cart, removeFromCart } = useCart();
+    const { cart, removeFromCart, updateCartItemQuantity } = useCart();
 
     return (
         <div className="header shadow fixed top-0 left-0 z-50 w-full bg-white/80 backdrop-blur-sm shadow">
@@ -79,15 +105,17 @@ export default function Header() {
                     >
                         Giới Thiệu
                     </Link>
-                    <Link href={'/product-list'} className="header_menu_item text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer relative get_menu_secondary">
-                        Sản Phẩm <ChevronDown className="ml-1" strokeWidth={1} />
+                    <li
+                        className="header_menu_item text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer relative get_menu_secondary"
+                    >
+                        <Link href={'/product-list'} className='flex gap-1 items-center'>Sản Phẩm <ChevronDown className="ml-1" strokeWidth={1} /></Link>
                         {/* Menu secondary */}
                         <div className="menu_secondary w-[700px] lg:w-[800px] xl:w-[1000px] absolute top-full left-0 bg-white shadow-md rounded-sm p-5 hidden z-50">
                             <ul className="menu_secondary_list w-1/5">
                                 <li className="menu_secondary_item font-semibold mb-4">Máy tính</li>
                                 <li className="menu_secondary_item mb-4">
                                     <Link
-                                        href=""
+                                        href="/"
                                         className="hover:text-red-500 hover:tracking-wide transition-all duration-150 font-xl"
                                     >
                                         Mackbook
@@ -95,7 +123,7 @@ export default function Header() {
                                 </li>
                                 <li className="menu_secondary_item mb-4">
                                     <Link
-                                        href=""
+                                        href="/"
                                         className="hover:text-red-500 hover:tracking-wide transition-all duration-150 font-xl"
                                     >
                                         Thinkbook
@@ -103,7 +131,7 @@ export default function Header() {
                                 </li>
                                 <li className="menu_secondary_item mb-4">
                                     <Link
-                                        href=""
+                                        href="/"
                                         className="hover:text-red-500 hover:tracking-wide transition-all duration-150 font-xl"
                                     >
                                         Asus Gaming
@@ -114,7 +142,7 @@ export default function Header() {
                                 <li className="menu_secondary_item font-semibold mb-4">Phụ Kiện</li>
                                 <li className="menu_secondary_item mb-4">
                                     <Link
-                                        href=""
+                                        href="/"
                                         className="hover:text-red-500 hover:tracking-wide transition-all duration-150 font-xl"
                                     >
                                         Màn hình
@@ -122,7 +150,7 @@ export default function Header() {
                                 </li>
                                 <li className="menu_secondary_item mb-4">
                                     <Link
-                                        href=""
+                                        href="/"
                                         className="hover:text-red-500 hover:tracking-wide transition-all duration-150 font-xl"
                                     >
                                         Tai nghe
@@ -130,7 +158,7 @@ export default function Header() {
                                 </li>
                                 <li className="menu_secondary_item mb-4">
                                     <Link
-                                        href=""
+                                        href="/"
                                         className="hover:text-red-500 hover:tracking-wide transition-all duration-150 font-xl"
                                     >
                                         Lót chuột
@@ -138,7 +166,7 @@ export default function Header() {
                                 </li>
                                 <li className="menu_secondary_item mb-4">
                                     <Link
-                                        href=""
+                                        href="/"
                                         className="hover:text-red-500 hover:tracking-wide transition-all duration-150 font-xl"
                                     >
                                         Bàn phím
@@ -163,7 +191,7 @@ export default function Header() {
                                 />
                             </div>
                         </div>
-                    </Link>
+                    </li>
                     <Link
                         href="/contact"
                         className="header_menu_item text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer"
@@ -184,11 +212,11 @@ export default function Header() {
                         <div
                             className={`search_container flex items-center justify-between ${showSearch ? 'show' : ''}`}
                         >
-                                <h2 className="header_logo text-2xl font-bold text-red-500 text-center w-1/5">
-                            <Link href="/">
+                            <h2 className="header_logo text-2xl font-bold text-red-500 text-center w-1/5">
+                                <Link href="/">
                                     <span className="bg-red-500 text-white p-2 rounded-md">5D</span> - Tech
-                            </Link>
-                                </h2>
+                                </Link>
+                            </h2>
                             <div className="flex items-center justify-between w-[500px] border outline-none pl-3">
                                 <input
                                     type="text"
@@ -198,9 +226,20 @@ export default function Header() {
                                     className="outline-none w-[430px]"
                                 />
                                 {searchTerm && (
-                                    <Button variant="ghost" onClick={() => setSearchTerm('')} className='text-lg hover:bg-transparent cursor-pointer'>&times;</Button>
+                                    <Button
+                                        variant="ghost"
+                                        onClick={() => setSearchTerm('')}
+                                        className="text-lg hover:bg-transparent cursor-pointer"
+                                    >
+                                        &times;
+                                    </Button>
                                 )}
-                                <Button className='rounded-none cursor-pointer w-[70px] outline-none' onClick={handleSearch}><Search /></Button>
+                                <Button
+                                    className="rounded-none cursor-pointer w-[70px] outline-none"
+                                    onClick={handleSearch}
+                                >
+                                    <Search />
+                                </Button>
                             </div>
                             <div className="w-1/5 flex items-center justify-center">
                                 <div className="close-btn" onClick={() => setShowSearch(false)}>
@@ -211,72 +250,81 @@ export default function Header() {
                     </li>
 
                     <li className="cursor-pointer">
-                        {/* <DropdownMenu>
-                            <DropdownMenuTrigger className="cursor-pointer outline-none">
-                                <UserRound />
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="mt-[32px]">
-                                <DropdownMenuLabel>Xin chào, Nguyễn Thái Dương</DropdownMenuLabel>
+                        {isLoggedIn ? (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className="cursor-pointer outline-none">
+                                    <UserRound />
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="mt-[32px]">
+                                    <DropdownMenuLabel>Xin chào, Nguyễn Thái Dương</DropdownMenuLabel>
 
-                                <Link href="/edit-information">
-                                    <DropdownMenuItem>
-                                        <UserRoundPlus stroke="black" />
-                                        Chỉnh sửa thông tin
-                                    </DropdownMenuItem>
-                                </Link>
+                                    <Link href="/edit-information">
+                                        <DropdownMenuItem className='cursor-pointer'>
+                                            <UserRoundPlus stroke="black" />
+                                            Chỉnh sửa thông tin
+                                        </DropdownMenuItem>
+                                    </Link>
 
-                                <Link href="/cart">
-                                    <DropdownMenuItem>
-                                        <ShoppingBag stroke="black" />
-                                        Giỏ hàng của bạn
-                                    </DropdownMenuItem>
-                                </Link>
+                                    <Link href="/cart">
+                                        <DropdownMenuItem className='cursor-pointer'>
+                                            <ShoppingBag stroke="black" />
+                                            Giỏ hàng của bạn
+                                        </DropdownMenuItem>
+                                    </Link>
 
-                                <Link href="/history">
-                                    <DropdownMenuItem>
-                                        <History stroke="black" />
-                                        Lịch sửa mua hàng
-                                    </DropdownMenuItem>
-                                </Link>
+                                    <Link href="/history">
+                                        <DropdownMenuItem className='cursor-pointer'>
+                                            <History stroke="black" />
+                                            Lịch sửa mua hàng
+                                        </DropdownMenuItem>
+                                    </Link>
 
-                                <Link href="/support">
-                                    <DropdownMenuItem>
-                                        <Headset stroke="black" />
-                                        Hỗ trợ khách hàng
+                                    <Link href="/support">
+                                        <DropdownMenuItem className='cursor-pointer'>
+                                            <Headset stroke="black" />
+                                            Hỗ trợ khách hàng
+                                        </DropdownMenuItem>
+                                    </Link>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem className='cursor-pointer' onClick={handleLogout}>
+                                        <LogOut stroke="black" />
+                                        Logout
                                     </DropdownMenuItem>
-                                </Link>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                    <LogOut stroke="black" />
-                                    Logout
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu> */}
-
-                        <DropdownMenu>
-                            <DropdownMenuTrigger className="cursor-pointer outline-none">
-                                <UserRound />
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className='mt-[32px]'>
-                                <Link href="/signup">
-                                    <DropdownMenuItem className='cursor-pointer'>
-                                        <UserPlus stroke="black"/>Đăng ký
-                                    </DropdownMenuItem>
-                                </Link>
-                                <DropdownMenuSeparator />
-                                <Link href="/login">
-                                    <DropdownMenuItem className='cursor-pointer'>
-                                        <LogIn stroke="black" />Đăng nhập
-                                    </DropdownMenuItem>
-                                </Link>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        ) : (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className="cursor-pointer outline-none">
+                                    <UserRound />
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="mt-[32px]">
+                                    <Link href="/signup">
+                                        <DropdownMenuItem className="cursor-pointer">
+                                            <UserPlus stroke="black" />
+                                            Đăng ký
+                                        </DropdownMenuItem>
+                                    </Link>
+                                    <DropdownMenuSeparator />
+                                    <Link href="/login">
+                                        <DropdownMenuItem className="cursor-pointer">
+                                            <LogIn stroke="black" />
+                                            Đăng nhập
+                                        </DropdownMenuItem>
+                                    </Link>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )}
                     </li>
 
                     <li>
                         <Sheet>
-                            <SheetTrigger>
+                            <SheetTrigger className="relative">
                                 <ShoppingBasket className="cursor-pointer" />
+                                {cart.length > 0 && (
+                                    <span className="absolute -top-3 -right-2 bg-red-500 text-white text-[12px] w-4 h-4 flex items-center justify-center rounded-full">
+                                        {cart.reduce((total, item) => total + item.quantity, 0)}
+                                    </span>
+                                )}
                             </SheetTrigger>
                             <SheetContent className="gap-0">
                                 <SheetHeader>
@@ -291,18 +339,40 @@ export default function Header() {
                                                     <Image
                                                         src={item.image}
                                                         alt={item.name}
-                                                        width={100}
-                                                        height={70}
+                                                        width={120}
+                                                        height={80}
                                                         className="object-cover"
                                                     />
                                                     <div className="flex-1">
-                                                        <p className="text-sm font-medium">{item.name}</p>
-                                                        <p className="text-sm text-gray-500">
-                                                            Số lượng: {item.quantity}  
+                                                        <p className="text-[16px] font-medium mb-1">{item.name}</p>
+                                                        <p className="text-[14px] text-red-500 mb-1">
+                                                            Giá tiền:{' '}
+                                                            {new Intl.NumberFormat('vi-VN', {
+                                                                style: 'currency',
+                                                                currency: 'VND',
+                                                            }).format(item.price)}
                                                         </p>
-                                                        <p className='text-sm text-red-500'>
-                                                            Giá tiền: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
-                                                        </p>
+                                                        <div className="flex items-center justify-between gap-2 text-[12px] w-[100px]">
+                                                            <div
+                                                                className="text-red-500 bg-red-500 text-white transition-all duration-300 border px-2 border-red-500 cursor-pointer"
+                                                                onClick={() =>
+                                                                    updateCartItemQuantity(item.id, item.quantity - 1)
+                                                                }
+                                                            >
+                                                                -
+                                                            </div>
+                                                            <span className="w-[20px] text-center">
+                                                                {item.quantity}
+                                                            </span>
+                                                            <div
+                                                                className="text-red-500 bg-red-500 text-white transition-all duration-300 border px-2 border-red-500 cursor-pointer"
+                                                                onClick={() =>
+                                                                    updateCartItemQuantity(item.id, item.quantity + 1)
+                                                                }
+                                                            >
+                                                                +
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <Button
                                                         variant="outline"
@@ -321,18 +391,19 @@ export default function Header() {
                                 {/* Tính tổng tiền */}
                                 <div className="mt-auto border-t p-1 pt-4">
                                     <p className="text-lg flex items-center justify-between">
-                                        <span>
-                                            Tổng tiền:{" "}
-                                        </span>
+                                        <span>Tổng tiền: </span>
                                         <span className="text-red-500">
-                                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
-                                                cart.reduce((total, item) => total + item.price * item.quantity, 0)
+                                            {new Intl.NumberFormat('vi-VN', {
+                                                style: 'currency',
+                                                currency: 'VND',
+                                            }).format(
+                                                cart.reduce((total, item) => total + item.price * item.quantity, 0),
                                             )}
                                         </span>
                                     </p>
                                 </div>
 
-                                <div className='mt-2 flex items-center justify-between gap-1 p-1'>
+                                <div className="mt-2 flex items-center justify-between gap-1 p-1">
                                     <Link href="/cart">
                                         <Button className="rounded-none w-[208px] cursor-pointer hover:bg-red-500 transition-all duration-300">
                                             Xem giỏ hàng

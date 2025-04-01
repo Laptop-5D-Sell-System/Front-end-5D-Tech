@@ -8,6 +8,16 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import {
+    Pagination,
+    PaginationContent,
+    PaginationEllipsis,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from '@/components/ui/pagination';
+
 import { Eye, ShoppingCart, Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -31,15 +41,23 @@ interface Product {
     processWidth?: number;
 }
 export default function ProductListlPage() {
+    const [products, setProducts] = useState<Product[]>([]);
+
+    // Filter products
     const [filterCategory, setFilterCategory] = useState<string | null>(null);
     const [filterBrand, setFilterBrand] = useState<string | null>(null);
     const [filterPrice, setFilterPrice] = useState<number | null>(null);
 
-    // Handle dialog
+    // Pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 6;
+
+    // Display dialog
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalContent, setModalContent] = useState<'Cart' | 'View'>('Cart');
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
+    // Handle open modal
     const handleModalOpen = (content: 'Cart' | 'View', product?: Product) => {
         setModalContent(content);
         if (product) {
@@ -54,7 +72,6 @@ export default function ProductListlPage() {
     };
 
     // Render products
-    const [products, setProducts] = useState<Product[]>([]);
     const filteredProducts = products.filter((product) => {
         const matchesCategory = filterCategory ? product.category === filterCategory : true;
         const matchesBrand = filterBrand ? product.brand === filterBrand : true;
@@ -62,6 +79,14 @@ export default function ProductListlPage() {
 
         return matchesCategory && matchesBrand && matchesPrice;
     });
+
+    // Handle pagination
+    const totalItems = filteredProducts.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentProducts = filteredProducts.slice(startIndex, endIndex);
+
     useEffect(() => {
         const fetchProducts = async () => {
             try {
@@ -219,8 +244,11 @@ export default function ProductListlPage() {
 
                 {/* List items */}
                 <div className="featured_products_list grid grid-cols-2 md:grid-cols-3 gap-5 ml-5">
-                    {filteredProducts.map((product) => (
-                        <div key={product.id} className="featured_products_item h-100 group rounded border overflow-hidden">
+                    {currentProducts.map((product) => (
+                        <div
+                            key={product.id}
+                            className="featured_products_item h-100 group rounded border overflow-hidden"
+                        >
                             {/* Img item */}
                             <div className="featured_products_img relative w-[300px] h-[180px] overflow-hidden">
                                 <div className="featured_products_sale absolute top-4 left-4 bg-red-500 text-white font-light z-10 text-sm p-1 rounded">
@@ -302,6 +330,75 @@ export default function ProductListlPage() {
                     ))}
                 </div>
             </div>
+            {/* Pagination */}
+            {/* Pagination */}
+            <div className="flex justify-center mt-6">
+                <Pagination>
+                    <PaginationContent>
+                        {/* Nút Previous */}
+                        {currentPage > 1 && (
+                            <PaginationItem className='cursor-pointer'>
+                                <PaginationPrevious onClick={() => setCurrentPage(currentPage - 1)} />
+                            </PaginationItem>
+                        )}
+
+                        {/* Trang đầu tiên */}
+                        <PaginationItem className='cursor-pointer'>
+                            <PaginationLink onClick={() => setCurrentPage(1)} isActive={currentPage === 1}>
+                                1
+                            </PaginationLink>
+                        </PaginationItem>
+
+                        {/* Hiển thị dấu "..." nếu currentPage > 3 */}
+                        {currentPage > 3 && (
+                            <PaginationItem>
+                                <PaginationEllipsis />
+                            </PaginationItem>
+                        )}
+
+                        {/* Hiển thị trang trước, trang hiện tại, và trang sau */}
+                        {[currentPage - 1, currentPage, currentPage + 1]
+                            .filter((page) => page > 1 && page < totalPages)
+                            .map((page) => (
+                                <PaginationItem className='cursor-pointer' key={page}>
+                                    <PaginationLink
+                                        onClick={() => setCurrentPage(page)}
+                                        isActive={currentPage === page}
+                                    >
+                                        {page}
+                                    </PaginationLink>
+                                </PaginationItem>
+                            ))}
+
+                        {/* Hiển thị dấu "..." nếu currentPage < totalPages - 2 */}
+                        {currentPage < totalPages - 2 && (
+                            <PaginationItem>
+                                <PaginationEllipsis />
+                            </PaginationItem>
+                        )}
+
+                        {/* Trang cuối cùng */}
+                        {totalPages > 1 && (
+                            <PaginationItem className='cursor-pointer'>
+                                <PaginationLink
+                                    onClick={() => setCurrentPage(totalPages)}
+                                    isActive={currentPage === totalPages}
+                                >
+                                    {totalPages}
+                                </PaginationLink>
+                            </PaginationItem>
+                        )}
+
+                        {/* Nút Next */}
+                        {currentPage < totalPages && (
+                            <PaginationItem className='cursor-pointer'>
+                                <PaginationNext onClick={() => setCurrentPage(currentPage + 1)} />
+                            </PaginationItem>
+                        )}
+                    </PaginationContent>
+                </Pagination>
+            </div>
+
             {/* Gọi Modal */}
             <Modal isOpen={isModalOpen} onClose={handleModalClose} content={modalContent} product={selectedProduct} />
             {/* End modal */}

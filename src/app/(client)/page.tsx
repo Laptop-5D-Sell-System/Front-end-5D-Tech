@@ -63,7 +63,7 @@ export default function Home() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('/api/products');
+                const response = await axios.get('https://localhost:44303/product/all-products');
                 const fetchedProducts: Product[] = response.data;
 
                 // Cập nhật processWidth dựa trên available và quantity
