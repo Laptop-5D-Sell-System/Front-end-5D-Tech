@@ -15,27 +15,16 @@ import {
 } from '@/components/ui/breadcrumb';
 import { ShoppingBasket, ShoppingCart } from 'lucide-react';
 import { toast } from 'react-toastify';
-import { useCart } from "@/context/CartContext";
+import { useCart } from '@/context/CartContext';
 
 interface Product {
     id: number;
     name: string;
-    category: string;
-    brand: string;
+    category_id: string;
     price: number;
-    oldPrice: number;
-    discount: number;
-    available: number;
-    quantity: number;
-    cpu?: string;
-    ram?: string;
-    storage?: string;
-    screen?: string;
-    gpu?: string;
-    battery?: string;
-    os?: string;
+    stock_quantity: number;
     description: string;
-    image: string;
+    product_image: string;
 }
 
 export default function ProductDetailPage() {
@@ -46,6 +35,7 @@ export default function ProductDetailPage() {
     const [quantity, setQuantity] = useState(1);
     const { addToCart } = useCart();
     const router = useRouter();
+    const descriptionProduct = product?.description.split('. ').filter((item) => item);
 
     useEffect(() => {
         if (!productId) {
@@ -55,21 +45,18 @@ export default function ProductDetailPage() {
 
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`/api/products`);
+                const response = await fetch(`https://localhost:44303/product/detail?id=${productId}`);
                 if (!response.ok) {
-                    throw new Error('Failed to fetch product');
+                    throw new Error('Không thể lấy thông tin sản phẩm');
                 }
                 const data = await response.json();
                 console.log(data);
-                const foundProduct = data.find((p: Product) => p.id === parseInt(productId, 10));
-                if (!foundProduct) {
-                    console.error('Không tìm thấy sản phẩm');
-                    router.push('/'); // Nếu không tìm thấy sản phẩm, chuyển hướng về trang chủ
-                } else {
-                    setProduct(foundProduct);
-                }
+
+                setProduct(data.product);
             } catch (error) {
-                console.error('Error fetching product:', error);
+                console.error('Lỗi khi lấy thông tin sản phẩm:', error);
+                toast.error('Không thể lấy thông tin sản phẩm');
+                router.push('/'); // Chuyển hướng về trang chủ nếu có lỗi
             } finally {
                 setLoading(false);
             }
@@ -87,7 +74,7 @@ export default function ProductDetailPage() {
     }
 
     const handleIncrease = () => {
-        if (product && quantity < product.available) {
+        if (product && quantity < product.stock_quantity) {
             setQuantity(quantity + 1);
         }
     };
@@ -104,8 +91,9 @@ export default function ProductDetailPage() {
                 id: product.id,
                 name: product.name,
                 price: product.price,
+                stock_quantity: product.stock_quantity,
+                product_image: product.product_image,
                 quantity: quantity,
-                image: product.image,
             });
             toast.success('Đã thêm vào giỏ hàng', {
                 closeButton: true,
@@ -133,7 +121,7 @@ export default function ProductDetailPage() {
 
             <div className="flex gap-8 mt-4">
                 <Image
-                    src={product.image}
+                    src={product.product_image}
                     alt={product.name}
                     width={500}
                     height={250}
@@ -148,9 +136,9 @@ export default function ProductDetailPage() {
                                 product.price,
                             )}
                         </div>
-                        <div className="old_price text-gray-500 text-sm line-through">{product.oldPrice} ₫</div>
+                        {/* <div className="old_price text-gray-500 text-sm line-through">{product.oldPrice} ₫</div> */}
                     </div>
-                    <p className="text-gray-500 text-sm w-90 mb-2">{product.description}</p>
+                    {/* <p className="text-gray-500 text-sm w-90 mb-2">{product.description}</p>
                     <ul>
                         <li className="text-gray-500 text-sm">Thông tin sản phẩm:</li>
                         <li className="text-gray-500 text-sm list-disc ml-4">
@@ -171,12 +159,20 @@ export default function ProductDetailPage() {
                         <li className="text-gray-500 text-sm list-disc ml-4">
                             Battery: <span className="text-red-500">{product.battery}</span>
                         </li>
+                    </ul> */}
+                    <p className="text-md w-90 mb-2">Thông tin sản phẩm:</p>
+                    <ul>
+                        {descriptionProduct?.map((item, index) => (
+                            <li className="text-gray-500 text-sm list-disc ml-4" key={index}>
+                                {item}
+                            </li>
+                        ))}
                     </ul>
 
                     {/* Chỉnh số lượng */}
                     <div className="mt-2">
                         <p className="text-sm text-gray-500 mb-2">
-                            Có sẵn: <span className="text-red-500">{product.available}</span>
+                            Có sẵn: <span className="text-red-500">{product.stock_quantity}</span>
                         </p>
                         <div className="flex items-center gap-4">
                             <span className="text-gray-500 text-sm">Số lượng:</span>

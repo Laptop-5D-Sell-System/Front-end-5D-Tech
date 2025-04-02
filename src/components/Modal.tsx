@@ -11,22 +11,11 @@ import Link from "next/link";
 interface Product {
     id: number;
     name: string;
-    category: string;
-    brand: string;
+    category_id: string;
     price: number;
-    oldPrice: number;
-    discount: number;
-    available: number;
-    quantity: number;
-    cpu?: string;
-    ram?: string;
-    storage?: string;
-    screen?: string ;
-    gpu?: string;
-    battery?: string;
-    os?: string ;
+    stock_quantity: number;
     description: string;
-    image: string;
+    product_image: string;
 }
 
 interface ModalProps {
@@ -39,9 +28,10 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
     const [quantity, setQuantity] = useState(1);
     const { addToCart } = useCart();
-    
+    const descriptionProduct = product?.description.split(". ").filter(item => item);
+
     const handleIncrease = () => {
-        if(product && quantity < product.available) {
+        if(product && quantity < product.stock_quantity) {
             setQuantity(quantity + 1);
         }
     };
@@ -58,8 +48,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
                 id: product.id,
                 name: product.name,
                 price: product.price,
-                quantity: quantity,
-                image: product.image
+                stock_quantity: product.stock_quantity,
+                product_image: product.product_image, 
+                quantity,
             });
             toast.success("Đã thêm vào giỏ hàng", {
                 closeButton: true,
@@ -67,6 +58,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
             onClose();
         }
     }
+
     return (
         <Dialog open={isOpen} onClose={onClose} className="fixed inset-0 z-50">
             {/* Nền mờ */}
@@ -88,15 +80,15 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
                     <Dialog.Description>
                         {product && (
                             <div className="flex justify-between">
-                                <Image src={product.image} alt={product.name} width={320} height={150} quality={100} className="object-cover h-[200px]" />
+                                <Image src={product.product_image} alt={product.name} width={320} height={150} quality={100} className="object-cover w-[320px] h-[150px]" />
                                 <div className="ml-4">
                                     <span className="text-2xl text-red-500 font-[500] mb-2">{product.name}</span>
                                     <div className="featured_products_price flex gap-2 mb-2">
                                         <div className="new_price text-red-500">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}</div>
-                                        <div className="old_price text-gray-500 text-sm line-through">{product.oldPrice} ₫</div>
+                                        {/* <div className="old_price text-gray-500 text-sm line-through">{product.oldPrice} ₫</div> */}
                                     </div>
-                                    <span className="text-gray-500 text-sm w-90 mb-2">{product.description}</span>
-                                    <ul>
+                                    {/* <span className="text-gray-500 text-sm w-90 mb-2">{product.description}</span> */}
+                                    {/* <ul>
                                         <li className="text-gray-500 text-sm">Thông tin sản phẩm:</li>
                                         <li className="text-gray-500 text-sm list-disc ml-4">CPU: <span className="text-red-500">{product.cpu}</span></li>
                                         <li className="text-gray-500 text-sm list-disc ml-4">RAM: <span className="text-red-500">{product.ram}</span></li>
@@ -104,12 +96,18 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
                                         <li className="text-gray-500 text-sm list-disc ml-4">Screen: <span className="text-red-500">{product.screen}</span></li>
                                         <li className="text-gray-500 text-sm list-disc ml-4">GPU: <span className="text-red-500">{product.gpu}</span></li>
                                         <li className="text-gray-500 text-sm list-disc ml-4">Battery: <span className="text-red-500">{product.battery}</span></li>
+                                    </ul> */}
+                                    <p className="text-md w-90 mb-2">Thông tin sản phẩm:</p>
+                                    <ul>
+                                        {descriptionProduct?.map((item, index) => (
+                                            <li className="text-gray-500 text-sm list-disc ml-4" key={index}>{item}.</li>
+                                        ))}
                                     </ul>
 
                                     {/* Chỉnh số lượng */}
                                     <div className="mt-2">
                                         <p className="text-sm text-gray-500 mb-2">
-                                            Có sẵn: <span className="text-red-500">{product.available}</span>
+                                            Có sẵn: <span className="text-red-500">{product.stock_quantity}</span>
                                         </p>
                                         <div className="flex items-center gap-4">
                                             <span className="text-gray-500 text-sm">

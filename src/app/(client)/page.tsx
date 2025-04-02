@@ -25,15 +25,11 @@ import Link from 'next/link';
 interface Product {
     id: number;
     name: string;
-    category: string;
-    brand: string;
+    category_id: string;
     price: number;
-    oldPrice: number;
-    discount: number;
-    available: number;
-    quantity: number;
+    stock_quantity: number;
     description: string;
-    image: string;
+    product_image: string;
     processWidth?: number;
 }
 
@@ -63,12 +59,12 @@ export default function Home() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('https://localhost:44303/product/all-products');
-                const fetchedProducts: Product[] = response.data;
+                const response = await axios.get('https://localhost:44303/product/all-products?sortOrder=null');
+                const fetchedProducts: Product[] = response.data.products;
 
                 // Cập nhật processWidth dựa trên available và quantity
                 const updatedProducts = fetchedProducts.map(product => {
-                    const percent = product.quantity > 0 ? (product.available / product.quantity) * 100 : 0;
+                    const percent = product.stock_quantity > 0 ? (product.stock_quantity / 100) * 100 : 0;
                     return { ...product, processWidth: percent };
                 });
 
@@ -403,12 +399,12 @@ export default function Home() {
                                 <div key={product.id} className="featured_products_item group rounded border overflow-hidden">
                                     {/* Img item */}
                                     <div className="featured_products_img relative w-full h-[200px] overflow-hidden">
-                                        <div className="featured_products_sale absolute top-4 left-4 bg-red-500 text-white font-light z-10 text-sm p-1 rounded">
+                                        {/* <div className="featured_products_sale absolute top-4 left-4 bg-red-500 text-white font-light z-10 text-sm p-1 rounded">
                                             -{product.discount}%
-                                        </div>
+                                        </div> */}
                                         
                                         <Image
-                                            src={product.image}
+                                            src={product.product_image}
                                             alt={product.name}
                                             fill
                                             quality={100}
@@ -436,7 +432,7 @@ export default function Home() {
                                     <Link href={`/product-detail?id=${product.id}`}>
                                         <div className="p-4">
                                             <div className="featured_products_category mb-2 text-gray-500 text-sm">
-                                                {product.category}
+                                                {product.category_id}
                                             </div>
                                             <div className="featured_products_name h-[50px] text-sm">
                                                 {product.name}
@@ -453,7 +449,7 @@ export default function Home() {
                                                 ))}
                                             </div>
                                             <div className="featured_products_quantity text-sm mb-2">
-                                                Có sẵn: <span className="text-red-500">{product.available}/{product.quantity}</span>
+                                                Có sẵn: <span className="text-red-500">{product.stock_quantity}/100</span>
                                             </div>
                                             <div className="w-full bg-gray-200 h-1 mb-4">
                                                 <div
@@ -463,7 +459,7 @@ export default function Home() {
                                             </div>
                                             <div className="featured_products_price flex gap-2">
                                                 <div className="new_price text-red-500">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}</div>
-                                                <div className="old_price text-gray-500 text-sm line-through">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.oldPrice)}</div>
+                                                {/* <div className="old_price text-gray-500 text-sm line-through">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.oldPrice)}</div> */}
                                             </div>
                                         </div>
                                     </Link>

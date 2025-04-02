@@ -337,7 +337,7 @@ export default function Header() {
                                             {cart.map((item) => (
                                                 <li key={item.id} className="flex items-center gap-4 border-b pb-2">
                                                     <Image
-                                                        src={item.image}
+                                                        src={item.product_image}
                                                         alt={item.name}
                                                         width={120}
                                                         height={80}
