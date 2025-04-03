@@ -3,9 +3,16 @@
 
 import authApiRequest from "@/apiRequests/auth";
 import { LoginBodyType } from "@/schemaValidations/auth.schema";
+import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
+  const cookieStore = cookies()
+  const accessToken = (await cookieStore).get('token')?.value
+  const refreshToken = (await cookieStore).get('refreshToken')?.value
+
+  await cookieStore.delete('accessToken')
+  await cookieStore.delete('refreshToken')
   try {
     const body = (await request.json()) as LoginBodyType;
     console.log(" Đang xử lý đăng nhập...");

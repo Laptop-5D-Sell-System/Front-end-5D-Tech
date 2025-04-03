@@ -13,15 +13,15 @@ export async function POST(request: NextRequest) {
     const response = await authApiRequest.sLogin(body);
     console.log(" API response:", response);
 
-    if (!response?.payload?.token) {
+    if (!response?.payload?.data?.token) {
       return new NextResponse(
         JSON.stringify({ message: "Lỗi đăng nhập: Không nhận được token" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    const accessToken = response.payload.token;
-    const refreshToken = response.payload.refreshToken;
+    const accessToken = response.payload.data.token;
+    const refreshToken = response.payload.data.refreshToken;
 
 
     const res = new NextResponse(
