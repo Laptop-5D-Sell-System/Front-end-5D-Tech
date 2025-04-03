@@ -29,15 +29,11 @@ import { Button } from '@/components/ui/button';
 interface Product {
     id: number;
     name: string;
-    category: string;
-    brand: string;
+    category_id: string;
     price: number;
-    oldPrice: number;
-    discount: number;
-    available: number;
-    quantity: number;
+    stock_quantity: number;
     description: string;
-    image: string;
+    product_image: string;
     processWidth?: number;
 }
 export default function ProductListlPage() {
@@ -45,7 +41,7 @@ export default function ProductListlPage() {
 
     // Filter products
     const [filterCategory, setFilterCategory] = useState<string | null>(null);
-    const [filterBrand, setFilterBrand] = useState<string | null>(null);
+    // const [filterBrand, setFilterBrand] = useState<string | null>(null);
     const [filterPrice, setFilterPrice] = useState<number | null>(null);
 
     // Pagination
@@ -73,11 +69,12 @@ export default function ProductListlPage() {
 
     // Render products
     const filteredProducts = products.filter((product) => {
-        const matchesCategory = filterCategory ? product.category === filterCategory : true;
-        const matchesBrand = filterBrand ? product.brand === filterBrand : true;
+        const matchesCategory = filterCategory ? product.category_id === filterCategory : true;
+        // const matchesBrand = filterBrand ? product.brand === filterBrand : true;
         const matchesPrice = filterPrice ? product.price <= filterPrice : true;
 
-        return matchesCategory && matchesBrand && matchesPrice;
+        // return matchesCategory && matchesBrand && matchesPrice;
+        return matchesCategory && matchesPrice;
     });
 
     // Handle pagination
@@ -90,12 +87,12 @@ export default function ProductListlPage() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('/api/products');
-                const fetchedProducts: Product[] = response.data;
+                const response = await axios.get('https://localhost:44303/product/all-products?sortOrder=null');
+                const fetchedProducts: Product[] = response.data.products;
 
                 // Cập nhật processWidth dựa trên available và quantity
                 const updatedProducts = fetchedProducts.map((product) => {
-                    const percent = product.quantity > 0 ? (product.available / product.quantity) * 100 : 0;
+                    const percent = product.stock_quantity > 0 ? (product.stock_quantity / 100) * 100 : 0;
                     return { ...product, processWidth: percent };
                 });
 
@@ -129,7 +126,7 @@ export default function ProductListlPage() {
                     <div className="mb-4">
                         <h3 className="text-md font-semibold text-red-500 mb-2">Danh mục</h3>
                         <ul>
-                            {Array.from(new Set(products.map((product) => product.category))).map((category) => (
+                            {Array.from(new Set(products.map((product) => product.category_id))).map((category) => (
                                 <li key={category}>
                                     <label className="flex items-center">
                                         <input
@@ -161,7 +158,7 @@ export default function ProductListlPage() {
                     </div>
 
                     {/* Lọc theo brand */}
-                    <div className="mb-4">
+                    {/* <div className="mb-4">
                         <h3 className="text-md font-semibold text-red-500 mb-2">Thương hiệu</h3>
                         <ul>
                             {Array.from(new Set(products.map((product) => product.brand))).map((brand) => (
@@ -193,7 +190,7 @@ export default function ProductListlPage() {
                                 </label>
                             </li>
                         </ul>
-                    </div>
+                    </div> */}
 
                     {/* Lọc theo price */}
                     <div className="mb-4">
@@ -251,12 +248,12 @@ export default function ProductListlPage() {
                         >
                             {/* Img item */}
                             <div className="featured_products_img relative w-[300px] h-[180px] overflow-hidden">
-                                <div className="featured_products_sale absolute top-4 left-4 bg-red-500 text-white font-light z-10 text-sm p-1 rounded">
+                                {/* <div className="featured_products_sale absolute top-4 left-4 bg-red-500 text-white font-light z-10 text-sm p-1 rounded">
                                     -{product.discount}%
-                                </div>
+                                </div> */}
 
                                 <Image
-                                    src={product.image}
+                                    src={product.product_image}
                                     alt={product.name}
                                     fill
                                     quality={100}
@@ -284,7 +281,7 @@ export default function ProductListlPage() {
                             <Link href={`/product-detail?id=${product.id}`}>
                                 <div className="p-4">
                                     <div className="featured_products_category mb-2 text-gray-500 text-sm">
-                                        {product.category}
+                                        {product.category_id}
                                     </div>
                                     <div className="featured_products_name h-[50px] text-sm">{product.name}</div>
                                     <div className="featured_products_rate flex items-center my-2 text-yellow-300">
@@ -301,7 +298,7 @@ export default function ProductListlPage() {
                                     <div className="featured_products_quantity text-sm mb-2">
                                         Có sẵn:{' '}
                                         <span className="text-red-500">
-                                            {product.available}/{product.quantity}
+                                            {product.stock_quantity}/100
                                         </span>
                                     </div>
                                     <div className="w-full bg-gray-200 h-1 mb-4">
@@ -317,12 +314,12 @@ export default function ProductListlPage() {
                                                 currency: 'VND',
                                             }).format(product.price)}
                                         </div>
-                                        <div className="old_price text-gray-500 text-sm line-through">
+                                        {/* <div className="old_price text-gray-500 text-sm line-through">
                                             {new Intl.NumberFormat('vi-VN', {
                                                 style: 'currency',
                                                 currency: 'VND',
                                             }).format(product.oldPrice)}
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                             </Link>
