@@ -45,6 +45,7 @@ export default function Login() {
         throw new Error(errorData.mess || 'Đăng nhập thất bại');
       }
       const data = await response.json();
+      console.log(data)
       const token = data.token
       const refreshToken = data.refreshToken
       localStorage.setItem("token", token);

@@ -32,27 +32,24 @@ import {
 } from '@radix-ui/react-dropdown-menu';
 
 import envConfig from '../../../../config';
+import { AccountListResType } from '@/schemaValidations/account.schema';
 
-interface accounts {
-    id: string;
-    avatar: string;
-    email: string;
-    role: string;
-}
+type AccountItem = AccountListResType['accounts'][0]
+
 
 const AccountTableContext = createContext<{
     setAccountIdEdit: (value: string) => void;
     accountIdEdit: string | undefined;
-    setAcountDelete: (value: accounts | null) => void;
-    accountDelete: accounts | null;
+    setAcountDelete: (value: AccountItem | null) => void;
+    accountDelete: AccountItem | null;
 }>({
     setAccountIdEdit: (value: string) => {},
     accountIdEdit: undefined,
     accountDelete: null,
-    setAcountDelete: (value: accounts | null) => {},
+    setAcountDelete: (value: AccountItem | null) => {},
 });
 
-export const columns: ColumnDef<accounts>[] = [
+export const columns: ColumnDef<AccountItem>[] = [
     {
         id: 'stt',
         header: 'STT',
@@ -86,10 +83,10 @@ export const columns: ColumnDef<accounts>[] = [
         ),
         cell: ({ row }) => <div className="lowercase">{row.getValue('email')}</div>,
     },
-    // {
-    //     accessorKey: 'username',
-    //     header: 'Username',
-    // },
+    {
+        accessorKey: 'role',
+        header: 'Quyền ',
+    },
     {
         id: 'actions',
         enableHiding: false,
@@ -119,20 +116,17 @@ export const columns: ColumnDef<accounts>[] = [
                             onClick={() => navigator.clipboard.writeText(accounts.email)}
                             className="hover:bg-gray-600 transition duration-200 p-2 rounded-md"
                         >
-                            📋 Sao Chép Email
+                            Sao Chép Email
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="hover:bg-gray-600 transition duration-200 p-2 rounded-md">
-                            👤 Xem Khách Hàng
-                        </DropdownMenuItem>
                         <DropdownMenuItem className="hover:bg-red-100 text-red-600 transition duration-200 p-2 rounded-md">
-                            ❌ Xóa Tài Khoản
+                            Xóa Tài Khoản
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             className="hover:bg-blue-100 text-blue-600 transition duration-200 p-2 rounded-md"
                             // onClick={openEditAccount}
                         >
-                            ✏️ Sửa Tài Khoản
+                            Sửa Tài Khoản
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -183,21 +177,45 @@ export function Accounts_table() {
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
     const [accountIdEdit, setAccountIdEdit] = useState<string | undefined>();
-    const [accountDelete, setAcountDelete] = useState<accounts | null>(null);
-    const [data, setData] = React.useState<accounts[]>([]);
+    const [accountDelete, setAcountDelete] = useState<AccountItem | null>(null);
+    const [data, setData] = React.useState<AccountItem[]>([]);
     const [loading, setLoading] = React.useState(true);
     React.useEffect(() => {
-        fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/get-accounts`)
-            .then((res) => res.json())
-            .then((data) => {
-                setData(data);
+        const fetchData = async () => {
+            const token = localStorage.getItem("token");
+        
+            if (!token) {
+                console.error("No token found");
+                return;
+            }
+        
+            setLoading(true);
+            try {
+                const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/get-accounts`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`  
+                    }
+                });
+        
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+        
+                const result = await response.json();
+                setData(result.accounts); 
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            } finally {
                 setLoading(false);
-            })
-            .catch((error) => {
-                console.error('Error fetching data:', error);
-                setLoading(false);
-            });
+            }
+        };
+        
+    
+        fetchData();
     }, []);
+    
     const table = useReactTable({
         data,
         columns,
