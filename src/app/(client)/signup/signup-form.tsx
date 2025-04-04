@@ -7,12 +7,14 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
-import { Mail, Lock, LogIn } from 'lucide-react';
+import { Mail, Lock, LogIn, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
 // Schema validation
 const RegisterBody = z.object({
+    first_name: z.string().trim().min(2).max(256),
+    last_name: z.string().trim().min(2).max(256),
     email: z.string().email('Email không hợp lệ'),
     password_hash: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
 });
@@ -24,13 +26,15 @@ export default function SignupForm() {
     const form = useForm<RegisterBodyType>({
         resolver: zodResolver(RegisterBody),
         defaultValues: {
+            first_name: '',
+            last_name: '',
             email: '',
             password_hash: '',
         },
     });
 
     async function onSubmit(values: RegisterBodyType) {
-        console.log("Dữ liệu gửi đi:", values);
+        console.log('Dữ liệu gửi đi:', values);
         try {
             const response = await fetch('https://localhost:44303/auth/register', {
                 method: 'POST',
@@ -44,8 +48,8 @@ export default function SignupForm() {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
-            toast.success("Đăng ký thành công!");
+            // const data = await response.json();
+            toast.success('Đăng ký thành công!');
             router.push('/login');
         } catch (error) {
             console.error('Error fetching signup:', error);
@@ -58,6 +62,40 @@ export default function SignupForm() {
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" noValidate>
                     <h2 className="text-center text-red-500 font-semibold text-2xl">Đăng Ký Tài Khoản</h2>
+
+                    {/* First name Field */}
+                    <FormField
+                        control={form.control}
+                        name="first_name"
+                        render={({ field }) => (
+                            <FormItem className="mb-4">
+                                <FormControl>
+                                    <div className="flex items-center border border-gray-200 p-1">
+                                        <User size={20} className="text-gray-400 ml-2" />
+                                        <Input placeholder="Nhập họ và tên đệm" type="text" {...field} />
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    {/* Last name Field */}
+                    <FormField
+                        control={form.control}
+                        name="last_name"
+                        render={({ field }) => (
+                            <FormItem className="mb-4">
+                                <FormControl>
+                                    <div className="flex items-center border border-gray-200 p-1">
+                                        <User size={20} className="text-gray-400 ml-2" />
+                                        <Input placeholder="Nhập tên của bạn" type="text" {...field} />
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
                     {/* Email Field */}
                     <FormField

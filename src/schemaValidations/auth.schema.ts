@@ -3,6 +3,8 @@ import z from 'zod'
 export const RegisterBody = z
   .object({
     name: z.string().trim().min(2).max(256),
+    first_name: z.string().trim().min(2).max(256),
+    last_name: z.string().trim().min(2).max(256),
     email: z.string().email(),
     password_hash: z.string().min(6).max(100),
     confirmPassword: z.string().min(6).max(100)

@@ -1,10 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { toast } from 'react-toastify';
+import { useCart } from '@/context/CartContext';
+import { ShoppingBasket, ShoppingCart, Star } from 'lucide-react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/effect-coverflow';
+import { Navigation, Autoplay, EffectCoverflow, Pagination } from 'swiper/modules'
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -13,14 +21,13 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { ShoppingBasket, ShoppingCart } from 'lucide-react';
-import { toast } from 'react-toastify';
-import { useCart } from '@/context/CartContext';
+import Link from 'next/link';
+import './ProductDetail.scss';
 
 interface Product {
     id: number;
     name: string;
-    category_id: string;
+    category_name: string;
     price: number;
     stock_quantity: number;
     description: string;
@@ -29,6 +36,7 @@ interface Product {
 
 export default function ProductDetailPage() {
     const [product, setProduct] = useState<Product | null>(null);
+    const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const searchParams = useSearchParams();
     const productId = searchParams.get('id');
@@ -37,6 +45,7 @@ export default function ProductDetailPage() {
     const router = useRouter();
     const descriptionProduct = product?.description.split('. ').filter((item) => item);
 
+    // 🟢 Lấy sản phẩm chi tiết
     useEffect(() => {
         if (!productId) {
             router.push('/');
@@ -46,17 +55,13 @@ export default function ProductDetailPage() {
         const fetchProduct = async () => {
             try {
                 const response = await fetch(`https://localhost:44303/product/detail?id=${productId}`);
-                if (!response.ok) {
-                    throw new Error('Không thể lấy thông tin sản phẩm');
-                }
+                if (!response.ok) throw new Error('Không thể lấy thông tin sản phẩm');
                 const data = await response.json();
-                console.log(data);
-
                 setProduct(data.product);
             } catch (error) {
                 console.error('Lỗi khi lấy thông tin sản phẩm:', error);
                 toast.error('Không thể lấy thông tin sản phẩm');
-                router.push('/'); // Chuyển hướng về trang chủ nếu có lỗi
+                router.push('/');
             } finally {
                 setLoading(false);
             }
@@ -65,14 +70,39 @@ export default function ProductDetailPage() {
         fetchProduct();
     }, [productId, router]);
 
-    if (loading) {
-        return <p>Đang tải...</p>;
-    }
+    // 🟢 Lấy sản phẩm tương tự từ AI
+    useEffect(() => {
+        if (!productId) return;
 
-    if (!product) {
-        return <p>Không tìm thấy sản phẩm</p>;
-    }
+        const fetchSimilarProducts = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/similar/${productId}`);
+                console.log(response);
 
+                if (!response.ok) throw new Error('Không thể lấy danh sách sản phẩm tương tự');
+                const data = await response.json();
+                console.log(data);
+
+                setSimilarProducts(data.pros || []);
+            } catch (error) {
+                console.error('Lỗi khi lấy sản phẩm tương tự:', error);
+            }
+        };
+
+        fetchSimilarProducts();
+    }, [productId]);
+
+    if (loading) return (
+        <div className="w-full h-[200px] flex items-center justify-center">
+            <svg className="pl" width="240" height="240" viewBox="0 0 240 240">
+                <circle className="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
+                <circle className="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
+                <circle className="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+                <circle className="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+            </svg>
+        </div>
+    );
+    if (!product) return <p>Không tìm thấy sản phẩm</p>;
     const handleIncrease = () => {
         if (product && quantity < product.stock_quantity) {
             setQuantity(quantity + 1);
@@ -92,7 +122,7 @@ export default function ProductDetailPage() {
                 name: product.name,
                 price: product.price,
                 stock_quantity: product.stock_quantity,
-                product_image: product.product_image,
+                product_image: '/images/laptop.jpeg',
                 quantity: quantity,
             });
             toast.success('Đã thêm vào giỏ hàng', {
@@ -100,7 +130,6 @@ export default function ProductDetailPage() {
             });
         }
     };
-
     return (
         <div className="mx-[100px] pt-4">
             <Breadcrumb>
@@ -121,7 +150,7 @@ export default function ProductDetailPage() {
 
             <div className="flex gap-8 mt-4">
                 <Image
-                    src={product.product_image}
+                    src={'/images/laptop.jpeg'}
                     alt={product.name}
                     width={500}
                     height={250}
@@ -209,6 +238,93 @@ export default function ProductDetailPage() {
                             Mua hàng
                         </Button>
                     </div>
+                </div>
+            </div>
+
+            {/* 🟢 Slider hiển thị sản phẩm tương tự */}
+            <div className="mt-[120px]">
+                <div className="text-center text-2xl font-semibold flex justify-center items-center gap-3 mb-4">
+                    <div className="w-[50px] h-[2px] bg-black"></div>
+                    CÓ THỂ BẠN CŨNG THÍCH
+                    <div className="w-[50px] h-[2px] bg-black"></div>
+                </div>
+
+                <div className="mt-6">
+                    <Swiper 
+                    slidesPerView={4}
+                    spaceBetween={20}
+                    navigation
+                    autoplay={{ delay: 3000, disableOnInteraction: false }}
+                    loop={true}
+                    speed={800} // Làm mượt chuyển động
+                    effect="coverflow" // Hiệu ứng 3D
+                    grabCursor={true} // Con trỏ thay đổi khi rê chuột
+                    centeredSlides={true} // Căn giữa slide
+                    coverflowEffect={{
+                        rotate: 30, // Góc xoay
+                        stretch: 0,
+                        depth: 100,
+                        modifier: 1,
+                        slideShadows: true,
+                    }}
+                    pagination={{ clickable: true }} // Thêm thanh chấm điều hướng
+                    modules={[Navigation, Autoplay, EffectCoverflow, Pagination]}
+                    className="mySwiper"
+                    >
+                        {similarProducts.map((item) => (
+                            <SwiperSlide key={item.id}>
+                                <div className="border rounded shadow cursor-pointer">
+                                    <div className="featured_products_img relative w-full h-[200px] overflow-hidden">
+                                        {/* <div className="featured_products_sale absolute top-4 left-4 bg-red-500 text-white font-light z-10 text-sm p-1 rounded">
+                                            -{product.discount}%
+                                        </div> */}
+
+                                        <Image
+                                            src={'/images/laptop.jpeg'}
+                                            alt={item.name}
+                                            fill
+                                            quality={100}
+                                            loading="lazy"
+                                            className="object-cover overflow-hidden transition-transform duration-500 group-hover:scale-110"
+                                        />
+                                        
+                                    </div>
+                                    {/* Content item */}
+                                    <Link href={`/product-detail?id=${item.id}`}>
+                                        <div className="p-4">
+                                            <div className="featured_products_category mb-2 text-gray-500 text-sm">
+                                                {item.category_name}
+                                            </div>
+                                            <div className="featured_products_name h-[50px] text-sm">{item.name}</div>
+                                            <div className="featured_products_rate flex items-center my-2 text-yellow-300">
+                                                {Array.from({ length: 5 }, (_, index) => (
+                                                    <Star
+                                                        key={index}
+                                                        size={16}
+                                                        fill="currentColor"
+                                                        stroke="currentColor"
+                                                        className="mr-1"
+                                                    />
+                                                ))}
+                                            </div>
+                                            <div className="featured_products_quantity text-sm mb-2">
+                                                Có sẵn: <span className="text-red-500">{item.stock_quantity}/100</span>
+                                            </div>
+                                            <div className="featured_products_price flex gap-2">
+                                                <div className="new_price text-red-500">
+                                                    {new Intl.NumberFormat('vi-VN', {
+                                                        style: 'currency',
+                                                        currency: 'VND',
+                                                    }).format(item.price)}
+                                                </div>
+                                                {/* <div className="old_price text-gray-500 text-sm line-through">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.oldPrice)}</div> */}
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </div>
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
                 </div>
             </div>
         </div>

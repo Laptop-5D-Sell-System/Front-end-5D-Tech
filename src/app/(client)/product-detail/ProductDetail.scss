@@ -1,3 +1,49 @@
+.swiper-pagination.swiper-pagination-clickable.swiper-pagination-bullets.swiper-pagination-horizontal {
+    bottom: -5px;
+}
+
+/* Tùy chỉnh dấu chấm điều hướng */
+.swiper-pagination-bullet {
+    width: 5px;
+    height: 5px;
+    background-color: #ccc; /* Màu xám nhạt */
+    opacity: 0.6;
+    transition: all 0.3s ease-in-out;
+}
+
+.swiper-pagination-bullet-active {
+    width: 24px;
+    height: 5px;
+    background-color: #ff4500; /* Màu cam đậm */
+    border-radius: 15px;
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+/* Tùy chỉnh mũi tên điều hướng */
+.swiper-button-next,
+.swiper-button-prev {
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.6);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    background-color: rgb(255, 67, 67); /* Màu cam khi hover */
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+    font-size: 20px;
+    font-weight: bold;
+}
 
 /* From Uiverse.io by Nawsome */
 .pl {

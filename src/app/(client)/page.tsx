@@ -25,7 +25,7 @@ import Link from 'next/link';
 interface Product {
     id: number;
     name: string;
-    category_id: string;
+    category_name: string;
     price: number;
     stock_quantity: number;
     description: string;
@@ -404,7 +404,7 @@ export default function Home() {
                                         </div> */}
                                         
                                         <Image
-                                            src={product.product_image}
+                                            src={'/images/laptop.jpeg'}
                                             alt={product.name}
                                             fill
                                             quality={100}
@@ -432,7 +432,7 @@ export default function Home() {
                                     <Link href={`/product-detail?id=${product.id}`}>
                                         <div className="p-4">
                                             <div className="featured_products_category mb-2 text-gray-500 text-sm">
-                                                {product.category_id}
+                                                {product.category_name}
                                             </div>
                                             <div className="featured_products_name h-[50px] text-sm">
                                                 {product.name}
