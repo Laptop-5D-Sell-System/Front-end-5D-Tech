@@ -29,7 +29,7 @@ import { Button } from '@/components/ui/button';
 interface Product {
     id: number;
     name: string;
-    category_id: string;
+    category_name: string;
     price: number;
     stock_quantity: number;
     description: string;
@@ -69,7 +69,7 @@ export default function ProductListlPage() {
 
     // Render products
     const filteredProducts = products.filter((product) => {
-        const matchesCategory = filterCategory ? product.category_id === filterCategory : true;
+        const matchesCategory = filterCategory ? product.category_name === filterCategory : true;
         // const matchesBrand = filterBrand ? product.brand === filterBrand : true;
         const matchesPrice = filterPrice ? product.price <= filterPrice : true;
 
@@ -126,7 +126,7 @@ export default function ProductListlPage() {
                     <div className="mb-4">
                         <h3 className="text-md font-semibold text-red-500 mb-2">Danh mục</h3>
                         <ul>
-                            {Array.from(new Set(products.map((product) => product.category_id))).map((category) => (
+                            {Array.from(new Set(products.map((product) => product.category_name))).map((category) => (
                                 <li key={category}>
                                     <label className="flex items-center">
                                         <input
@@ -253,7 +253,7 @@ export default function ProductListlPage() {
                                 </div> */}
 
                                 <Image
-                                    src={product.product_image}
+                                    src={'/images/laptop.jpeg'}
                                     alt={product.name}
                                     fill
                                     quality={100}
@@ -281,7 +281,7 @@ export default function ProductListlPage() {
                             <Link href={`/product-detail?id=${product.id}`}>
                                 <div className="p-4">
                                     <div className="featured_products_category mb-2 text-gray-500 text-sm">
-                                        {product.category_id}
+                                        {product.category_name}
                                     </div>
                                     <div className="featured_products_name h-[50px] text-sm">{product.name}</div>
                                     <div className="featured_products_rate flex items-center my-2 text-yellow-300">

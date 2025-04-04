@@ -11,7 +11,7 @@ import Link from "next/link";
 interface Product {
     id: number;
     name: string;
-    category_id: string;
+    category_name: string;
     price: number;
     stock_quantity: number;
     description: string;
@@ -49,7 +49,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
                 name: product.name,
                 price: product.price,
                 stock_quantity: product.stock_quantity,
-                product_image: product.product_image, 
+                product_image: '/images/laptop.jpeg', 
                 quantity,
             });
             toast.success("Đã thêm vào giỏ hàng", {
@@ -80,7 +80,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
                     <Dialog.Description>
                         {product && (
                             <div className="flex justify-between">
-                                <Image src={product.product_image} alt={product.name} width={320} height={150} quality={100} className="object-cover w-[320px] h-[150px]" />
+                                <Image src={'/images/laptop.jpeg'} alt={product.name} width={320} height={150} quality={100} className="object-cover w-[320px] h-[150px]" />
                                 <div className="ml-4">
                                     <span className="text-2xl text-red-500 font-[500] mb-2">{product.name}</span>
                                     <div className="featured_products_price flex gap-2 mb-2">

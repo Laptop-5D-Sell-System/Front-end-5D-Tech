@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import Image from 'next/image';
 import Link from 'next/link';
+import axios from 'axios';
+
 import {
     LogOut,
     Search,
@@ -40,26 +42,69 @@ import '../styles/Header.scss';
 import { Separator } from './ui/separator';
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
+import jwt from 'jsonwebtoken';
 
 export default function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
+    const [userName, setUserName] = useState('');
     const router = useRouter();
 
-    // Kiểm tra token trong localStorage
+    // Check token in localStorage
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (token) {
-            setIsLoggedIn(true);
-        } else {
+        if (!token) {
             setIsLoggedIn(false);
+            return;
         }
+
+        let userId: number | null = null;
+        try {
+            // Decode the token to extract the user ID
+            const decoded = jwt.decode(token) as { nameid: number }; // Adjust based on your token structure
+            userId = decoded?.nameid;
+            console.log('Decoded Token:', decoded);
+            console.log('User ID:', userId);
+        } catch (error) {
+            console.error('Error decoding token:', error);
+            setIsLoggedIn(false);
+            return;
+        }
+
+        if (!userId) {
+            console.error('User ID is undefined or null.');
+            setIsLoggedIn(false);
+            return;
+        }
+
+        // Fetch user details from API
+        axios
+            .get(`https://localhost:44303/user/detail?id=${userId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            .then((response) => {
+                console.log(response);
+                
+                if (response.data.httpStatus === 200) {
+                    const { first_name, last_name } = response.data.user;
+                    setUserName(`${first_name} ${last_name}`);
+                    setIsLoggedIn(true);
+                } else {
+                    console.error('Failed to fetch user details:', response.data);
+                    setIsLoggedIn(false);
+                }
+            })
+            .catch((error) => {
+                console.error('Error fetching user details:', error);
+                setIsLoggedIn(false);
+            });
     }, []);
 
     const handleLogout = () => {
         // Xóa token khi đăng xuất
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
+    
         setIsLoggedIn(false);
         router.push('/login'); // Điều hướng đến trang đăng nhập
     };
@@ -95,18 +140,18 @@ export default function Header() {
                 <ul className="header_menu h-full flex items-center justify-between w-2/5">
                     <Link
                         href="/"
-                        className="header_menu_item text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer"
+                        className="header_menu_item outline-none text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer"
                     >
                         Trang Chủ
                     </Link>
                     <Link
                         href="/about"
-                        className="header_menu_item text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer"
+                        className="header_menu_item outline-none text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer"
                     >
                         Giới Thiệu
                     </Link>
                     <li
-                        className="header_menu_item text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer relative get_menu_secondary"
+                        className="header_menu_item outline-none text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer relative get_menu_secondary"
                     >
                         <Link href={'/product-list'} className='flex gap-1 items-center'>Sản Phẩm <ChevronDown className="ml-1" strokeWidth={1} /></Link>
                         {/* Menu secondary */}
@@ -194,7 +239,7 @@ export default function Header() {
                     </li>
                     <Link
                         href="/contact"
-                        className="header_menu_item text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer"
+                        className="header_menu_item outline-none text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer"
                     >
                         Liên Hệ
                     </Link>
@@ -256,7 +301,7 @@ export default function Header() {
                                     <UserRound />
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="mt-[32px]">
-                                    <DropdownMenuLabel>Xin chào, Nguyễn Thái Dương</DropdownMenuLabel>
+                                    <DropdownMenuLabel>Xin chào, {userName}</DropdownMenuLabel>
 
                                     <Link href="/edit-information">
                                         <DropdownMenuItem className='cursor-pointer'>
@@ -337,7 +382,7 @@ export default function Header() {
                                             {cart.map((item) => (
                                                 <li key={item.id} className="flex items-center gap-4 border-b pb-2">
                                                     <Image
-                                                        src={item.product_image}
+                                                        src={'/images/laptop.jpeg'}
                                                         alt={item.name}
                                                         width={120}
                                                         height={80}
