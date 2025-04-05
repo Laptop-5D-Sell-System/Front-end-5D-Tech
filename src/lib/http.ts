@@ -71,6 +71,7 @@ const request = async <Response>({
   const fullUrl = createUrl(url, options?.baseUrl);
 
   try {
+    console.log('Full URL:', fullUrl);
     const res = await fetch(fullUrl, {
       ...options,
       headers: { ...baseHeaders, ...options?.headers },
@@ -89,16 +90,21 @@ const request = async <Response>({
           if (!clientLogoutRequest) {
             clientLogoutRequest = fetch("/api/auth/logout", {
               method: "POST",
-              headers: baseHeaders as any,
-            });
-            try {
+              body: null,
+              headers: {
+                ...baseHeaders
+              } as any
+            })
+            try{
               await clientLogoutRequest;
             } catch (error) {
               console.error("Logout request failed", error);
             } finally {
               localStorage.removeItem("token");
+              localStorage.removeItem("refreshToken");
+
               clientLogoutRequest = null;
-              location.href = "/login";
+              // location.href = "/login";
             }
           }
         } else {
@@ -118,7 +124,7 @@ const request = async <Response>({
       
           if (token) {
             localStorage.setItem("token", token);
-            console.log("🎉 Đăng nhập thành công!");
+            console.log("Đăng nhập thành công!");
             // Nếu dùng react-toastify để hiển thị thông báo trên giao diện
             
           } else {
@@ -136,9 +142,9 @@ const request = async <Response>({
 };
 
 const http = {
-//   get<Response>({ url, options }: { url: string; options?: Omit<CustomOptions, "body"> }) {
-//     return request<Response>({ method: "GET", url, options });
-//   },
+  get<Response>({ url, options }: { url: string; options?: Omit<CustomOptions, "body"> }) {
+    return request<Response>({ method: "GET", url, options });
+  },
 
   post<Response>({ url, body, options }: { url: string; body: any; options?: CustomOptions }) {
     return request<Response>({ method: "POST", url, options: { ...options, body } });

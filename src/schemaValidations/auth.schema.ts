@@ -51,11 +51,7 @@ export const LoginBody = z.object({
   
 
   export const LogoutBody = z.object({
-    data: z.object({
-      token: z.string(), 
-      refreshToken: z.string(),
-      httpStatus: z.number()
-    })
+    refreshToken: z.string()
   })
   .strict()
 
@@ -71,13 +67,7 @@ export const LoginBody = z.object({
   });
 
   export const LogoutRes = z.object({
-    data: z.object({
-      token: z.string(), 
       refreshToken: z.string(),
-      httpStatus: z.number()
-      
-    }),
-    message: z.string(),
   });
 
 export type LogoutResType = z.TypeOf<typeof LogoutRes>;

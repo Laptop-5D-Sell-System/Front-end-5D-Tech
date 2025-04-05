@@ -11,8 +11,36 @@ import {
 
 import { LogOut, Settings, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useLogoutMutation } from '@/queries/useAuth';
+import { use } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function DropdownAvatar() {
+    const route = useRouter();
+
+    const logout = async () => {
+        try {
+          const res = await fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+      
+          const data = await res.json();
+      
+          if (!res.ok) {
+            throw new Error(data.message || 'Lỗi khi gọi API logout');
+          }
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+      
+          route.push('/');
+        } catch (error) {
+          console.error('Logout error:', error);
+        }
+      };
+      
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -33,8 +61,8 @@ export default function DropdownAvatar() {
                     <Settings className="mr-2 h-4 w-4" /> Settings
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                    <LogOut className="mr-2 h-4 w-4" /> Logout
+                <DropdownMenuItem onClick={logout}>
+                    <LogOut className="mr-2 h-4 w-4"  /> Logout
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

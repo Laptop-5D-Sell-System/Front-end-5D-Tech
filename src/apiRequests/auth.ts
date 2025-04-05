@@ -1,5 +1,6 @@
 import http from "@/lib/http";
-import { LoginBodyType, LoginResType, LogoutBodyType, LogoutResType } from "@/schemaValidations/auth.schema";
+import { LoginBodyType, LoginResType, LogoutBodyType } from "@/schemaValidations/auth.schema";
+import { log } from "console";
 
 const authApiRequest = {
   
@@ -11,8 +12,26 @@ const authApiRequest = {
         options: { baseUrl: "" },
     }),
 
-    // sLogin: (body: LogoutBodyType) => http.post<LogoutResType>({ url: "/auth/logout", body }),
-
+    sLogout: (body: LogoutBodyType & {
+        token: string
+      }) => http.post({
+        url: "/auth/logout",
+        body: { 
+          token: body.token,
+          refreshToken: body.refreshToken 
+        },
+        options: {
+          headers: {
+            Authorization: `Bearer ${body.token}`
+          }
+        }
+      }),
+      logout: () =>
+        http.post({
+            url: "/logout",
+            body: null,
+            options: { baseUrl: "" },
+        }),
       
 };
 

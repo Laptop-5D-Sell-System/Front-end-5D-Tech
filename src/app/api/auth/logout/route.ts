@@ -1,69 +1,43 @@
-
 "use server";
 
 import authApiRequest from "@/apiRequests/auth";
-import { LoginBodyType } from "@/schemaValidations/auth.schema";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const cookieStore = cookies()
-  const accessToken = (await cookieStore).get('token')?.value
-  const refreshToken = (await cookieStore).get('refreshToken')?.value
+  const cookieStore = await cookies(); // ✅ cần await ở đây
 
-  await cookieStore.delete('accessToken')
-  await cookieStore.delete('refreshToken')
-  try {
-    const body = (await request.json()) as LoginBodyType;
-    console.log(" Đang xử lý đăng nhập...");
+  const accessToken = cookieStore.get("token")?.value;
+  const refreshToken = cookieStore.get("refreshToken")?.value;
 
-    const response = await authApiRequest.sLogin(body);
-    console.log(" API response:", response);
+  // Xóa cookie
+  cookieStore.delete("token");
+  cookieStore.delete("refreshToken");
 
-    if (!response?.payload?.token) {
-      return new NextResponse(
-        JSON.stringify({ message: "Lỗi đăng nhập: Không nhận được token" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
-    }
-
-    const accessToken = response.payload.token;
-    const refreshToken = response.payload.refreshToken;
-
-    const res = new NextResponse(
-      JSON.stringify({ 
-        message: "Đăng nhập thành công    !",
-        token: refreshToken,
-        refreshToken: refreshToken
-      }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+  if (!accessToken || !refreshToken) {
+    return NextResponse.json(
+      { message: "Không tìm thấy accessToken hoặc refreshToken trong cookie" },
+      { status: 400 }
     );
+  }
 
-    res.cookies.set("token", accessToken, {
-      path: "/",
-      httpOnly: true,
-      sameSite: "lax",
-      secure: true,
-      maxAge: 60 * 60, // 1 giờ
+  try {
+    const result = await authApiRequest.sLogout({
+      refreshToken,
+      token: accessToken,
     });
 
-    res.cookies.set("refreshToken", refreshToken, {
-      path: "/",
-      httpOnly: true,
-      sameSite: "lax",
-      secure: true,
-      maxAge: 60 * 60, // 1 giờ
-    });
+    console.log("Logout API result:", result);
 
-    console.log("Cookie đã được thiết lập:", res);
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error("Lỗi khi gọi authApiRequest.sLogout:", error);
 
-    return res;
-  } catch (error) {
-    console.error(" Lỗi khi đăng nhập:", error);
-
-    return new NextResponse(
-      JSON.stringify({ message: "Có lỗi xảy ra", error: (error as Error).message }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+    return NextResponse.json(
+      {
+        message: error?.message || "Lỗi khi gọi API đến Backend",
+      },
+      { status: 500 }
     );
   }
 }
