@@ -100,14 +100,30 @@ export default function Header() {
             });
     }, []);
 
-    const handleLogout = () => {
-        // Xóa token khi đăng xuất
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-    
-        setIsLoggedIn(false);
-        router.push('/login'); // Điều hướng đến trang đăng nhập
-    };
+    const route = useRouter();
+
+    const logout = async () => {
+        try {
+          const res = await fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+      
+          const data = await res.json();
+      
+          if (!res.ok) {
+            throw new Error(data.message || 'Lỗi khi gọi API logout');
+          }
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+      
+          route.push('/login');
+        } catch (error) {
+          console.error('Logout error:', error);
+        }
+      };
 
     // Handle search
     const [searchTerm, setSearchTerm] = useState('');
@@ -331,9 +347,9 @@ export default function Header() {
                                         </DropdownMenuItem>
                                     </Link>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem className='cursor-pointer' onClick={handleLogout}>
+                                    <DropdownMenuItem className='cursor-pointer' onClick={logout}>
                                         <LogOut stroke="black" />
-                                        Logout
+                                        Đăng Xuất
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>

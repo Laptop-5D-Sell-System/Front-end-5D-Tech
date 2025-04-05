@@ -2,6 +2,9 @@
 // import { LoginBodyType } from "@/schemaValidations/auth.schema";
 // import { useMutation } from "@tanstack/react-query"
 
+import authApiRequest from "@/apiRequests/auth";
+import { useMutation } from "@tanstack/react-query";
+
 // // export const useLoginMuntation = ()=> {
 // //     return useMutation({
 // //         mutationFn: authApiRequest.login
@@ -28,3 +31,9 @@
 //     );
 //   }
   
+
+export const useLogoutMutation = () => {
+    return useMutation({
+        mutationFn: authApiRequest.logout
+    });
+}
