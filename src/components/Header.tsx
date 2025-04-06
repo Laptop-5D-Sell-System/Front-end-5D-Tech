@@ -80,8 +80,6 @@ export default function Header() {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then((response) => {
-                console.log(response);
-                
                 if (response.data.httpStatus === 200) {
                     const { first_name, last_name } = response.data.user;
                     setUserName(`${first_name} ${last_name}`);

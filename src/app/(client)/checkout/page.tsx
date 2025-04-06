@@ -22,7 +22,6 @@ export default function Checkout() {
     // const [cart, setCart] = useState<CartItem[]>([]);
     const { cart, fetchCart } = useCart();
     const [loading, setLoading] = useState(true);
-    const [address, setAddress] = useState('');
     const router = useRouter();
 
     // Fetch user information
@@ -47,7 +46,6 @@ export default function Checkout() {
                 const data = await response.json();
                 
                 setUser(data.user);
-                setAddress(data.user.address || '');
                 fetchCart(); 
                 setLoading(false); 
             } catch (error) {
@@ -73,11 +71,17 @@ export default function Checkout() {
                 },
                 body: JSON.stringify({
                     orderItems: cart.map((item) => ({
-                        product_id: item.id,
+                        product_id: item.product_id,
                         quantity: item.quantity,
                     }))
                 }),
             });
+
+            console.log(cart.map((item) => ({
+                product_id: item.product_id,
+                quantity: item.quantity,
+            })));
+            
 
             console.log(response);
             
@@ -101,10 +105,10 @@ export default function Checkout() {
         return (
             <div className="w-full h-[200px] flex items-center justify-center">
                 <svg className="pl" width="240" height="240" viewBox="0 0 240 240">
-                    <circle className="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
-                    <circle className="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
-                    <circle className="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
-                    <circle className="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+                    <circle className="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" strokeWidth="20" strokeDasharray="0 660" strokeDashoffset="-330" strokeLinecap="round"></circle>
+                    <circle className="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" strokeWidth="20" strokeDasharray="0 220" strokeDashoffset="-110" strokeLinecap="round"></circle>
+                    <circle className="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" strokeWidth="20" strokeDasharray="0 440" strokeLinecap="round"></circle>
+                    <circle className="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" strokeWidth="20" strokeDasharray="0 440" strokeLinecap="round"></circle>
                 </svg>
             </div>
         );
@@ -129,8 +133,7 @@ export default function Checkout() {
                     <Input
                         type="text"
                         id="address"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
+                        value={user.address}
                         placeholder="Nhập địa chỉ giao hàng"
                         className="w-full"
                     />
@@ -148,7 +151,7 @@ export default function Checkout() {
                                 <p className="text-lg font-medium">{item.product_name}</p>
                                 <p className="text-sm text-gray-500">Số lượng: {item.quantity}</p>
                                 <p className="text-sm text-red-500">
-                                    Giá: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.product_price)}
+                                    Đơn giá: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.product_price)}
                                 </p>
                             </div>
                         </li>
