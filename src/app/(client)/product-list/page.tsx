@@ -127,7 +127,7 @@ export default function ProductListlPage() {
                         <h3 className="text-md font-semibold text-red-500 mb-2">Danh mục</h3>
                         <ul>
                             {Array.from(new Set(products.map((product) => product.category_name))).map((category) => (
-                                <li key={category}>
+                                <li key={`${category}`}>
                                     <label className="flex items-center">
                                         <input
                                             type="radio"

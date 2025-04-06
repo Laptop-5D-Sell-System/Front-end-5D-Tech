@@ -9,6 +9,7 @@ import './EditInformation.scss';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import { toast } from 'react-toastify';
 
 interface Account {
     id: number;
@@ -38,6 +39,7 @@ export default function EditInformation() {
     const [formData, setFormData] = useState<Partial<User>>({});
     const router = useRouter();
 
+    
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -49,6 +51,9 @@ export default function EditInformation() {
         try {
             const decoded = jwt.decode(token) as { nameid: number };
             userId = decoded?.nameid;
+            console.log('Decoded token:', decoded);
+            console.log('User ID:', userId);
+            
         } catch (error) {
             console.error('Error decoding token:', error);
             router.push('/login');
@@ -69,6 +74,8 @@ export default function EditInformation() {
         })
             .then((res) => res.json())
             .then((data) => {
+                console.log('User data:', data);
+                
                 if (data.httpStatus === 200) {
                     setUser(data.user);
                     setFormData(data.user);
@@ -91,7 +98,7 @@ export default function EditInformation() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-
+        
         const token = localStorage.getItem('token');
         if (!token) {
             router.push('/login');
@@ -108,9 +115,13 @@ export default function EditInformation() {
         })
             .then((res) => res.json())
             .then((data) => {
+                console.log('Update response:', data);
+                
                 if (data.httpStatus === 200) {
-                    alert('Thông tin đã được cập nhật thành công!');
+                    toast.success('Thông tin đã được cập nhật thành công!');
                     setUser(data.user);
+                    console.log('Updated user data:', data.user);
+                    
                 } else {
                     alert('Cập nhật thông tin thất bại.');
                 }
@@ -132,10 +143,10 @@ export default function EditInformation() {
                         r="105"
                         fill="none"
                         stroke="#000"
-                        stroke-width="20"
-                        stroke-dasharray="0 660"
-                        stroke-dashoffset="-330"
-                        stroke-linecap="round"
+                        strokeWidth="20"
+                        strokeDasharray="0 660"
+                        strokeDashoffset="-330"
+                        strokeLinecap="round"
                     ></circle>
                     <circle
                         className="pl__ring pl__ring--b"
@@ -144,10 +155,10 @@ export default function EditInformation() {
                         r="35"
                         fill="none"
                         stroke="#000"
-                        stroke-width="20"
-                        stroke-dasharray="0 220"
-                        stroke-dashoffset="-110"
-                        stroke-linecap="round"
+                        strokeWidth="20"
+                        strokeDasharray="0 220"
+                        strokeDashoffset="-110"
+                        strokeLinecap="round"
                     ></circle>
                     <circle
                         className="pl__ring pl__ring--c"
@@ -156,9 +167,9 @@ export default function EditInformation() {
                         r="70"
                         fill="none"
                         stroke="#000"
-                        stroke-width="20"
-                        stroke-dasharray="0 440"
-                        stroke-linecap="round"
+                        strokeWidth="20"
+                        strokeDasharray="0 440"
+                        strokeLinecap="round"
                     ></circle>
                     <circle
                         className="pl__ring pl__ring--d"
@@ -167,9 +178,9 @@ export default function EditInformation() {
                         r="70"
                         fill="none"
                         stroke="#000"
-                        stroke-width="20"
-                        stroke-dasharray="0 440"
-                        stroke-linecap="round"
+                        strokeWidth="20"
+                        strokeDasharray="0 440"
+                        strokeLinecap="round"
                     ></circle>
                 </svg>
             </div>
@@ -195,9 +206,9 @@ export default function EditInformation() {
                     </BreadcrumbList>
                 </Breadcrumb>
                 <div className='flex gap-8 w-full px-[100px]'>
-                    <div className="w-1/3 text-center border-2 border-red-500 rounded-lg p-4 bg-white shadow-md">
+                    <div className="w-1/3 h-[280px] text-center border-2 border-red-500 rounded-lg p-4 bg-white shadow-md">
                         <Avatar className='mx-auto w-[150px] h-[150px] mb-4 border border-gray-300 rounded-full'>
-                            <AvatarImage src={`${formData.profile_picture}`} />
+                            <AvatarImage src={`${formData.profile_picture}`} className='object-cover' />
                             <AvatarFallback>User</AvatarFallback>
                         </Avatar>
                         <p className='mb-1'>{formData.first_name} {formData.last_name}</p>
