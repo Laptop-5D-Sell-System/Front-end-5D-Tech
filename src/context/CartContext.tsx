@@ -37,7 +37,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
 
             const data = await response.json();
-            console.log(data);
             
             if (response.ok) {
                 setCart(data.data || []);
@@ -69,6 +68,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     quantity,
                 }),
             });
+            console.log(JSON.stringify({
+                orderItems: cart.map((item) => ({
+                    product_id: item.product_id,
+                    quantity: item.quantity,
+                }))
+              }));
+              
 
             const data = await response.json();
             if (response.ok && data.httpStatus === 200) {
