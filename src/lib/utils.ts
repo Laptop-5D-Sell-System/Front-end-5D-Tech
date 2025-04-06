@@ -20,5 +20,5 @@ export const getAccessTokenFromLocalStorage = () => {
 
 
 export const decodeToken = (token: string) => {
-  // return jwt.decode(token) as TokenPayload;
+  return jwt.decode(token);
 }

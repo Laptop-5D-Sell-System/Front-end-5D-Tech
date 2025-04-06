@@ -11,6 +11,7 @@ import { Mail, Lock, LogIn } from 'lucide-react';
 import envConfig from '../../../../../config';
 import Cookies from 'js-cookie'; 
 import { useRouter } from 'next/navigation';
+import { decodeToken } from '@/lib/utils';
 
 // Schema validation
 const LoginBody = z.object({
@@ -50,10 +51,15 @@ export default function Login() {
       localStorage.setItem("token", token);
       localStorage.setItem("refreshToken", refreshToken);
 
-      console.log('Đăng nhập thành công:', data);
+      const decodedToken = decodeToken(token);
+      const role = decodedToken?.role;
 
-      // Chuyển hướng đến trang chính
-      router.push('/');
+      if (role === 'admin') {
+        router.push('/admin/dashboard');
+      }
+      else{
+        router.push('/');
+      }
     } catch (error:any) {
       console.error('Error logging in:', error);
       alert(error.message || 'Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.');

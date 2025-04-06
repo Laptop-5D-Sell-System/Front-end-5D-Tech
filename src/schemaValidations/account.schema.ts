@@ -36,3 +36,19 @@ export const AccountListRes = z.object({
 });
 
 export type AccountListResType = z.TypeOf<typeof AccountListRes>;
+
+
+
+export const updateAccountBody = z.object({
+    email: z.string().email("Email không hợp lệ").optional(), 
+    name: z.string().min(1, "Tên không được để trống"), 
+    avatar: z.string().url("URL ảnh không hợp lệ").optional(), 
+    password_hash: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự").optional(),
+    confirmPassword: z.string().optional(), 
+    changePassword: z.boolean(), 
+}).refine(data => data.password_hash === data.confirmPassword, {
+    message: "Mật khẩu và xác nhận mật khẩu không khớp",
+    path: ["confirmPassword"],
+});
+
+export type UpdateAccountBodyType = z.infer<typeof updateAccountBody>;
