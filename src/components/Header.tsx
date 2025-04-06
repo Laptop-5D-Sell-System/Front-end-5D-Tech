@@ -60,11 +60,8 @@ export default function Header() {
 
         let userId: number | null = null;
         try {
-            // Decode the token to extract the user ID
-            const decoded = jwt.decode(token) as { nameid: number }; // Adjust based on your token structure
+            const decoded = jwt.decode(token) as { nameid: number }; 
             userId = decoded?.nameid;
-            console.log('Decoded Token:', decoded);
-            console.log('User ID:', userId);
         } catch (error) {
             console.error('Error decoding token:', error);
             setIsLoggedIn(false);
@@ -396,22 +393,22 @@ export default function Header() {
                                     {cart.length > 0 ? (
                                         <ul className="space-y-4">
                                             {cart.map((item) => (
-                                                <li key={item.id} className="flex items-center gap-4 border-b pb-2">
+                                                <li key={item.product_id} className="flex items-center gap-4 border-b pb-2">
                                                     <Image
                                                         src={'/images/laptop.jpeg'}
-                                                        alt={item.name}
+                                                        alt={item.product_name}
                                                         width={120}
                                                         height={80}
                                                         className="object-cover"
                                                     />
                                                     <div className="flex-1">
-                                                        <p className="text-[16px] font-medium mb-1">{item.name}</p>
+                                                        <p className="text-[14px] font-medium mb-1">{item.product_name}</p>
                                                         <p className="text-[14px] text-red-500 mb-1">
                                                             Giá tiền:{' '}
                                                             {new Intl.NumberFormat('vi-VN', {
                                                                 style: 'currency',
                                                                 currency: 'VND',
-                                                            }).format(item.price)}
+                                                            }).format(item.product_price)}
                                                         </p>
                                                         <div className="flex items-center justify-between gap-2 text-[12px] w-[100px]">
                                                             <div
@@ -458,7 +455,7 @@ export default function Header() {
                                                 style: 'currency',
                                                 currency: 'VND',
                                             }).format(
-                                                cart.reduce((total, item) => total + item.price * item.quantity, 0),
+                                                cart.reduce((total, item) => total + item.product_price * item.quantity, 0),
                                             )}
                                         </span>
                                     </p>
