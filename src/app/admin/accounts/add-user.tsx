@@ -19,15 +19,15 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
+import envConfig from "../../../../config"
 
-// 🛠 Định nghĩa schema xác thực bằng Zod
 const formSchema = z.object({
   username: z.string().min(1, "Tên không được để trống"),
   email: z.string().email("Email không hợp lệ"),
-  password: z.string().min(6, "Mật khẩu ít nhất 6 ký tự"),
+  password_hash: z.string().min(6, "Mật khẩu ít nhất 6 ký tự"),
   confirmPassword: z.string().min(6, "Xác nhận mật khẩu ít nhất 6 ký tự"),
   avatar: z.string().optional(),
-}).refine(data => data.password === data.confirmPassword, {
+}).refine(data => data.password_hash === data.confirmPassword, {
   message: "Mật khẩu không khớp",
   path: ["confirmPassword"],
 })
@@ -44,7 +44,7 @@ export function AddUser() {
     defaultValues: {
       username: "",
       email: "",
-      password: "",
+      password_hash: "",
       confirmPassword: "",
       avatar: "",
     }
@@ -63,14 +63,14 @@ export function AddUser() {
     setMessage("")
 
     try {
-      const response = await fetch("http://localhost:4000/Account", {
+      const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: Date.now().toString(), ...values }),
       })
 
       if (response.ok) {
-        setMessage("Thêm tài khoản thành công 🎉")
+        setMessage("Thêm tài khoản thành công ")
         form.reset()
         setTimeout(() => {
           setOpen(false)
@@ -164,7 +164,7 @@ export function AddUser() {
 
             <FormField
               control={form.control}
-              name="password"
+              name="password_hash"
               render={({ field }) => (
                 <FormItem>
                   <Label>Mật khẩu</Label>

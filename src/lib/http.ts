@@ -1,13 +1,12 @@
 import envConfig from "../../config";
 import { normalizePath } from "./utils";
-import { LoginResType } from "@/schemaValidations/auth.schema";
 import { redirect } from "next/navigation";
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 
 type CustomOptions = Omit<RequestInit, "method"> & {
-  baseUrl?: string; // baseUrl có thể không bắt buộc
+  baseUrl?: string; 
 };
 
 const ENTITY_ERROR_STATUS = 422;
@@ -39,7 +38,7 @@ export class EntityError extends HttpError {
   payload: EntityErrorPayload;
 
   constructor({ status, payload }: { status: number; payload?: EntityErrorPayload }) {
-    super({ status, message: "Lỗi thực thể" }); // Không cần `token`
+    super({ status, message: "Lỗi thực thể" }); 
     this.payload = payload;
   }
 }
@@ -120,12 +119,12 @@ const request = async <Response>({
         const normalizedUrl = normalizePath(url);
         if (normalizedUrl === 'api/auth/login') {
           const loginData = payload; // Lấy phản hồi từ API
-          const token = loginData?.payload?.token; // Lấy token từ payload
+          const token = loginData?.payload?.token;
       
           if (token) {
             localStorage.setItem("token", token);
             console.log("Đăng nhập thành công!");
-            // Nếu dùng react-toastify để hiển thị thông báo trên giao diện
+            
             
           } else {
             console.error("Lỗi: Không tìm thấy token trong phản hồi của API");

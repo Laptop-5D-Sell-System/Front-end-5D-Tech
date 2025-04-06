@@ -14,39 +14,30 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 import { Skeleton } from '@/components/ui/skeleton';
-
 import { Button } from '@/components/ui/button';
-
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import { AddUser } from './add-user';
-import { useState, useEffect, useContext } from 'react';
-import { createContext } from 'react';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@radix-ui/react-dropdown-menu';
-
-import envConfig from '../../../../config';
+import { useState, useEffect, useContext, createContext } from 'react';
 import { AccountListResType } from '@/schemaValidations/account.schema';
+import EditAccount from './edit-user';
+import envConfig from '../../../../config';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
-type AccountItem = AccountListResType['accounts'][0]
+type AccountItem = AccountListResType['accounts'][0];
 
-
+// Định nghĩa context với đúng tên hàm
 const AccountTableContext = createContext<{
     setAccountIdEdit: (value: string) => void;
     accountIdEdit: string | undefined;
-    setAcountDelete: (value: AccountItem | null) => void;
+    setAccountDelete: (value: AccountItem | null) => void;
     accountDelete: AccountItem | null;
 }>({
-    setAccountIdEdit: (value: string) => {},
+    setAccountIdEdit: () => {},
     accountIdEdit: undefined,
     accountDelete: null,
-    setAcountDelete: (value: AccountItem | null) => {},
+    setAccountDelete: () => {},
 });
 
 export const columns: ColumnDef<AccountItem>[] = [
@@ -67,10 +58,6 @@ export const columns: ColumnDef<AccountItem>[] = [
         cell: ({ row }) => (
             <div className="flex items-center space-x-2">
                 <img src={row.getValue('avatar')} alt="avatar" className="w-14 h-14" />
-                {/* <div className="flex flex-col">
-                    <div className="text-sm font-semibold">{row.getValue('username')}</div>
-                    <div className="text-sm text-muted-foreground">{row.getValue('email')}</div>
-                </div> */}
             </div>
         ),
     },
@@ -85,20 +72,18 @@ export const columns: ColumnDef<AccountItem>[] = [
     },
     {
         accessorKey: 'role',
-        header: 'Quyền ',
+        header: 'Quyền',
     },
     {
         id: 'actions',
         enableHiding: false,
         cell: ({ row }) => {
             const accounts = row.original;
-            // const { setAccountIdEdit, setAcountDelete } = useContext(AccountTableContext);
-            // const openEditAccount = () => {
-            //     setAccountIdEdit(row.original.id);
-            // };
-            // const openDeleteAccount = () => {
-            //     setAcountDelete(row.original);
-            // };
+            const { setAccountIdEdit, setAccountDelete } = useContext(AccountTableContext);
+
+            const openEditAccount = () => {
+                setAccountIdEdit(row.original.id);
+            };
 
             return (
                 <DropdownMenu>
@@ -124,7 +109,7 @@ export const columns: ColumnDef<AccountItem>[] = [
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             className="hover:bg-blue-100 text-blue-600 transition duration-200 p-2 rounded-md"
-                            // onClick={openEditAccount}
+                            onClick={openEditAccount}
                         >
                             Sửa Tài Khoản
                         </DropdownMenuItem>
@@ -135,87 +120,51 @@ export const columns: ColumnDef<AccountItem>[] = [
     },
 ];
 
-// function AlertDialogDeleteAccount({
-//     accountDelete,
-//     setAccountDelete,
-// }: {
-//     accountDelete: Payment | null;
-//     setAccountDelete: (value: Payment | null) => void;
-// }) {
-//     return (
-//         <AlertDialog
-//             open={Boolean(accountDelete)}
-//             onOpenChange={(value) => {
-//                 if (!value) {
-//                     setAccountDelete(null);
-//                 }
-//             }}
-//         >
-//             <AlertDialogContent>
-//                 <AlertDialogHeader>
-//                     <AlertDialogTitle>Xác Nhận Xóa Tài Khoản</AlertDialogTitle>
-//                     <AlertDialogDescription>
-//                         Tài Khoản{' '}
-//                         <span className='gb-foreground font-semibold rounded px-1'>
-//                             {employeeDelete?.username}
-//                         </span>{' '}
-//                         sẽ bị xóa vĩnh viễn. Bạn có chắc chắn muốn xóa?
-//                     </AlertDialogDescription>
-//                 </AlertDialogHeader>
-//                 <AlertDialogFooter>
-//                     <AlertDialogCancel>Hủy</AlertDialogCancel>
-//                     <AlertDialogAction>Đồng ý</AlertDialogAction>
-//                 </AlertDialogFooter>
-//             </AlertDialogContent>
-//         </AlertDialog>
-//     );
-// }
-
 export function Accounts_table() {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
     const [accountIdEdit, setAccountIdEdit] = useState<string | undefined>();
-    const [accountDelete, setAcountDelete] = useState<AccountItem | null>(null);
+    const [accountDelete, setAccountDelete] = useState<AccountItem | null>(null);
     const [data, setData] = React.useState<AccountItem[]>([]);
     const [loading, setLoading] = React.useState(true);
-    React.useEffect(() => {
+
+    useEffect(() => {
         const fetchData = async () => {
             const token = localStorage.getItem("token");
-        
+
             if (!token) {
                 console.error("No token found");
                 return;
             }
-        
+
             setLoading(true);
             try {
                 const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/get-accounts`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`  
+                        "Authorization": `Bearer ${token}`
                     }
                 });
-        
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-        
+
                 const result = await response.json();
-                setData(result.accounts); 
+                setData(result.accounts);
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
                 setLoading(false);
             }
         };
-        
-    
+
         fetchData();
     }, []);
-    
+
     const table = useReactTable({
         data,
         columns,
@@ -241,13 +190,12 @@ export function Accounts_table() {
                 accountIdEdit,
                 setAccountIdEdit,
                 accountDelete,
-                setAcountDelete,
+                setAccountDelete,
             }}
         >
-            {/* <div className="w-full p-4">
+            <div className="w-full p-4">
                 <EditAccount id={accountIdEdit} setId={setAccountIdEdit} onSubmitSuccess={() => {}} />
-            </div> */}
-
+            </div>
             <div className="w-full p-4">
                 <div className="flex items-center py-4 justify-between">
                     <Input
