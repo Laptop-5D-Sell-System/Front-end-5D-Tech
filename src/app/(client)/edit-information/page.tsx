@@ -1,10 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import jwt from 'jsonwebtoken';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import './EditInformation.scss';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
@@ -37,6 +35,7 @@ export default function EditInformation() {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [formData, setFormData] = useState<Partial<User>>({});
+    const [selectedFile, setSelectedFile] = useState<File | null>(null); 
     const router = useRouter();
 
     
@@ -47,26 +46,7 @@ export default function EditInformation() {
             return;
         }
 
-        let userId: number | null = null;
-        try {
-            const decoded = jwt.decode(token) as { nameid: number };
-            userId = decoded?.nameid;
-            console.log('Decoded token:', decoded);
-            console.log('User ID:', userId);
-            
-        } catch (error) {
-            console.error('Error decoding token:', error);
-            router.push('/login');
-            return;
-        }
-
-        if (!userId) {
-            console.error('User ID not found in token.');
-            router.push('/login');
-            return;
-        }
-
-        fetch(`https://localhost:44303/user/detail?id=${userId}`, {
+        fetch(`https://localhost:44303/user/my-information`, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -96,6 +76,12 @@ export default function EditInformation() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setSelectedFile(e.target.files[0]);
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         
@@ -105,13 +91,24 @@ export default function EditInformation() {
             return;
         }
 
+        const formDataToSend = new FormData();
+        Object.entries(formData).forEach(([key, value]) => {
+            if (value !== null && value !== undefined) {
+                formDataToSend.append(key, value as string);
+            }
+        });
+
+        if (selectedFile) {
+            formDataToSend.append('profile_picture', selectedFile); 
+        }
+
         fetch('https://localhost:44303/user/edit-user', {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
+                // 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(formData),
+            body: formDataToSend,
         })
             .then((res) => res.json())
             .then((data) => {
@@ -259,6 +256,13 @@ export default function EditInformation() {
                             value={formData.dob ? formData.dob.split('T')[0] : ''}
                             onChange={handleInputChange}
                             className='border mb-2'
+                        />
+                        <label htmlFor="">Ảnh đại diện:</label>
+                        <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="border mb-2"
                         />
                         <div className="w-full mt-8 flex gap-4 items-ceter justify-center">
                             <Button type="submit" className="flex-1 cursor-pointer hover:bg-red-500 transition-all duration-200">

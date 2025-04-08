@@ -42,7 +42,6 @@ import '../styles/Header.scss';
 import { Separator } from './ui/separator';
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
-import jwt from 'jsonwebtoken';
 
 export default function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -58,25 +57,9 @@ export default function Header() {
             return;
         }
 
-        let userId: number | null = null;
-        try {
-            const decoded = jwt.decode(token) as { nameid: number }; 
-            userId = decoded?.nameid;
-        } catch (error) {
-            console.error('Error decoding token:', error);
-            setIsLoggedIn(false);
-            return;
-        }
-
-        if (!userId) {
-            console.error('User ID is undefined or null.');
-            setIsLoggedIn(false);
-            return;
-        }
-
         // Fetch user details from API
         axios
-            .get(`https://localhost:44303/user/detail?id=${userId}`, {
+            .get(`https://localhost:44303/user/my-information`, {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then((response) => {
