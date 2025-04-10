@@ -53,7 +53,7 @@ export default function ProductDetailPage() {
 
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`https://localhost:44303/product/detail?id=${productId}`);
+                const response = await fetch(`https://oms-5d-tech.azurewebsites.net/product/detail?id=${productId}`);
                 if (!response.ok) throw new Error('Không thể lấy thông tin sản phẩm');
                 const data = await response.json();
                 setProduct(data.product);
@@ -119,7 +119,7 @@ export default function ProductDetailPage() {
             try {
                 const token = localStorage.getItem('token');
     
-                const response = await fetch('https://localhost:44303/cart/create', {
+                const response = await fetch('https://oms-5d-tech.azurewebsites.net/cart/create', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

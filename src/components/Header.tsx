@@ -59,7 +59,7 @@ export default function Header() {
 
         // Fetch user details from API
         axios
-            .get(`https://localhost:44303/user/my-information`, {
+            .get(`https://oms-5d-tech.azurewebsites.net/user/my-information`, {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then((response) => {

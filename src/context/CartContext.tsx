@@ -28,7 +28,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!token) return;
 
         try {
-            const response = await fetch("https://localhost:44303/cart/get-my-cart", {
+            const response = await fetch("https://oms-5d-tech.azurewebsites.net/cart/get-my-cart", {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -57,7 +57,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!token) return;
 
         try {
-            const response = await fetch("https://localhost:44303/cart/create", {
+            const response = await fetch("https://oms-5d-tech.azurewebsites.net/cart/create", {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -92,7 +92,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!token) return;
 
         try {
-            const response = await fetch(`https://localhost:44303/cart/delete?id=${id}`, {
+            const response = await fetch(`https://oms-5d-tech.azurewebsites.net/cart/delete?id=${id}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -116,7 +116,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!token) return;
 
         try {
-            const response = await fetch(`https://localhost:44303/cart/update?id=${id}`, {
+            const response = await fetch(`https://oms-5d-tech.azurewebsites.net/cart/update?id=${id}`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
