@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { Mail, Lock, LogIn, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import envConfig from '../../../../config';
 
 // Schema validation
 const RegisterBody = z.object({
@@ -36,7 +37,7 @@ export default function SignupForm() {
     async function onSubmit(values: RegisterBodyType) {
         console.log('Dữ liệu gửi đi:', values);
         try {
-            const response = await fetch('https://localhost:44303/auth/register', {
+            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
