@@ -44,7 +44,7 @@ export default function Checkout() {
             }
 
             try {
-                const response = await fetch('https://localhost:44303/user/my-information', {
+                const response = await fetch('https://oms-5d-tech.azurewebsites.net/user/my-information', {
                     method: 'GET',
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -81,7 +81,7 @@ export default function Checkout() {
         const token = localStorage.getItem('token');
 
         try {
-            const response = await fetch('https://localhost:44303/order/create', {
+            const response = await fetch('https://oms-5d-tech.azurewebsites.net/order/create', {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -103,7 +103,7 @@ export default function Checkout() {
                 if (paymentMethod === 'cod') {
                     toast.success('Đặt hàng thành công!');
                 } else if (paymentMethod === 'vnpay') {
-                    const response = await fetch('https://localhost:44303/payment/create', {
+                    const response = await fetch('https://oms-5d-tech.azurewebsites.net/payment/create', {
                         method: 'POST',
                         headers: {
                             Authorization: `Bearer ${token}`,

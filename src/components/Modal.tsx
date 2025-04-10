@@ -62,7 +62,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
                 }
             }
     
-            const response = await fetch("https://localhost:44303/cart/create", {
+            const response = await fetch("https://oms-5d-tech.azurewebsites.net/cart/create", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

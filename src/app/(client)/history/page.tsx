@@ -3,9 +3,12 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'react-toastify';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 import './History.scss';
+import { ArchiveX, ClipboardCheck, RefreshCcw } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface Order {
     id: number;
@@ -18,7 +21,8 @@ export default function History() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [statusOrder, setStatusOrder] = useState<'done' | 'processing' | 'cancel'>('done'); // Default status
     const [loading, setLoading] = useState(true);
-
+    const router = useRouter();
+    
     const fetchOrders = async (status: 'done' | 'processing' | 'cancel') => {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -28,7 +32,7 @@ export default function History() {
 
         try {
             setLoading(true);
-            const response = await fetch(`https://localhost:44303/order/my-orders?status=${status}`, {
+            const response = await fetch(`https://oms-5d-tech.azurewebsites.net/order/my-orders?status=${status}`, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -56,36 +60,69 @@ export default function History() {
         fetchOrders(statusOrder);
     }, [statusOrder]);
 
+    const handleRowClick = (orderId: number) => {
+        router.push(`/order-detail?id=${orderId}`); // Navigate to the OrderDetail page
+    };
+
     return (
         <div className="history-page mx-[100px] pt-8">
-            <h1 className="text-2xl font-[500] mb-4">Lịch sử đặt hàng</h1>
+            <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-[500] mb-4">Lịch sử đặt hàng</h1>
 
-            {/* Status Filter */}
-            <div className="mb-4 flex gap-4">
-                <Button
-                    onClick={() => setStatusOrder('done')}
-                    className={`py-2 px-4 rounded hover:bg-red-500 cursor-pointer ${
-                        statusOrder === 'done' ? 'bg-red-500 text-white' : 'bg-black'
-                    }`}
-                >
-                    Hoàn thành
-                </Button>
-                <Button
-                    onClick={() => setStatusOrder('processing')}
-                    className={`py-2 px-4 rounded hover:bg-red-500 cursor-pointer ${
-                        statusOrder === 'processing' ? 'bg-red-500 text-white' : 'bg-black'
-                    }`}
-                >
-                    Đang xử lý
-                </Button>
-                <Button
-                    onClick={() => setStatusOrder('cancel')}
-                    className={`py-2 px-4 rounded hover:bg-red-500 cursor-pointer ${
-                        statusOrder === 'cancel' ? 'bg-red-500 text-white' : 'bg-black'
-                    }`}
-                >
-                    Đã hủy
-                </Button>
+                {/* Status Filter */}
+                <div className="mb-4 flex gap-4">
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    onClick={() => setStatusOrder('done')}
+                                    className={`py-2 px-4 text-black border rounded hover:text-white transition-all duration-300 hover:bg-red-500 cursor-pointer ${
+                                        statusOrder === 'done' ? 'bg-red-500 text-white' : 'bg-transparent'
+                                    }`}
+                                >
+                                    <ClipboardCheck /> Hoàn thành
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Đơn đã nhận</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    onClick={() => setStatusOrder('processing')}
+                                    className={`py-2 px-4 text-black border rounded hover:text-white transition-all duration-300 hover:bg-red-500 cursor-pointer ${
+                                        statusOrder === 'processing' ? 'bg-red-500 text-white' : 'bg-transparent'
+                                    }`}
+                                >
+                                    <RefreshCcw /> Đang xử lý
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Đơn đang xử lý</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    onClick={() => setStatusOrder('cancel')}
+                                    className={`py-2 px-4 text-black border rounded hover:text-white transition-all duration-300 hover:bg-red-500 cursor-pointer ${
+                                        statusOrder === 'cancel' ? 'bg-red-500 text-white' : 'bg-transparent'
+                                    }`}
+                                >
+                                    <ArchiveX /> Đã hủy
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Đơn đã hủy</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </div>
             </div>
 
             {/* Orders List */}
@@ -155,9 +192,11 @@ export default function History() {
                         </TableHeader>
                         <TableBody>
                             {orders.map((order) => (
-                                <TableRow key={order.id}>
+                                <TableRow key={order.id} className='cursor-pointer' onClick={() => handleRowClick(order.id)}>
                                     <TableCell className="font-medium text-center">{order.id}</TableCell>
-                                    <TableCell className="text-center">{order.order_date ? order.order_date.split('T')[0] : ''}</TableCell>
+                                    <TableCell className="text-center">
+                                        {order.order_date ? order.order_date.split('T')[0] : ''}
+                                    </TableCell>
                                     <TableCell className="text-center">
                                         {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
                                             order.total,
@@ -166,10 +205,10 @@ export default function History() {
                                     <TableCell className="text-center">
                                         <span
                                             className={`px-2 py-1 rounded ${
-                                                order.status === 'done'
+                                                order.status === 'Done'
                                                     ? 'bg-green-500 text-white'
-                                                    : order.status === 'processing'
-                                                    ? 'bg-yellow-500 text-white'
+                                                    : order.status === 'Processing'
+                                                    ? 'bg-yellow-300 text-white'
                                                     : 'bg-red-500 text-white'
                                             }`}
                                         >

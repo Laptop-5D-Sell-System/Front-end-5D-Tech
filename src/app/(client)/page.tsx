@@ -59,7 +59,7 @@ export default function Home() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('https://localhost:44303/product/all-products?sortOrder=null');
+                const response = await axios.get('https://oms-5d-tech.azurewebsites.net/product/all-products?sortOrder=null');
                 const fetchedProducts: Product[] = response.data.products;
 
                 // Cập nhật processWidth dựa trên available và quantity

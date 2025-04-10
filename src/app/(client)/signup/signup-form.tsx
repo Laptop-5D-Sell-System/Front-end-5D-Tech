@@ -36,7 +36,7 @@ export default function SignupForm() {
     async function onSubmit(values: RegisterBodyType) {
         console.log('Dữ liệu gửi đi:', values);
         try {
-            const response = await fetch('https://localhost:44303/auth/register', {
+            const response = await fetch('https://oms-5d-tech.azurewebsites.net/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

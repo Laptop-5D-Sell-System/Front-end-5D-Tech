@@ -46,7 +46,7 @@ export default function EditInformation() {
             return;
         }
 
-        fetch(`https://localhost:44303/user/my-information`, {
+        fetch(`https://oms-5d-tech.azurewebsites.net/user/my-information`, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ export default function EditInformation() {
             formDataToSend.append('profile_picture', selectedFile); 
         }
 
-        fetch('https://localhost:44303/user/edit-user', {
+        fetch('https://oms-5d-tech.azurewebsites.net/user/edit-user', {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${token}`,
