@@ -38,6 +38,8 @@ export default function SignupForm() {
         console.log('Dữ liệu gửi đi:', values);
         try {
             const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/register`, {
+
+
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

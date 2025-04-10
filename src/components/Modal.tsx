@@ -7,6 +7,8 @@ import Image from "next/image";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
+import jwt from "jsonwebtoken";
+import { useRouter } from "next/navigation";
 
 interface Product {
     id: number;
@@ -28,7 +30,9 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
     const [quantity, setQuantity] = useState(1);
     const { addToCart } = useCart();
+    const { fetchCart } = useCart();
     const descriptionProduct = product?.description.split(". ").filter(item => item);
+    const router = useRouter();
 
     const handleIncrease = () => {
         if(product && quantity < product.stock_quantity) {
@@ -42,22 +46,55 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
         }
     }
 
-    const handleAddToCart = () => {
-        if(product) {
-            addToCart({
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                stock_quantity: product.stock_quantity,
-                product_image: '/images/laptop.jpeg', 
-                quantity,
+    const handleAddToCart = async () => {
+        if (!product) return;
+    
+        try {
+            const token = localStorage.getItem("token"); // lấy token nếu cần xác thực
+            if (token) {
+                const decoded = jwt.decode(token) as { exp: number };
+                const isExpired = decoded.exp * 1000 < Date.now();
+                if (isExpired) {
+                    console.error("Token has expired");
+                    toast.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+                    router.push("/login");
+                    return;
+                }
+            }
+    
+            const response = await fetch("https://oms-5d-tech.azurewebsites.net/cart/create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`, 
+                },
+                body: JSON.stringify({
+                    product_id: product.id,
+                    quantity: quantity,
+                }),
             });
-            toast.success("Đã thêm vào giỏ hàng", {
-                closeButton: true,
-            });
-            onClose();
+    
+            const data = await response.json();
+            console.log("Response data:", data);
+            
+            if (data.HttpStatus === 201) {
+                toast.success("Đã thêm vào giỏ hàng", {
+                    closeButton: true,
+                });
+
+                fetchCart(); 
+
+                onClose();
+            } else {
+                console.error("Thêm giỏ hàng thất bại:", data);
+                toast.error(data.message || "Không thể thêm sản phẩm vào giỏ hàng");
+            }
+        } catch (error) {
+            console.error("Lỗi khi gọi API:", error);
+            toast.error("Lỗi kết nối đến server");
         }
-    }
+    };
+    
 
     return (
         <Dialog open={isOpen} onClose={onClose} className="fixed inset-0 z-50">
@@ -77,7 +114,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
                         {content === "Cart" ? "Thêm vào giỏ hàng" : "Xem chi tiết sản phẩm"}
                         <button onClick={onClose} className="rounded-full w-[30px] h-[30px] flex items-center justify-center cursor-pointer bg-transparent border border-black hover:bg-black hover:text-white hover:rotate-180 text-md transition-all duration-300">&times;</button>
                     </Dialog.Title>
-                    <Dialog.Description>
+                    <div>
                         {product && (
                             <div className="flex justify-between">
                                 <Image src={'/images/laptop.jpeg'} alt={product.name} width={320} height={150} quality={100} className="object-cover w-[320px] h-[150px]" />
@@ -100,7 +137,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
                                     <p className="text-md w-90 mb-2">Thông tin sản phẩm:</p>
                                     <ul>
                                         {descriptionProduct?.map((item, index) => (
-                                            <li className="text-gray-500 text-sm list-disc ml-4" key={index}>{item}.</li>
+                                            <li className="text-gray-500 text-sm list-disc ml-4" key={index}>{item}</li>
                                         ))}
                                     </ul>
 
@@ -148,7 +185,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
                                 </div>
                             </div>
                         )}
-                    </Dialog.Description>
+                    </div>
                 </Dialog.Panel>
             </div>
         </Dialog>

@@ -41,11 +41,10 @@ export default function ProductDetailPage() {
     const searchParams = useSearchParams();
     const productId = searchParams.get('id');
     const [quantity, setQuantity] = useState(1);
-    const { addToCart } = useCart();
     const router = useRouter();
+    const {fetchCart, addToCart} = useCart();
     const descriptionProduct = product?.description.split('. ').filter((item) => item);
 
-    // 🟢 Lấy sản phẩm chi tiết
     useEffect(() => {
         if (!productId) {
             router.push('/');
@@ -54,7 +53,7 @@ export default function ProductDetailPage() {
 
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`https://localhost:44303/product/detail?id=${productId}`);
+                const response = await fetch(`https://oms-5d-tech.azurewebsites.net/product/detail?id=${productId}`);
                 if (!response.ok) throw new Error('Không thể lấy thông tin sản phẩm');
                 const data = await response.json();
                 setProduct(data.product);
@@ -70,7 +69,7 @@ export default function ProductDetailPage() {
         fetchProduct();
     }, [productId, router]);
 
-    // 🟢 Lấy sản phẩm tương tự từ AI
+
     useEffect(() => {
         if (!productId) return;
 
@@ -95,10 +94,10 @@ export default function ProductDetailPage() {
     if (loading) return (
         <div className="w-full h-[200px] flex items-center justify-center">
             <svg className="pl" width="240" height="240" viewBox="0 0 240 240">
-                <circle className="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
-                <circle className="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
-                <circle className="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
-                <circle className="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20" stroke-dasharray="0 440" stroke-linecap="round"></circle>
+                <circle className="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" strokeWidth="20" strokeDasharray="0 660" strokeDashoffset="-330" strokeLinecap="round"></circle>
+                <circle className="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" strokeWidth="20" strokeDasharray="0 220" strokeDashoffset="-110" strokeLinecap="round"></circle>
+                <circle className="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" strokeWidth="20" strokeDasharray="0 440" strokeLinecap="round"></circle>
+                <circle className="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" strokeWidth="20" strokeDasharray="0 440" strokeLinecap="round"></circle>
             </svg>
         </div>
     );
@@ -115,20 +114,37 @@ export default function ProductDetailPage() {
         }
     };
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         if (product) {
-            addToCart({
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                stock_quantity: product.stock_quantity,
-                product_image: '/images/laptop.jpeg',
-                quantity: quantity,
-            });
-            toast.success('Đã thêm vào giỏ hàng', {
-                closeButton: true,
-            });
+            try {
+                const token = localStorage.getItem('token');
+    
+                const response = await fetch('https://oms-5d-tech.azurewebsites.net/cart/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        product_id: product.id,
+                        quantity: quantity,
+                    }),
+                });
+    
+                const data = await response.json();
+                if (response.ok && data.HttpStatus === 201) {
+                    toast.success('Đã thêm vào giỏ hàng', {
+                        closeButton: true,
+                    });
+                } else {
+                    toast.error(data.message || 'Không thể thêm sản phẩm vào giỏ hàng');
+                }
+            } catch (error) {
+                console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
+                toast.error('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng.');
+            }
         }
+        fetchCart();
     };
     return (
         <div className="mx-[100px] pt-4">

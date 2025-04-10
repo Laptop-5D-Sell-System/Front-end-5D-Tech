@@ -17,7 +17,7 @@ import {
 export default function Cart() {
     const { cart, updateCartItemQuantity, removeFromCart } = useCart();
 
-    const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+    const totalPrice = cart.reduce((total, item) => total + item.product_price * item.quantity, 0);
 
     return (
         <div className="container mx-auto p-4">
@@ -34,29 +34,29 @@ export default function Cart() {
             </Breadcrumb>
             <h1 className="text-2xl font-normal my-8">Giỏ hàng của bạn</h1>
             {cart.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
                     {/* Danh sách sản phẩm */}
                     <div className="col-span-2 space-y-4">
                         {cart.map((item) => (
                             <div
-                                key={item.id}
+                                key={item.product_id}
                                 className="flex gap-4 border-b pb-4"
                             >
                                 <Image
                                     src={'/images/laptop.jpeg'}
-                                    alt={item.name}
+                                    alt={item.product_name}
                                     width={240}
                                     height={150}
                                     className="object-cover"
                                 />
                                 <div className="flex-1">
-                                    <p className="text-lg font-medium">{item.name}</p>
+                                    <p className="text-lg font-medium">{item.product_name}</p>
                                     <p className="text-sm text-red-500">
                                         Giá tiền:{' '}
                                         {new Intl.NumberFormat('vi-VN', {
                                             style: 'currency',
                                             currency: 'VND',
-                                        }).format(item.price)}
+                                        }).format(item.product_price)}
                                     </p>
                                     <div className="flex items-center justify-between gap-2 mt-2 w-[100px]">
                                         <div
@@ -103,7 +103,7 @@ export default function Cart() {
                             </span>
                         </p>
                         <Link href="/checkout">
-                            <Button className="w-full bg-red-500 text-white hover:bg-red-600 transition-all duration-300">
+                            <Button className="w-full cursor-pointer bg-red-500 text-white hover:bg-red-600 transition-all duration-300">
                                 Thanh toán
                             </Button>
                         </Link>

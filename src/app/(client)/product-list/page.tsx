@@ -87,7 +87,7 @@ export default function ProductListlPage() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('https://localhost:44303/product/all-products?sortOrder=null');
+                const response = await axios.get('https://oms-5d-tech.azurewebsites.net/product/all-products?sortOrder=null');
                 const fetchedProducts: Product[] = response.data.products;
 
                 // Cập nhật processWidth dựa trên available và quantity
@@ -127,7 +127,7 @@ export default function ProductListlPage() {
                         <h3 className="text-md font-semibold text-red-500 mb-2">Danh mục</h3>
                         <ul>
                             {Array.from(new Set(products.map((product) => product.category_name))).map((category) => (
-                                <li key={category}>
+                                <li key={`${category}`}>
                                     <label className="flex items-center">
                                         <input
                                             type="radio"
