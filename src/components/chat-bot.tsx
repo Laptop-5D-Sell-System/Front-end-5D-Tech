@@ -6,7 +6,7 @@ import axios from 'axios';
 
 export default function ChatBot() {
     const [isChatOpen, setIsChatOpen] = useState(false);
-    const [messages, setMessages] = useState<{ role: string; content: string }[]>([
+    const [messages, setMessages] = useState<{ role: string; content: string | any[] }[]>([
         { role: 'assistant', content: 'Xin chào! Tôi có thể giúp gì cho bạn?' },
     ]);
     const [input, setInput] = useState('');
@@ -26,13 +26,23 @@ export default function ChatBot() {
 
         try {
             const response = await axios.get(
-                `http://localhost:8888/test-chatbot?text=${encodeURIComponent(input)}&session_id=fixed-session-1234`
+                `http://localhost:8080/test-chatbot?text=${encodeURIComponent(input)}&session_id=fixed-session-1234`
             );
 
-            setMessages((prev) => [
-                ...prev,
-                { role: 'assistant', content: response.data.mess || 'Xin lỗi, tôi không hiểu câu hỏi của bạn.' },
-            ]);
+            const responseData = response.data.mess;
+
+            // Check if the response contains product details
+            if (Array.isArray(responseData)) {
+                setMessages((prev) => [
+                    ...prev,
+                    { role: 'assistant', content: responseData },
+                ]);
+            } else {
+                setMessages((prev) => [
+                    ...prev,
+                    { role: 'assistant', content: responseData || 'Xin lỗi, tôi không hiểu câu hỏi của bạn.' },
+                ]);
+            }
         } catch (error) {
             console.error('Error sending message:', error);
             setMessages((prev) => [
@@ -70,14 +80,51 @@ export default function ChatBot() {
                     </div>
                     <div className="chat-messages flex-1 overflow-y-auto p-4 text-[14px]">
                         {messages.map((message, index) => (
-                            <div key={index} className={`mb-2 ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
-                                <p
-                                    className={`inline-block px-4 py-2 rounded-full ${
-                                        message.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
-                                    }`}
-                                >
-                                    {message.content}
-                                </p>
+                            <div key={index} className={`mb-4 ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
+                                {Array.isArray(message.content) ? (
+                                    // Render product details if the content is an array
+                                    <div className="bg-gray-200 p-2 rounded-md">
+                                        <p className="font-bold mb-2">Thông tin sản phẩm:</p>
+                                        <table className="w-full text-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th className="text-left">Tên sản phẩm</th>
+                                                    <th className="text-center">Số lượng</th>
+                                                    <th className="text-right">Giá</th>
+                                                    <th className="text-right">Tổng</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {message.content.map((product, productIndex) => (
+                                                    <tr key={productIndex}>
+                                                        <td>{product.productName}</td>
+                                                        <td className="text-center">{product.quantity}</td>
+                                                        <td className="text-right">
+                                                            {new Intl.NumberFormat('vi-VN', {
+                                                                style: 'currency',
+                                                                currency: 'VND',
+                                                            }).format(product.price)}
+                                                        </td>
+                                                        <td className="text-right">
+                                                            {new Intl.NumberFormat('vi-VN', {
+                                                                style: 'currency',
+                                                                currency: 'VND',
+                                                            }).format(product.total)}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ) : (
+                                    <p
+                                        className={`inline-block p-2 rounded-sm ${
+                                            message.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+                                        }`}
+                                    >
+                                        {message.content}
+                                    </p>
+                                )}
                             </div>
                         ))}
                         {isLoading && (

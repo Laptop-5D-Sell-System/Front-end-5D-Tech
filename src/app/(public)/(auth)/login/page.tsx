@@ -33,7 +33,7 @@ export default function Login() {
 
   async function onSubmit(values: LoginBodyType) {
     try {
-      const response = await fetch(`https://oms-5d-tech.azurewebsites.net/auth/login`, {
+      const response = await fetch(`${envConfig.NEXT_PUBLIC_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -46,14 +46,15 @@ export default function Login() {
         throw new Error(errorData.mess || 'Đăng nhập thất bại');
       }
       const data = await response.json();
-      const token = data.data.token
-      const refreshToken = data.data.refreshToken
+      const token = data.token
+      const refreshToken = data.refreshToken
       localStorage.setItem("token", token);
       localStorage.setItem("refreshToken", refreshToken);
 
       const decodedToken = decodeToken(token);
       const role = decodedToken?.role;
-
+      console.log(role);
+      
       if (role === 'admin') {
         router.push('/admin/dashboard');
       }
