@@ -21,6 +21,7 @@ import { Button } from '../../components/ui/button';
 import Image from 'next/image';
 import Modal from '../../components/Modal';
 import Link from 'next/link';
+import envConfig from '../../../config';
 
 interface Product {
     id: number;
@@ -59,7 +60,7 @@ export default function Home() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('https://oms-5d-tech.azurewebsites.net/product/all-products?sortOrder=null');
+                const response = await axios.get(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/product/all-products?sortOrder=null`);
                 const fetchedProducts: Product[] = response.data.products;
 
                 // Cập nhật processWidth dựa trên available và quantity
@@ -404,7 +405,7 @@ export default function Home() {
                                         </div> */}
                                         
                                         <Image
-                                            src={'/images/laptop.jpeg'}
+                                            src={product.product_image}
                                             alt={product.name}
                                             fill
                                             quality={100}

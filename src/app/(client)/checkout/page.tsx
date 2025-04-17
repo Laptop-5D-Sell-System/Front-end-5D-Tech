@@ -15,6 +15,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import envConfig from '../../../../config';
 interface User {
     id: number;
     first_name: string;
@@ -44,7 +45,7 @@ export default function Checkout() {
             }
 
             try {
-                const response = await fetch('https://oms-5d-tech.azurewebsites.net/user/my-information', {
+                const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/user/my-information`, {
                     method: 'GET',
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -80,30 +81,43 @@ export default function Checkout() {
     const handlePlaceOrder = async () => {
         const token = localStorage.getItem('token');
 
+        const cartItems = cart.map((item) => ({
+            product_id: item.product_id,
+            quantity: item.quantity,
+        }));
+
         try {
-            const response = await fetch('https://oms-5d-tech.azurewebsites.net/order/create', {
+            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/order/order-by-cart`, {
                 method: 'POST',
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    orderItems: cart.map((item) => ({
-                        product_id: item.product_id,
-                        quantity: item.quantity,
-                    })),
-                }),
+                body: JSON.stringify(cartItems),
             });
 
             const dataCreate = await response.json();
 
-            console.log(dataCreate);
+            console.log(dataCreate.OrderId);
 
             if (dataCreate.HttpStatus === 201) {
                 if (paymentMethod === 'cod') {
-                    toast.success('Đặt hàng thành công!');
+                    const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/payment/payment-by-COD?orderId=${dataCreate.OrderId}`, {
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                    })
+
+                    const dataCod = await res.json();
+                    if(dataCod.HttpStatus === 200) {
+                        toast.success('Đặt hàng thành công!');
+                        fetchCart();
+                        router.push('/');
+                    }
                 } else if (paymentMethod === 'vnpay') {
-                    const response = await fetch('https://oms-5d-tech.azurewebsites.net/payment/create', {
+                    const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/payment/create`, {
                         method: 'POST',
                         headers: {
                             Authorization: `Bearer ${token}`,

@@ -25,6 +25,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import Modal from '@/components/Modal';
 import { Button } from '@/components/ui/button';
+import envConfig from '../../../../config';
 
 interface Product {
     id: number;
@@ -46,7 +47,7 @@ export default function ProductListlPage() {
 
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 6;
+    const itemsPerPage = 8;
 
     // Display dialog
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,7 +88,7 @@ export default function ProductListlPage() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('https://oms-5d-tech.azurewebsites.net/product/all-products?sortOrder=null');
+                const response = await axios.get(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/product/all-products?sortOrder=null`);
                 const fetchedProducts: Product[] = response.data.products;
 
                 // Cập nhật processWidth dựa trên available và quantity
@@ -240,20 +241,20 @@ export default function ProductListlPage() {
                 </div>
 
                 {/* List items */}
-                <div className="featured_products_list grid grid-cols-2 md:grid-cols-3 gap-5 ml-5">
+                <div className="featured_products_list grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 ml-5">
                     {currentProducts.map((product) => (
                         <div
                             key={product.id}
                             className="featured_products_item h-100 group rounded border overflow-hidden"
                         >
                             {/* Img item */}
-                            <div className="featured_products_img relative w-[300px] h-[180px] overflow-hidden">
+                            <div className="featured_products_img relative w-full h-[150px] overflow-hidden">
                                 {/* <div className="featured_products_sale absolute top-4 left-4 bg-red-500 text-white font-light z-10 text-sm p-1 rounded">
                                     -{product.discount}%
                                 </div> */}
 
                                 <Image
-                                    src={'/images/laptop.jpeg'}
+                                    src={product.product_image}
                                     alt={product.name}
                                     fill
                                     quality={100}

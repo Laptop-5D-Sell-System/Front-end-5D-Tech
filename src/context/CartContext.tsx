@@ -1,5 +1,6 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import envConfig from "../../config";
 
 interface CartItem {
     id: number;
@@ -28,7 +29,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!token) return;
 
         try {
-            const response = await fetch("https://oms-5d-tech.azurewebsites.net/cart/get-my-cart", {
+            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/cart/get-my-cart`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -57,7 +58,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!token) return;
 
         try {
-            const response = await fetch("https://oms-5d-tech.azurewebsites.net/cart/create", {
+            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/cart/create`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -92,7 +93,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!token) return;
 
         try {
-            const response = await fetch(`https://oms-5d-tech.azurewebsites.net/cart/delete?id=${id}`, {
+            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/cart/delete?id=${id}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -116,7 +117,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (!token) return;
 
         try {
-            const response = await fetch(`https://oms-5d-tech.azurewebsites.net/cart/update?id=${id}`, {
+            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/cart/update?id=${id}`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,

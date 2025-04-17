@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/breadcrumb';
 import Link from 'next/link';
 import './ProductDetail.scss';
+import envConfig from '../../../../config';
 
 interface Product {
     id: number;
@@ -53,7 +54,7 @@ export default function ProductDetailPage() {
 
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`https://oms-5d-tech.azurewebsites.net/product/detail?id=${productId}`);
+                const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/product/detail?id=${productId}`);
                 if (!response.ok) throw new Error('Không thể lấy thông tin sản phẩm');
                 const data = await response.json();
                 setProduct(data.product);
@@ -119,7 +120,7 @@ export default function ProductDetailPage() {
             try {
                 const token = localStorage.getItem('token');
     
-                const response = await fetch('https://oms-5d-tech.azurewebsites.net/cart/create', {
+                const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/cart/create`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -166,7 +167,7 @@ export default function ProductDetailPage() {
 
             <div className="flex gap-8 mt-4">
                 <Image
-                    src={'/images/laptop.jpeg'}
+                    src={product.product_image}
                     alt={product.name}
                     width={500}
                     height={250}
@@ -296,7 +297,7 @@ export default function ProductDetailPage() {
                                         </div> */}
 
                                         <Image
-                                            src={'/images/laptop.jpeg'}
+                                            src={product.product_image}
                                             alt={item.name}
                                             fill
                                             quality={100}

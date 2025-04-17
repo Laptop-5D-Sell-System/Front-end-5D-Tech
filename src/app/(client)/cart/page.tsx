@@ -43,7 +43,7 @@ export default function Cart() {
                                 className="flex gap-4 border-b pb-4"
                             >
                                 <Image
-                                    src={'/images/laptop.jpeg'}
+                                    src={item.product_image}
                                     alt={item.product_name}
                                     width={240}
                                     height={150}
