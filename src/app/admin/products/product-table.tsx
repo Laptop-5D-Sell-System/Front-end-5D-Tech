@@ -30,10 +30,11 @@ import {
 import { ProductListResType } from '@/schemaValidations/product.schema';
 import { AddProduct } from './add-products';
 import EditProduct from './edit-product';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { toast, Toaster } from 'sonner';
 
 type ProductsItem = ProductListResType['products'][0];
 
-// Khai báo Context
 const ProTableContext = createContext<{
     setProductIdEdit: (value: string) => void;
     productIdEdit: string | undefined;
@@ -56,7 +57,7 @@ export const columns: ColumnDef<ProductsItem>[] = [
         header: 'Ảnh',
         cell: ({ row }) => (
             <div className="flex items-center space-x-2">
-                <img src={row.getValue('image')} alt="image" className="w-14 h-14" />
+                <img src={row.original.product_image} alt="image" className="w-14 h-14" />
             </div>
         ),
     },
@@ -82,6 +83,15 @@ export const columns: ColumnDef<ProductsItem>[] = [
         enableHiding: false,
         cell: ({ row }) => {
             const product = row.original;
+
+            const { setProductIdEdit, setProductDelete } = useContext(ProTableContext);
+            const openEditProductId = () => {
+                setProductIdEdit(row.original.id);
+            }
+
+            const openDeleteProduct = () => {
+                setProductDelete(row.original)
+            }
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -95,10 +105,14 @@ export const columns: ColumnDef<ProductsItem>[] = [
                             Sao Chép Tên Sản Phẩm
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="hover:bg-red-100 text-red-600 transition duration-200 p-2 rounded-md">
+                        <DropdownMenuItem className="hover:bg-red-100 text-red-600 transition duration-200 p-2 rounded-md"
+                            onClick={openDeleteProduct}
+                        >
                             Xóa Sản Phẩm
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="hover:bg-blue-100 text-blue-600 transition duration-200 p-2 rounded-md">
+                        <DropdownMenuItem className="hover:bg-blue-100 text-blue-600 transition duration-200 p-2 rounded-md"
+                        onClick={openEditProductId}
+                        >
                             Sửa Sản Phẩm
                         </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -108,6 +122,70 @@ export const columns: ColumnDef<ProductsItem>[] = [
     },
 ];
 
+
+function AlertDialogDeleteProducts({
+    productDelete,
+    setproductDelete,
+    setData,
+}: {
+    productDelete: ProductsItem | null;
+    setproductDelete: (value: ProductsItem | null) => void;
+    setData: React.Dispatch<React.SetStateAction<ProductsItem[]>>;
+}) {
+    
+    const deleteAcc = async () => {
+        const token = localStorage.getItem("token");
+        console.log(productDelete?.id);
+        const id = productDelete?.id;
+        const name = productDelete?.name;
+        try {
+            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/product/delete?id=${productDelete?.id}`, {
+                method: "DELETE",
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            })
+            console.log('Response from server:', response.status, await response.text());
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            setData(prev => prev.filter(acc => acc.id !== id));
+            toast.success(`Sản phẩm ${name} đã bị xoá`);
+            setproductDelete(null);
+            
+        } catch (error) {
+            console.error('Error deleting account:', error);
+        }
+
+    }
+    return (
+        <AlertDialog
+            open={Boolean(productDelete)}
+            onOpenChange={(value) => {
+                if (!value) {
+                    setproductDelete(null);
+                }
+            }}
+        >
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Xoá tài khoản</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Sản phẩm {' '}
+                        <span className="font-bold">{productDelete?.name}</span> sẽ bị xoá vĩnh viễn. Bạn có chắc chắn muốn xoá không?
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Hủy</AlertDialogCancel>
+                    <AlertDialogAction onClick={deleteAcc}>Xóa</AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    )
+}
+
 export function Products_table() {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -116,9 +194,42 @@ export function Products_table() {
     const [data, setData] = React.useState<ProductsItem[]>([]);
     const [loading, setLoading] = React.useState(true);
 
-    // Định nghĩa state cho productIdEdit và setProductIdEdit
     const [productIdEdit, setProductIdEdit] = useState<string | undefined>();
     const [productDelete, setProductDelete] = useState<ProductsItem | null>(null);
+
+    const fetchProducts = async () => {
+        const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('No token found');
+                return;
+            }
+
+            setLoading(true);
+            try {
+                const response = await fetch(
+                    `${envConfig.NEXT_PUBLIC_API_ENDPOINT}/product/all-products?sortOrder=null`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                setData(result.products);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            } finally {
+                setLoading(false);
+            }
+      };
+      
 
     useEffect(() => {
         const fetchData = async () => {
@@ -177,17 +288,33 @@ export function Products_table() {
     });
 
     return (
-        <ProTableContext.Provider value={{ setProductIdEdit, setProductDelete, productDelete }}>
+        <ProTableContext.Provider value={{ 
+            productIdEdit,
+            setProductIdEdit, setProductDelete, productDelete 
+            }}>
             <div className="w-full p-4">
                 <div className="w-full p-4">
                                 <EditProduct id={productIdEdit} setId={setProductIdEdit} onSubmitSuccess={() => {}} />
+                                <EditProduct
+  id={productIdEdit}
+  setId={setProductIdEdit}
+  onSubmitSuccess={fetchProducts}
+/>
+
+
                             </div>
                 <div className="flex items-center py-4 justify-between">
                     <Input
-                        placeholder="Filter products..."
+                        placeholder="Lọc sản phẩm theo tên..."
                         value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
                         onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
                         className="max-w-sm"
+                    />
+                    <Toaster/>
+                    <AlertDialogDeleteProducts
+                        productDelete={productDelete}
+                        setproductDelete={setProductDelete}
+                        setData={setData}
                     />
                     <AddProduct />
                 </div>

@@ -1,5 +1,13 @@
 'use client';
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,13 +29,15 @@ export function AddProduct() {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [stock_quantity, setStock_Quantity] = useState("");
-  const [picture, setPicture] = useState<File | null>(null); // Handle file input for picture
+  const [category_id, setCategory_id] = useState("");
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+  const [product_image, setProduct_image] = useState<File | null>(null); 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
 
   const handleSubmit = async () => {
-    if (!name || !price || !stock_quantity || !description || !picture) {
+    if (!name || !price || !stock_quantity || !description || !product_image) {
       setMessage("Vui lòng điền đầy đủ thông tin và chọn ảnh sản phẩm");
       return;
     }
@@ -38,11 +48,15 @@ export function AddProduct() {
     formData.append("description", description);
     formData.append("price", price);
     formData.append("stock_quantity", stock_quantity);
-    formData.append("picture", picture);
+    formData.append("category_id", category_id);
+    formData.append("product_image", product_image);
 
     try {
       const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/product/create`, {
         method: "POST",
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("token")}`,
+        },
         body: formData,
       });
 
@@ -52,7 +66,7 @@ export function AddProduct() {
         setDescription("");
         setPrice("");
         setStock_Quantity("");
-        setPicture(null);
+        setProduct_image(null);
 
         setTimeout(() => {
           setOpen(false);
@@ -67,98 +81,128 @@ export function AddProduct() {
     }
     setLoading(false);
   };
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/category/get-all-categories`, {
+          method: "GET",
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        const data = await res.json();
+        setCategories(data);
+      } catch (error) {
+        console.error("Lỗi khi lấy danh mục:", error);
+      }
+    };
+  
+    fetchCategories();
+  }, []);
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Thêm sản phẩm</Button>
+        <Button variant="outline" className="rounded-2xl px-6 py-2 text-base font-medium">
+          Thêm sản phẩm
+        </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[625px]">
+      <DialogContent className="sm:max-w-[650px] p-6 rounded-2xl shadow-xl">
         <DialogHeader>
-          <DialogTitle>Thêm Thông Tin Sản Phẩm</DialogTitle>
-          <DialogDescription>
-            Vui lòng điền đầy đủ thông tin về sản phẩm.
+          <DialogTitle className="text-xl font-bold">Thêm Thông Tin Sản Phẩm</DialogTitle>
+          <DialogDescription className="text-sm text-gray-500">
+            Vui lòng điền đầy đủ thông tin bên dưới để tạo sản phẩm mới.
           </DialogDescription>
         </DialogHeader>
-        
-        {/* Avatar Image */}
-        <div className="flex w-full max-w-sm items-center gap-1.5">
-          <Avatar>
-            <AvatarImage
-              src={picture ? URL.createObjectURL(picture) : "https://example.com/default-product-image.jpg"}
-              alt="Ảnh sản phẩm"
-              className="w-30"
-            />
-            <AvatarFallback className="bg-gray-500">Ảnh Sản Phẩm</AvatarFallback>
-          </Avatar>
-          
-          <div className="w-full">
-            <Label htmlFor="picture">Chọn ảnh sản phẩm</Label>
+
+        <div className="flex flex-col sm:flex-row items-start gap-6">
+          <div className="flex flex-col items-center gap-2 w-full sm:w-[40%]">
+            <Avatar className="w-32 h-32 rounded-xl overflow-hidden border">
+              <AvatarImage
+                src={product_image ? URL.createObjectURL(product_image) : ""}
+                alt="Ảnh sản phẩm"
+                className="object-cover w-full h-full"
+              />
+              <AvatarFallback className="bg-gray-300 text-sm flex items-center justify-center">
+                Ảnh Sản Phẩm
+              </AvatarFallback>
+            </Avatar>
+
             <Input
               id="picture"
               type="file"
               onChange={(e) => {
                 const file = e.target.files ? e.target.files[0] : null;
-                setPicture(file);
+                setProduct_image(file);
               }}
+              className="mt-2 w-full"
             />
+          </div>
+
+          <div className="grid gap-4 w-full sm:w-[60%]">
+            <div className="grid gap-2">
+              <Label htmlFor="name">Tên sản phẩm</Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="description">Mô tả</Label>
+              <Input
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="price">Giá</Label>
+                <Input
+                  id="price"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="stock_quantity">Tồn kho</Label>
+                <Input
+                  id="stock_quantity"
+                  value={stock_quantity}
+                  onChange={(e) => setStock_Quantity(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+  <Label htmlFor="category_id">Danh mục</Label>
+  <Select onValueChange={(value) => setCategory_id(value)} value={category_id}>
+    <SelectTrigger className="w-full">
+      <SelectValue placeholder="Chọn danh mục" />
+    </SelectTrigger>
+    <SelectContent>
+      {categories.map((cat) => (
+        <SelectItem key={cat.id} value={String(cat.id)}>
+          {cat.name}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+</div>
           </div>
         </div>
 
-        {/* Product Info Form */}
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Tên
-            </Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="description" className="text-right">
-              Mô Tả
-            </Label>
-            <Input
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="price" className="text-right">
-              Giá
-            </Label>
-            <Input
-              id="price"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="stock_quantity" className="text-right">
-              Số lượng còn lại
-            </Label>
-            <Input
-              id="stock_quantity"
-              value={stock_quantity}
-              onChange={(e) => setStock_Quantity(e.target.value)}
-              className="col-span-3"
-            />
-          </div>
-        </div>
-
-        {/* Message */}
-        {message && <p className="text-red-500">{message}</p>}
-
-        {/* Footer */}
-        <DialogFooter>
-          <Button onClick={handleSubmit} disabled={loading}>
+        <DialogFooter className="pt-4">
+          <Button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-base"
+          >
             {loading ? "Đang thêm..." : "Thêm sản phẩm"}
           </Button>
         </DialogFooter>
