@@ -19,6 +19,13 @@ export const UpdateMeBody = z.object({
 
 export type UpdateMeBodyType = z.TypeOf<typeof UpdateMeBody>
 
+export const UserDetails = z.object({
+  id: z.number(),
+  phone_number: z.string().nullable(),
+  profile_picture: z.string().nullable(),
+  full_name: z.string(),
+  address: z.string(),
+});
 
 export const AccountListRes = z.object({
   accounts: z.array(
@@ -30,7 +37,7 @@ export const AccountListRes = z.object({
       is_verified: z.boolean(),
       role: z.enum(['admin', 'user']),
       refresh_token_expiry: z.string(),
-      id_user: z.number()
+      id_user: UserDetails,
     })
   )
 });

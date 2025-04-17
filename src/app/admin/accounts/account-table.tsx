@@ -24,10 +24,11 @@ import { AccountListResType } from '@/schemaValidations/account.schema';
 import EditAccount from './edit-user';
 import envConfig from '../../../../config';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { toast, Toaster } from "sonner";
 
 type AccountItem = AccountListResType['accounts'][0];
 
-// Định nghĩa context với đúng tên hàm
 const AccountTableContext = createContext<{
     setAccountIdEdit: (value: string) => void;
     accountIdEdit: string | undefined;
@@ -57,7 +58,7 @@ export const columns: ColumnDef<AccountItem>[] = [
         header: 'Avatar',
         cell: ({ row }) => (
             <div className="flex items-center space-x-2">
-                <img src={row.getValue('avatar')} alt="avatar" className="w-14 h-14" />
+                <img src={row.original.id_user.profile_picture} alt="avatar" className="w-20 h-20" />
             </div>
         ),
     },
@@ -85,6 +86,10 @@ export const columns: ColumnDef<AccountItem>[] = [
                 setAccountIdEdit(row.original.id);
             };
 
+            const openDeleteAccount = () => {
+                setAccountDelete(row.original);
+            }
+
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -104,7 +109,9 @@ export const columns: ColumnDef<AccountItem>[] = [
                             Sao Chép Email
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem className="hover:bg-red-100 text-red-600 transition duration-200 p-2 rounded-md">
+                        <DropdownMenuItem className="hover:bg-red-100 text-red-600 transition duration-200 p-2 rounded-md"
+                            onClick={openDeleteAccount}
+                        >
                             Xóa Tài Khoản
                         </DropdownMenuItem>
                         <DropdownMenuItem
@@ -119,6 +126,67 @@ export const columns: ColumnDef<AccountItem>[] = [
         },
     },
 ];
+
+function AlertDialogDeleteAccount({
+    accountDelete,
+    setAccountDelete,
+    setData,
+}: {
+    accountDelete: AccountItem | null;
+    setAccountDelete: (value: AccountItem | null) => void;
+    setData: React.Dispatch<React.SetStateAction<AccountItem[]>>;
+}) {
+    
+    const deleteAcc = async () => {
+        const token = localStorage.getItem("token");
+        console.log(accountDelete?.id);
+        const id = accountDelete?.id;
+        const email = accountDelete?.email;
+        try {
+            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/delete?id=${accountDelete?.id}`, {
+                method: "DELETE",
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            })
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            setData(prev => prev.filter(acc => acc.id !== id));
+            toast.success(`Tài khoản ${email} đã bị xoá`);
+            setAccountDelete(null);
+            
+        } catch (error) {
+            console.error('Error deleting account:', error);
+        }
+
+    }
+    return (
+        <AlertDialog
+            open={Boolean(accountDelete)}
+            onOpenChange={(value) => {
+                if (!value) {
+                    setAccountDelete(null);
+                }
+            }}
+        >
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Xoá tài khoản</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Tài khoản {' '}
+                        <span className="font-bold">{accountDelete?.email}</span> sẽ bị xoá vĩnh viễn. Bạn có chắc chắn muốn xoá không?
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Hủy</AlertDialogCancel>
+                    <AlertDialogAction onClick={deleteAcc}>Xóa</AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    )
+}
 
 export function Accounts_table() {
     const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -195,6 +263,11 @@ export function Accounts_table() {
         >
             <div className="w-full p-4">
                 <EditAccount id={accountIdEdit} setId={setAccountIdEdit} onSubmitSuccess={() => {}} />
+                <AlertDialogDeleteAccount
+                    accountDelete={accountDelete}
+                    setAccountDelete={setAccountDelete}
+                    setData={setData}
+                />
             </div>
             <div className="w-full p-4">
                 <div className="flex items-center py-4 justify-between">
@@ -205,6 +278,8 @@ export function Accounts_table() {
                         className="max-w-sm"
                     />
                     <AddUser />
+                    <Toaster />
+
                 </div>
                 <div className="rounded-md border">
                     {loading ? (

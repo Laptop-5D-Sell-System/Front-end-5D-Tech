@@ -1,8 +1,7 @@
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+
 import { Products_table } from './product-table';
 
 export default function Products() {

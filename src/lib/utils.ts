@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx"
 import jwt from "jsonwebtoken";
 import { twMerge } from "tailwind-merge"
 
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -22,3 +23,8 @@ export const getAccessTokenFromLocalStorage = () => {
 export const decodeToken = (token: string) => {
   return jwt.decode(token);
 }
+
+
+// export function cn(...inputs: ClassValue[]) {
+//   return twMerge(clsx(inputs))
+// }
