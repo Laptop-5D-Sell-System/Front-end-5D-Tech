@@ -42,11 +42,13 @@ import '../styles/Header.scss';
 import { Separator } from './ui/separator';
 import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
+import envConfig from '../../config';
 
 export default function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
     const [userName, setUserName] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
     const router = useRouter();
 
     // Check token in localStorage
@@ -59,7 +61,7 @@ export default function Header() {
 
         // Fetch user details from API
         axios
-            .get(`https://oms-5d-tech.azurewebsites.net/user/my-information`, {
+            .get(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/user/my-information`, {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then((response) => {
@@ -82,26 +84,26 @@ export default function Header() {
 
     const logout = async () => {
         try {
-          const res = await fetch('/api/auth/logout', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-      
-          const data = await res.json();
-      
-          if (!res.ok) {
-            throw new Error(data.message || 'Lỗi khi gọi API logout');
-          }
-          localStorage.removeItem('token');
-          localStorage.removeItem('refreshToken');
-      
-          route.push('/login');
+            const res = await fetch('/api/auth/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.message || 'Lỗi khi gọi API logout');
+            }
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+
+            route.push('/login');
         } catch (error) {
-          console.error('Logout error:', error);
+            console.error('Logout error:', error);
         }
-      };
+    };
 
     // Handle search
     const [searchTerm, setSearchTerm] = useState('');
@@ -111,6 +113,24 @@ export default function Header() {
             router.push(`/search?q=${searchTerm}`);
         }
     };
+
+    useEffect(() => {
+        const delayDebounce = setTimeout(() => {
+            if (searchTerm.trim()) {
+                axios
+                    .get(`http://localhost:8080/search/${encodeURIComponent(searchTerm)}`)
+                    .then((res) => setSearchResults(res?.data.prop || []))
+                    .catch((err) => {
+                        console.error('Search error:', err);
+                        setSearchResults([]);
+                    });
+            } else {
+                setSearchResults([]);
+            }
+        }, 300); // đợi 300ms sau khi người dùng ngừng gõ
+
+        return () => clearTimeout(delayDebounce);
+    }, [searchTerm]);
 
     // handle cart
     const { cart, removeFromCart, updateCartItemQuantity } = useCart();
@@ -144,10 +164,10 @@ export default function Header() {
                     >
                         Giới Thiệu
                     </Link>
-                    <li
-                        className="header_menu_item outline-none text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer relative get_menu_secondary"
-                    >
-                        <Link href={'/product-list'} className='flex gap-1 items-center'>Sản Phẩm <ChevronDown className="ml-1" strokeWidth={1} /></Link>
+                    <li className="header_menu_item outline-none text-sm lg:text-base h-full relative flex items-center justify-center cursor-pointer relative get_menu_secondary">
+                        <Link href={'/product-list'} className="flex gap-1 items-center">
+                            Sản Phẩm <ChevronDown className="ml-1" strokeWidth={1} />
+                        </Link>
                         {/* Menu secondary */}
                         <div className="menu_secondary w-[700px] lg:w-[800px] xl:w-[1000px] absolute top-full left-0 bg-white shadow-md rounded-sm p-5 hidden z-50">
                             <ul className="menu_secondary_list w-1/5">
@@ -256,7 +276,7 @@ export default function Header() {
                                     <span className="bg-red-500 text-white p-2 rounded-md">5D</span> - Tech
                                 </Link>
                             </h2>
-                            <div className="flex items-center justify-between w-[500px] border outline-none pl-3">
+                            <div className="relative flex items-center justify-between w-[500px] border outline-none pl-3">
                                 <input
                                     type="text"
                                     placeholder="Search..."
@@ -279,6 +299,32 @@ export default function Header() {
                                 >
                                     <Search />
                                 </Button>
+                                {searchResults.length > 0 && (
+                                    <div className="absolute top-full left-0 w-full bg-white border rounded shadow-lg z-50 max-h-96 overflow-y-auto">
+                                        {searchResults.map((item: any) => (
+                                            <Link
+                                                key={item.id}
+                                                href={`/product/${item.id}`}
+                                                className="flex items-center p-3 hover:bg-gray-100 border-b"
+                                                onClick={() => setShowSearch(false)}
+                                            >
+                                                <Image
+                                                    src={item.image}
+                                                    alt={item.name}
+                                                    width={50}
+                                                    height={50}
+                                                    className="object-cover rounded"
+                                                />
+                                                <div className="ml-3">
+                                                    <p className="font-medium">{item.name}</p>
+                                                    <p className="text-sm text-red-500">
+                                                        {item.price.toLocaleString()}₫
+                                                    </p>
+                                                </div>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                             <div className="w-1/5 flex items-center justify-center">
                                 <div className="close-btn" onClick={() => setShowSearch(false)}>
@@ -298,34 +344,34 @@ export default function Header() {
                                     <DropdownMenuLabel>Xin chào, {userName}</DropdownMenuLabel>
 
                                     <Link href="/edit-information">
-                                        <DropdownMenuItem className='cursor-pointer'>
+                                        <DropdownMenuItem className="cursor-pointer">
                                             <UserRoundPlus stroke="black" />
                                             Chỉnh sửa thông tin
                                         </DropdownMenuItem>
                                     </Link>
 
                                     <Link href="/cart">
-                                        <DropdownMenuItem className='cursor-pointer'>
+                                        <DropdownMenuItem className="cursor-pointer">
                                             <ShoppingBag stroke="black" />
                                             Giỏ hàng của bạn
                                         </DropdownMenuItem>
                                     </Link>
 
                                     <Link href="/history">
-                                        <DropdownMenuItem className='cursor-pointer'>
+                                        <DropdownMenuItem className="cursor-pointer">
                                             <History stroke="black" />
                                             Lịch sửa mua hàng
                                         </DropdownMenuItem>
                                     </Link>
 
                                     <Link href="/support">
-                                        <DropdownMenuItem className='cursor-pointer'>
+                                        <DropdownMenuItem className="cursor-pointer">
                                             <Headset stroke="black" />
                                             Hỗ trợ khách hàng
                                         </DropdownMenuItem>
                                     </Link>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem className='cursor-pointer' onClick={logout}>
+                                    <DropdownMenuItem className="cursor-pointer" onClick={logout}>
                                         <LogOut stroke="black" />
                                         Đăng Xuất
                                     </DropdownMenuItem>
@@ -374,16 +420,21 @@ export default function Header() {
                                     {cart.length > 0 ? (
                                         <ul className="space-y-4">
                                             {cart.map((item) => (
-                                                <li key={item.product_id} className="flex items-center gap-4 border-b pb-2">
+                                                <li
+                                                    key={item.product_id}
+                                                    className="flex items-center gap-4 border-b pb-2"
+                                                >
                                                     <Image
-                                                        src={'/images/laptop.jpeg'}
+                                                        src={item.product_image}
                                                         alt={item.product_name}
                                                         width={120}
                                                         height={80}
                                                         className="object-cover"
                                                     />
                                                     <div className="flex-1">
-                                                        <p className="text-[14px] font-medium mb-1">{item.product_name}</p>
+                                                        <p className="text-[14px] font-medium mb-1">
+                                                            {item.product_name}
+                                                        </p>
                                                         <p className="text-[14px] text-red-500 mb-1">
                                                             Giá tiền:{' '}
                                                             {new Intl.NumberFormat('vi-VN', {
@@ -436,7 +487,10 @@ export default function Header() {
                                                 style: 'currency',
                                                 currency: 'VND',
                                             }).format(
-                                                cart.reduce((total, item) => total + item.product_price * item.quantity, 0),
+                                                cart.reduce(
+                                                    (total, item) => total + item.product_price * item.quantity,
+                                                    0,
+                                                ),
                                             )}
                                         </span>
                                     </p>

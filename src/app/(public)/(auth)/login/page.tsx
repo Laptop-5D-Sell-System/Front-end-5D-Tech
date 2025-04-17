@@ -12,6 +12,7 @@ import envConfig from '../../../../../config';
 import Cookies from 'js-cookie'; 
 import { useRouter } from 'next/navigation';
 import { decodeToken } from '@/lib/utils';
+import { toast } from 'react-toastify';
 
 // Schema validation
 const LoginBody = z.object({
@@ -57,9 +58,11 @@ export default function Login() {
       
       if (role === 'admin') {
         router.push('/admin/dashboard');
+        toast.success("Đăng nhập thành công!");
       }
       else{
         router.push('/');
+        toast.success("Đăng nhập thành công!");
       }
     } catch (error:any) {
       console.error('Error logging in:', error);

@@ -25,8 +25,8 @@ export default function ChatBot() {
         setIsLoading(true);
 
         try {
-            const response = await axios.get(
-                `http://localhost:8080/test-chatbot?text=${encodeURIComponent(input)}&session_id=fixed-session-1234`
+            const response = await axios.post(
+                `http://localhost:8080/chat/${encodeURIComponent(input)}`
             );
 
             const responseData = response.data.mess;

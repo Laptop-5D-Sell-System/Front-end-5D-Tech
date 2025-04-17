@@ -137,6 +137,7 @@ export default function EditProduct({
             <DialogContent className="sm:max-w-[625px]">
                 <AlertDialogHeader>
                     <DialogTitle>Cập nhật sản phẩm</DialogTitle>
+
                     <DialogDescription>Điền đầy đủ các trường để cập nhật sản phẩm</DialogDescription>
                 </AlertDialogHeader>
 

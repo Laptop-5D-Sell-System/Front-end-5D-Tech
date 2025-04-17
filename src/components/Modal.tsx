@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 import jwt from "jsonwebtoken";
 import { useRouter } from "next/navigation";
+import envConfig from "../../config";
 
 interface Product {
     id: number;
@@ -62,7 +63,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
                 }
             }
     
-            const response = await fetch("https://oms-5d-tech.azurewebsites.net/cart/create", {
+            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/cart/create`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -117,7 +118,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
                     <div>
                         {product && (
                             <div className="flex justify-between">
-                                <Image src={'/images/laptop.jpeg'} alt={product.name} width={320} height={150} quality={100} className="object-cover w-[320px] h-[150px]" />
+                                <Image src={product.product_image} alt={product.name} width={320} height={150} quality={100} className="object-cover w-[320px] h-[150px]" />
                                 <div className="ml-4">
                                     <span className="text-2xl text-red-500 font-[500] mb-2">{product.name}</span>
                                     <div className="featured_products_price flex gap-2 mb-2">

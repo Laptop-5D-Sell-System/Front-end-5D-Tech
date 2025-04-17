@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { toast } from 'react-toastify';
+import envConfig from '../../../../config';
 
 interface Account {
     id: number;
@@ -46,7 +47,7 @@ export default function EditInformation() {
             return;
         }
 
-        fetch(`https://oms-5d-tech.azurewebsites.net/user/my-information`, {
+        fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/user/my-information`, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
@@ -102,7 +103,7 @@ export default function EditInformation() {
             formDataToSend.append('profile_picture', selectedFile); 
         }
 
-        fetch('https://oms-5d-tech.azurewebsites.net/user/edit-user', {
+        fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/user/edit-user`, {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${token}`,

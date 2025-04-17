@@ -5,7 +5,9 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import Modal from '@/components/Modal';
 import '../history/History.scss'; // Import your CSS file for styling
+import envConfig from '../../../../config';
 interface Product {
     ProductName: string;
     Quantity: number;
@@ -23,14 +25,15 @@ interface OrderDetail {
 export default function OrderDetailPage() {
     const [order, setOrder] = useState<OrderDetail | null>(null);
     const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false); 
     const searchParams = useSearchParams();
     const router = useRouter();
-    const orderId = searchParams.get('id'); // Get the order ID from the query parameter
+    const orderId = searchParams.get('id');
 
     useEffect(() => {
         if (!orderId) {
             toast.error('Không tìm thấy mã đơn hàng.');
-            router.push('/history'); // Redirect to history page if no order ID is provided
+            router.push('/history'); 
             return;
         }
 
@@ -44,7 +47,7 @@ export default function OrderDetailPage() {
 
             try {
                 setLoading(true);
-                const response = await fetch(`https://oms-5d-tech.azurewebsites.net/order/detail?id=${orderId}`, {
+                const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/order/detail?id=${orderId}`, {
                     method: 'GET',
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -71,6 +74,37 @@ export default function OrderDetailPage() {
 
         fetchOrderDetail();
     }, [orderId, router]);
+
+    const cancelOrder = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            toast.error('Vui lòng đăng nhập để hủy đơn hàng.');
+            router.push('/login');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/order/cancel?id=${orderId}`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                toast.success('Đơn hàng đã được hủy thành công.');
+                setOrder((prev) => (prev ? { ...prev, status: 'cancelled' } : prev)); // Cập nhật trạng thái đơn hàng
+            } else {
+                toast.error(data.mess || 'Không thể hủy đơn hàng.');
+            }
+        } catch (error) {
+            console.error('Lỗi khi hủy đơn hàng:', error);
+            toast.error('Đã xảy ra lỗi khi hủy đơn hàng.');
+        }
+    };
 
     if (loading) {
         return (
@@ -133,24 +167,21 @@ export default function OrderDetailPage() {
 
     return (
         <div className="order-detail-page mx-[100px] pt-8">
-            <h1 className="text-2xl font-bold mb-4">Chi tiết đơn hàng</h1>
+            <h1 className="text-2xl font-semibold mb-4">Chi tiết đơn hàng</h1>
 
             {/* Order Summary */}
             <div className="mb-8 border p-4 rounded-lg shadow-md">
-                <p className="text-lg mb-2">
-                    <strong>Mã người dùng:</strong> {order.user_id}
+                <p className="text-md mb-2">
+                    <span className='font-[500]'>Ngày đặt hàng:</span> {new Date(order.order_date).toLocaleDateString('vi-VN')}
                 </p>
-                <p className="text-lg mb-2">
-                    <strong>Ngày đặt hàng:</strong> {new Date(order.order_date).toLocaleDateString('vi-VN')}
-                </p>
-                <p className="text-lg mb-2">
-                    <strong>Trạng thái:</strong>{' '}
+                <p className="text-md mb-2">
+                    <span className='font-[500]'>Trạng thái:</span>{' '}
                     <span
                         className={`px-2 py-1 rounded ${
                             order.status === 'Done'
                                 ? 'bg-green-500 text-white'
                                 : order.status === 'Processing'
-                                ? 'bg-yellow-500 text-white'
+                                ? 'bg-yellow-300 text-white'
                                 : 'bg-red-500 text-white'
                         }`}
                     >
@@ -161,11 +192,11 @@ export default function OrderDetailPage() {
                             : 'Đã hủy'}
                     </span>
                 </p>
-                <p className="text-lg mb-2">
-                    <strong>Tổng số lượng:</strong> {order.total_quantity}
+                <p className="text-md mb-2">
+                    <span className='font-[500]'>Tổng số lượng:</span> {order.total_quantity}
                 </p>
-                <p className="text-lg">
-                    <strong>Tổng tiền:</strong>{' '}
+                <p className="text-md">
+                    <span className='font-[500]'>Tổng tiền:</span>{' '}
                     <span className="text-red-500 font-bold">
                         {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.total)}
                     </span>
@@ -193,9 +224,18 @@ export default function OrderDetailPage() {
                 </Table>
             </div>
 
+            {/* Cancel Order Button */}
+            {order.status === 'Processing' && (
+                <div className="mt-8">
+                    <Button onClick={cancelOrder} className="cursor-pointer bg-red-500 text-white">
+                        Hủy đơn hàng
+                    </Button>
+                </div>
+            )}
+
             {/* Back to History Button */}
             <div className="mt-8">
-                <Button onClick={() => router.push('/history')} className="bg-red-500 text-white">
+                <Button onClick={() => router.push('/history')} className="cursor-pointer bg-red-500 text-white">
                     Quay lại lịch sử đơn hàng
                 </Button>
             </div>

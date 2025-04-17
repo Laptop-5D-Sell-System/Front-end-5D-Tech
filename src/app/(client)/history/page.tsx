@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import './History.scss';
 import { ArchiveX, ClipboardCheck, RefreshCcw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import envConfig from '../../../../config';
 
 interface Order {
     id: number;
@@ -19,11 +20,11 @@ interface Order {
 
 export default function History() {
     const [orders, setOrders] = useState<Order[]>([]);
-    const [statusOrder, setStatusOrder] = useState<'done' | 'processing' | 'cancel'>('done'); // Default status
+    const [statusOrder, setStatusOrder] = useState<'done' | 'processing' | 'cancelled'>('done'); // Default status
     const [loading, setLoading] = useState(true);
     const router = useRouter();
     
-    const fetchOrders = async (status: 'done' | 'processing' | 'cancel') => {
+    const fetchOrders = async (status: 'done' | 'processing' | 'cancelled') => {
         const token = localStorage.getItem('token');
         if (!token) {
             toast.error('Vui lòng đăng nhập để xem lịch sử đơn hàng.');
@@ -32,7 +33,7 @@ export default function History() {
 
         try {
             setLoading(true);
-            const response = await fetch(`https://oms-5d-tech.azurewebsites.net/order/my-orders?status=${status}`, {
+            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/order/my-orders?status=${status}`, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -109,9 +110,9 @@ export default function History() {
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
-                                    onClick={() => setStatusOrder('cancel')}
+                                    onClick={() => setStatusOrder('cancelled')}
                                     className={`py-2 px-4 text-black border rounded hover:text-white transition-all duration-300 hover:bg-red-500 cursor-pointer ${
-                                        statusOrder === 'cancel' ? 'bg-red-500 text-white' : 'bg-transparent'
+                                        statusOrder === 'cancelled' ? 'bg-red-500 text-white' : 'bg-transparent'
                                     }`}
                                 >
                                     <ArchiveX /> Đã hủy
