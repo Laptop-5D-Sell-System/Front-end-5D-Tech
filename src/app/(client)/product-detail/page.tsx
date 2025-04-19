@@ -297,7 +297,7 @@ export default function ProductDetailPage() {
                                         </div> */}
 
                                         <Image
-                                            src={product.product_image}
+                                            src={item.product_image}
                                             alt={item.name}
                                             fill
                                             quality={100}
