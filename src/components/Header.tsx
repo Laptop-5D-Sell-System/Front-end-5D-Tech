@@ -282,6 +282,11 @@ export default function Header() {
                                     placeholder="Search..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            handleSearch(); 
+                                        }
+                                    }}
                                     className="outline-none w-[430px]"
                                 />
                                 {searchTerm && (
