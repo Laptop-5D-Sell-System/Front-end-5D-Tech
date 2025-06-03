@@ -1,14 +1,12 @@
-import { Mail } from 'lucide-react';
-import { Button } from '../../components/ui/button';
-import Image from 'next/image';
-import SlidebarAdmin from '@/components/SlidebarAdmin';
-import HeaderAdmin from '@/components/HeaderAdmin';
+import React from 'react'
+import { Dashboard } from './components/DashboardMain'
 
-export default function Dashboard() {
-    return (
-        <p className='flex sm:mx-24'>
-            dashboard111111111111111111111111111
+const page = () => {
+  return (
+      <Dashboard>
             
-        </p>
-    );  
+      </Dashboard>
+  )
 }
+
+export default page

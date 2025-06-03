@@ -1,223 +1,278 @@
-import { useState, useRef, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Form, FormField, FormItem } from '@/components/ui/form';
-import { updateAccountBody, UpdateAccountBodyType } from '@/schemaValidations/account.schema';
-
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
 } from '@/components/ui/dialog';
-import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { format } from 'date-fns';
+import { useUserById } from './name_user';
+import envConfig from '../../../../config';
+import { toast } from 'sonner';
 
-export default function EditOrder({
-    id,
-    setId,
-    onSubmitSuccess,
-}: {
-    id?: string | undefined;
-    setId: (value: string) => void;
-    onSubmitSuccess?: () => void;
-}) {
-    const [file, setFile] = useState<File | undefined>();
-    const avatarInputRef = useRef<HTMLInputElement>(null);
+interface OrderDetailProps {
+  id: string | undefined;
+  setId: (value: string | undefined) => void;
+  onSubmitSuccess?: () => void;
+}
 
-    const form = useForm<UpdateAccountBodyType>({
-        resolver: zodResolver(updateAccountBody),
-        defaultValues: {
-            email: '',
-            name: '',
-            avatar: '',
-            password_hash: '',
-            confirmPassword: '',
-            changePassword: false,
-        },
-    });
+interface OrderDetailData {
+  user_id: number;
+  order_date: string;
+  status: string;
+  address: string;
+  products: {
+    ProductName: string;
+    Quantity: number;
+    Image: string;
+    Price: number;
+  }[];
+  total_quantity: number;
+  total: number;
+}
 
-    const avatar = form.watch('avatar');
-    const name = form.watch('name');
-    const changePassword = form.watch('changePassword');
+const statusOptions = [
+  { value: 'Processing', label: 'Chờ xử lý' },
+  { value: 'Done', label: 'Đã giao' },
+  { value: 'cancelled', label: 'Đã hủy' },
+];
 
-    const previewAvatarFromFile = useMemo(() => {
-        return file ? URL.createObjectURL(file) : avatar;
-    }, [file, avatar]);
+export default function EditOrder({ id, setId, onSubmitSuccess }: OrderDetailProps) {
+  const [order, setOrder] = useState<OrderDetailData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const { user: customer, loading: loadingCustomer } = useUserById(order?.user_id || 0);
 
-    const handleSubmit = (data: UpdateAccountBodyType) => {
-        console.log(data);
-        if (onSubmitSuccess) {
-            onSubmitSuccess();
+  const fetchOrderDetail = async () => {
+    if (!id) return;
+    
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/order/detail?id=${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
-    };
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setOrder(data.order);
+      setSelectedStatus(data.order.status);
+      return data.order;
+    } catch (error) {
+      console.error('Error fetching order:', error);
+      toast.error('Không thể tải thông tin đơn hàng');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return (
-        <Dialog
-            open={Boolean(id)}
-            onOpenChange={(value) => {
-                if (!value) {
-                    setId('');
-                }
-            }}
-        >
-            <DialogTrigger asChild>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[625px]">
-                <DialogHeader>
-                    <DialogTitle>Cập nhật tài khoản</DialogTitle>
-                    <DialogDescription>Các trường tên, email, mật khẩu là bắt buộc</DialogDescription>
-                </DialogHeader>
+  useEffect(() => {
+    if (!id) return;
+    fetchOrderDetail();
+  }, [id]);
 
-                <Form {...form} onSubmit={form.handleSubmit(handleSubmit)}>
-    <form noValidate className="space-y-6" id="edit-employee-form">
-        <div className="space-y-6">
-            
-            {/* Avatar Section */}
-            <FormField
-                control={form.control}
-                name="avatar"
-                render={({ field }) => (
-                    <FormItem className="flex items-center justify-start space-x-4">
-                        <div className="relative w-32 h-32 rounded-full border-4 border-blue-500 overflow-hidden shadow-md">
-                            <Avatar className='w-32 h-32'>
-                                <AvatarImage src={previewAvatarFromFile} />
-                                <AvatarFallback className="bg-gray-300 text-gray-600 flex items-center justify-center w-full h-full">
-                                    {name || 'Avatar'}
-                                </AvatarFallback>
-                            </Avatar>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                ref={avatarInputRef}
-                                onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) {
-                                        setFile(file);
-                                        field.onChange(file.name); 
-                                    }
-                                }}
-                                className="absolute inset-0 opacity-0 cursor-pointer"
-                            />
-                        </div>
-                        <button
-                            type="button"
-                            className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-2"
-                            onClick={() => avatarInputRef.current?.click()}
-                        >
-                            Tải lên
-                        </button>
-                    </FormItem>
+  const handleStatusUpdate = async () => {
+    if (!order || !id || selectedStatus === order.status) return;
+
+    setUpdating(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/order/update?id=${id}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: selectedStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Cập nhật trạng thái thất bại');
+      }
+
+      // Cập nhật state nội bộ
+      setOrder(prev => prev ? { ...prev, status: selectedStatus } : null);
+      
+      toast.success(`Thành công! Trạng thái đã được cập nhật thành ${statusOptions.find(s => s.value === selectedStatus)?.label}`);
+      
+      // Gọi callback để cập nhật lại danh sách ở component cha
+      if (onSubmitSuccess && typeof onSubmitSuccess === 'function') {
+        onSubmitSuccess();
+      }
+    } catch (error) {
+      console.error('Update error:', error);
+      toast.error('Cập nhật trạng thái thất bại');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const statusColorMap = {
+    Processing: 'bg-yellow-500',
+    Done: 'bg-green-500',
+    cancelled: 'bg-red-500',
+  };
+
+  return (
+    <Dialog
+      open={Boolean(id)}
+      onOpenChange={(value) => {
+        if (!value) {
+          setId(undefined);
+        }
+      }}
+    >
+      <DialogContent className="sm:max-w-[625px] max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Chi tiết đơn hàng #{id}</DialogTitle>
+          <DialogDescription>
+            Thông tin chi tiết về đơn hàng
+          </DialogDescription>
+        </DialogHeader>
+
+        {loading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-6 w-1/2" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full" />
+          </div>
+        ) : order ? (
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h3 className="font-medium">Thông tin khách hàng</h3>
+                {loadingCustomer ? (
+                  <Skeleton className="h-4 w-3/4 mt-2" />
+                ) : (
+                  <p className="text-sm">
+                    {customer?.last_name} {customer?.first_name}
+                  </p>
                 )}
-            />
+              </div>
+              <div>
+                <h3 className="font-medium">Ngày đặt hàng</h3>
+                <p className="text-sm">
+                  {format(new Date(order.order_date), 'dd/MM/yyyy HH:mm')}
+                </p>
+              </div>
+              <div>
+                <h3 className="font-medium">Trạng thái</h3>
+                <div className="flex items-center gap-2">
+                  <Badge className={`${statusColorMap[order.status] || 'bg-gray-500'} text-white`}>
+                    {statusOptions.find(s => s.value === order.status)?.label || order.status}
+                  </Badge>
+                </div>
+              </div>
+              <div>
+                <h3 className="font-medium">Địa chỉ giao hàng</h3>
+                <p className="text-sm">{order.address}</p>
+              </div>
+            </div>
 
-            <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                    <FormItem className="flex items-center space-x-4">
-                        <Label htmlFor="name" className="text-lg font-semibold text-white w-24">Tên</Label>
-                        <Input
-                            id="name"
-                            placeholder="Nhập tên"
-                            {...field}
-                            className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-                            required
-                        />
-                    </FormItem>
-                )}
-            />
+            <div>
+              <h3 className="font-medium mb-2">Cập nhật trạng thái</h3>
+              <Select
+                value={selectedStatus}
+                onValueChange={setSelectedStatus}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Chọn trạng thái" />
+                </SelectTrigger>
+                <SelectContent>
+                  {statusOptions.map((status) => (
+                    <SelectItem key={status.value} value={status.value}>
+                      {status.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-            <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                    <FormItem className="flex items-center space-x-4">
-                        <Label htmlFor="email" className="text-lg font-semibold text-white w-24">Email</Label>
-                        <Input
-                            id="email"
-                            placeholder="Nhập email"
-                            {...field}
-                            className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-                            required
-                        />
-                    </FormItem>
-                )}
-            />
+            <Separator />
 
-            <FormField
-                control={form.control}
-                name="changePassword"
-                render={({ field }) => (
-                    <FormItem className="flex items-center gap-4 mt-4">
-                        <Label htmlFor="changePassword" className="text-lg font-semibold text-white">Đổi mật khẩu</Label>
-                        <Switch 
-                            id="changePassword"
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                        >
-                            <span
-                                className={`w-6 h-6 bg-white rounded-full absolute transition-transform duration-300 ${
-                                    field.value ? 'translate-x-6' : ''
-                                }`}
-                            ></span>
-                        </Switch>
-                    </FormItem>
-                )}
-            />
+            <div>
+              <h3 className="font-medium mb-2">Sản phẩm</h3>
+              <ScrollArea className="h-64">
+                <div className="space-y-4">
+                  {order.products.map((product, index) => (
+                    <div key={index} className="flex gap-4">
+                      <img
+                        src={product.Image}
+                        alt={product.ProductName}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                      <div className="flex-1">
+                        <p className="font-medium">{product.ProductName}</p>
+                        <p className="text-sm text-gray-500">
+                          Số lượng: {product.Quantity}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium">
+                          {(product.Price * product.Quantity).toLocaleString()}đ
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {product.Price.toLocaleString()}đ x {product.Quantity}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
 
-            {changePassword && (
-                <>
-                    <FormField
-                        control={form.control}
-                        name="password_hash"
-                        render={({ field }) => (
-                            <FormItem className="flex items-center space-x-4">
-                                <Label htmlFor="password" className="text-lg font-semibold text-white w-24">Mật khẩu</Label>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    placeholder="Nhập mật khẩu"
-                                    {...field}
-                                    className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-                                    required
-                                />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="confirmPassword"
-                        render={({ field }) => (
-                            <FormItem className="flex items-center space-x-4">
-                                <Label htmlFor="confirmPassword" className="text-lg font-semibold text-white w-24">Xác nhận mật khẩu</Label>
-                                <Input
-                                    id="confirmPassword"
-                                    type="password"
-                                    placeholder="Xác nhận mật khẩu"
-                                    {...field}
-                                    className="p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-                                    required
-                                />
-                            </FormItem>
-                        )}
-                    />
-                </>
-            )}
-        </div>
+            <Separator />
 
-        <div className="flex justify-end mt-6">
-            <Button type="submit" className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition">Cập nhật</Button>
-        </div>
-    </form>
-</Form>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span>Tổng số lượng:</span>
+                <span className="font-medium">{order.total_quantity}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Tổng tiền:</span>
+                <span className="font-medium text-lg">
+                  {order.total.toLocaleString()}đ
+                </span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <p>Không tìm thấy thông tin đơn hàng</p>
+        )}
 
-            </DialogContent>
-        </Dialog>
-    );
+        <DialogFooter className="flex justify-between mt-6">
+          <Button 
+            variant="outline" 
+            onClick={() => setId(undefined)} 
+          >
+            Đóng
+          </Button>
+          {order && selectedStatus !== order.status && (
+            <Button 
+              onClick={handleStatusUpdate}
+              disabled={updating}
+            >
+              {updating ? 'Đang cập nhật...' : 'Cập nhật trạng thái'}
+            </Button>
+          )}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 }

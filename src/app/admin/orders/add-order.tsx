@@ -1,17 +1,14 @@
 'use client'
 
-import { useState, useRef, useMemo } from "react"
-import { useForm } from "react-hook-form"
+import { useState } from "react"
+import { useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -20,69 +17,73 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import envConfig from "../../../../config"
+import { OrderListResType } from "@/schemaValidations/order.schema"
 
-const formSchema = z.object({
-  username: z.string().min(1, "Tên không được để trống"),
-  email: z.string().email("Email không hợp lệ"),
-  password_hash: z.string().min(6, "Mật khẩu ít nhất 6 ký tự"),
-  confirmPassword: z.string().min(6, "Xác nhận mật khẩu ít nhất 6 ký tự"),
-  avatar: z.string().optional(),
-}).refine(data => data.password_hash === data.confirmPassword, {
-  message: "Mật khẩu không khớp",
-  path: ["confirmPassword"],
+// Schema cho form thêm đơn hàng
+const orderFormSchema = z.object({
+  user_id: z.number().min(1, "User ID là bắt buộc"),
+  order_items: z.array(
+    z.object({
+      product_id: z.number().min(1, "Product ID là bắt buộc"),
+      quantity: z.number().min(1, "Số lượng ít nhất là 1"),
+      price: z.number().min(0, "Giá không được âm")
+    })
+  ).min(1, "Cần ít nhất 1 sản phẩm")
 })
 
-export function AddOrder() {
-  const [file, setFile] = useState<File | null>(null)
-  const avatarInputRef = useRef<HTMLInputElement>(null)
+export function AddOrder({ onOrderAdded }: { onOrderAdded?: () => void }) {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState("")
   const [open, setOpen] = useState(false)
 
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(orderFormSchema),
     defaultValues: {
-      username: "",
-      email: "",
-      password_hash: "",
-      confirmPassword: "",
-      avatar: "",
+      user_id: 0,
+      order_items: [{
+        product_id: 0,
+        quantity: 1,
+        price: 0
+      }]
     }
   })
 
-  const watchAvatar = form.watch("avatar")
-  
-  const previewAvatar = useMemo(() => {
-    return file ? URL.createObjectURL(file) : watchAvatar
-  }, [file, watchAvatar])
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "order_items"
+  })
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async (values: z.infer<typeof orderFormSchema>) => {
     setLoading(true)
     setMessage("")
 
     try {
-      const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/order/create`, {
+      const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: Date.now().toString(), ...values }),
+        body: JSON.stringify({
+          user_id: values.user_id,
+          order_date: new Date().toISOString(),
+          status: "Processing",
+          OrderItems: values.order_items,
+          total: values.order_items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+        } as OrderListResType["orders"][0])
       })
 
       if (response.ok) {
-        setMessage("Thêm tài khoản thành công ")
+        setMessage("Thêm đơn hàng thành công!")
         form.reset()
-        setTimeout(() => {
-          setOpen(false)
-          window.location.reload()
-        }, 1000)
+        onOrderAdded?.()
+        setTimeout(() => setOpen(false), 1000)
       } else {
-        setMessage("Có lỗi xảy ra!")
+        setMessage(await response.text() || "Có lỗi xảy ra!")
       }
     } catch (error) {
-      console.error("Error adding user:", error)
-      setMessage("Có lỗi xảy ra!")
+      console.error("Error adding order:", error)
+      setMessage("Có lỗi xảy ra khi kết nối tới server")
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   return (
@@ -93,107 +94,125 @@ export function AddOrder() {
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
           <DialogTitle>Tạo Đơn Hàng</DialogTitle>
-          <DialogDescription>Vui lòng chọn ít nhất 1 sản phẩm</DialogDescription>
+          <DialogDescription>Vui lòng nhập thông tin đơn hàng</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
-            
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="avatar"
+              name="user_id"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex items-center gap-4">
-                    <Avatar>
-                      <AvatarImage src={previewAvatar} />
-                      <AvatarFallback>Ảnh</AvatarFallback>
-                    </Avatar>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      ref={avatarInputRef}
-                      className="hidden"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) {
-                          setFile(file)
-                          field.onChange(URL.createObjectURL(file))
-                        }
-                      }}
+                  <Label>User ID</Label>
+                  <FormControl>
+                    <Input 
+                      type="number" 
+                      placeholder="Nhập User ID" 
+                      {...field} 
+                      onChange={(e) => field.onChange(Number(e.target.value))}
                     />
-                    <Button type="button" onClick={() => avatarInputRef.current?.click()}>
-                      Chọn ảnh
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="space-y-4">
+              <Label>Sản phẩm</Label>
+              {fields.map((field, index) => (
+                <div key={field.id} className="grid grid-cols-3 gap-4 items-end">
+                  <FormField
+                    control={form.control}
+                    name={`order_items.${index}.product_id`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <Label>Product ID</Label>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            placeholder="Product ID" 
+                            {...field} 
+                            onChange={(e) => field.onChange(Number(e.target.value))}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`order_items.${index}.quantity`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <Label>Số lượng</Label>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            placeholder="Số lượng" 
+                            {...field} 
+                            onChange={(e) => field.onChange(Number(e.target.value))}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name={`order_items.${index}.price`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <Label>Giá</Label>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            placeholder="Giá" 
+                            {...field} 
+                            onChange={(e) => field.onChange(Number(e.target.value))}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {fields.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => remove(index)}
+                    >
+                      Xóa
                     </Button>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                  )}
+                </div>
+              ))}
 
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <Label>Tên</Label>
-                  <FormControl>
-                    <Input placeholder="Nhập tên" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <Label>Email</Label>
-                  <FormControl>
-                    <Input type="email" placeholder="Nhập email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="password_hash"
-              render={({ field }) => (
-                <FormItem>
-                  <Label>Mật khẩu</Label>
-                  <FormControl>
-                    <Input type="password" placeholder="Nhập mật khẩu" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <Label>Xác nhận mật khẩu</Label>
-                  <FormControl>
-                    <Input type="password" placeholder="Nhập lại mật khẩu" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {message && <p className={`text-sm ${message.includes("thành công") ? "text-green-500" : "text-red-500"}`}>{message}</p>}
-
-            <DialogFooter>
-              <Button type="submit" disabled={loading}>
-                {loading ? "Đang Thêm..." : "Thêm"}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => append({ product_id: 0, quantity: 1, price: 0 })}
+              >
+                Thêm sản phẩm
               </Button>
-            </DialogFooter>
+            </div>
+
+            {message && (
+              <p className={`text-sm ${
+                message.includes("thành công") ? "text-green-500" : "text-red-500"
+              }`}>
+                {message}
+              </p>
+            )}
+
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? "Đang tạo đơn hàng..." : "Tạo đơn hàng"}
+            </Button>
           </form>
         </Form>
       </DialogContent>

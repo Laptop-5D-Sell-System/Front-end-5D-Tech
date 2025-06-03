@@ -21,6 +21,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ArrowUpDown, CalendarIcon, MoreHorizontal } from 'lucide-react';
 import { useState, useEffect, useContext, createContext } from 'react';
 import envConfig from '../../../../config';
+import { useUserById } from './name_user';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -45,7 +46,6 @@ import { AddOrder } from './add-order';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { useUserById } from './name_user';
 
 type OrderItem = OrderListResType['orders'][0];
 
@@ -71,23 +71,33 @@ export const columns: ColumnDef<OrderItem>[] = [
     {
         accessorKey: 'user_id',
         header: 'Khách hàng',
-        cell: ({row}) => {
-            
+        cell: ({ row }) => {
+          const userId = row.getValue('user_id') as number;
+          const { fullName, loading, error } = useUserById(userId);
+      
+          if (loading) {
+            return <Skeleton className="h-4 w-[100px]" />;
+          }
+      
+          if (error) {
+            return <span className="text-red-500 text-sm">Lỗi tải tên</span>;
+          }
+      
+          return <span>{fullName || `Khách hàng #${userId}`}</span>;
         }
-            
-    },
+      },
     {
         accessorKey: 'status',
         header: 'Trạng thái',
         cell: ({ row }) => {
             const status = row.getValue('status') as string;
             const map = {
-                Processing: 'Chờ xác nhận',
-                confirmed: 'Đã xác nhận',
-                shipping: 'Đang giao',
+                Processing: 'Đang xử lý',
+                // confirmed: 'Đã xác nhận',
+                // shipping: 'Đang giao',
                 Done: 'Đã giao',
                 cancelled: 'Đã hủy',
-                returned: 'Trả hàng',
+                // returned: 'Trả hàng',
             };
             return <span>{map[status]}</span>;
         },
@@ -113,115 +123,49 @@ export const columns: ColumnDef<OrderItem>[] = [
         id: 'actions',
         enableHiding: false,
         cell: ({ row }) => {
-            const order = row.original;
-            const { setOrderIdEdit, setOrderDelete } = useContext(OrderTableContext);
-
-            const openEditOrder = () => {
-                setOrderIdEdit(row.original.id);
-            };
-
-            const openDeleteOrder = () => {
-                setOrderDelete(row.original);
-            };
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            className="h-8 w-8 p-1 flex items-center justify-center rounded-full hover:bg-gray-100 transition duration-200"
-                        >
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="w-5 h-5 text-gray-600" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 shadow-md rounded-lg bg-gray-900 border">
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(order.id)}
-                            className="hover:bg-gray-600 transition duration-200 p-2 rounded-md"
-                        >
-                            Sao Chép Email
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                            className="hover:bg-red-100 text-red-600 transition duration-200 p-2 rounded-md"
-                            onClick={openDeleteOrder}
-                        >
-                            Xóa Tài Khoản
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            className="hover:bg-blue-100 text-blue-600 transition duration-200 p-2 rounded-md"
-                            onClick={openEditOrder}
-                        >
-                            Sửa Tài Khoản
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            );
+          const order = row.original;
+          const { setOrderIdEdit, setOrderDelete } = useContext(OrderTableContext);
+      
+          const openOrderDetail = () => {
+            setOrderIdEdit(order.id);
+          };
+      
+          const openDeleteOrder = () => {
+            setOrderDelete(order);
+          };
+      
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="h-8 w-8 p-1 flex items-center justify-center rounded-full hover:bg-gray-100 transition duration-200"
+                >
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="w-5 h-5 text-gray-600" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48 shadow-md rounded-lg bg-gray-900 border">
+                <DropdownMenuItem
+                  onClick={openOrderDetail}
+                  className="hover:bg-gray-600 transition duration-200 p-2 rounded-md"
+                >
+                  Xem chi tiết
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="hover:bg-red-100 text-red-600 transition duration-200 p-2 rounded-md"
+                  onClick={openDeleteOrder}
+                >
+                  Xóa đơn hàng
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
         },
-    },
+      },
 ];
 
-// function AlertDialogDeleteAccount({
-//     accountDelete,
-//     setAccountDelete,
-//     setData,
-// }: {
-//     accountDelete: OrderItem | null;
-//     setAccountDelete: (value: OrderItem | null) => void;
-//     setData: React.Dispatch<React.SetStateAction<OrderItem[]>>;
-// }) {
-
-//     // const deleteAcc = async () => {
-//     //     const token = localStorage.getItem("token");
-//     //     console.log(accountDelete?.id);
-//     //     const id = accountDelete?.id;
-//     //     const email = accountDelete?.email;
-//     //     try {
-//     //         const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/delete?id=${accountDelete?.id}`, {
-//     //             method: "DELETE",
-//     //             headers: {
-//     //                 'Authorization': `Bearer ${token}`,
-//     //                 'Content-Type': 'application/json',
-//     //             }
-//     //         })
-//     //         if (!response.ok) {
-//     //             throw new Error(`HTTP error! Status: ${response.status}`);
-//     //         }
-//     //         setData(prev => prev.filter(acc => acc.id !== id));
-//     //         toast.success(`Tài khoản ${email} đã bị xoá`);
-//     //         setAccountDelete(null);
-
-//     //     } catch (error) {
-//     //         console.error('Error deleting account:', error);
-//     //     }
-
-//     }
-//     return (
-//         <AlertDialog
-//             // open={Boolean(accountDelete)}
-//             // onOpenChange={(value) => {
-//             //     if (!value) {
-//             //         setAccountDelete(null);
-//             //     }
-//             // }}
-//         >
-//             <AlertDialogContent>
-//                 <AlertDialogHeader>
-//                     <AlertDialogTitle>Xoá tài khoản</AlertDialogTitle>
-//                     <AlertDialogDescription>
-//                         Tài khoản {' '}
-//                         <span className="font-bold">{accountDelete?.email}</span> sẽ bị xoá vĩnh viễn. Bạn có chắc chắn muốn xoá không?
-//                     </AlertDialogDescription>
-//                 </AlertDialogHeader>
-//                 <AlertDialogFooter>
-//                     <AlertDialogCancel>Hủy</AlertDialogCancel>
-//                     <AlertDialogAction onClick={deleteAcc}>Xóa</AlertDialogAction>
-//                 </AlertDialogFooter>
-//             </AlertDialogContent>
-//         </AlertDialog>
-//     )
-// }
 
 export function Orders_table() {
     const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -236,7 +180,6 @@ export function Orders_table() {
     const [fromTo, setFromTo] = useState<Date | undefined>(undefined);
     const [fromEnd, setFromEnd] = useState<Date | undefined>(undefined);
 
-
     const filterOrdersByDate = (orders: OrderItem[]) => {
         if (!fromTo || !fromEnd) return orders;
       
@@ -244,17 +187,13 @@ export function Orders_table() {
           const orderDate = new Date(order.order_date);
           return orderDate >= fromTo && orderDate <= fromEnd;
         });
-      };
-
+    };
 
     const getStatusStats = () => {
         const stats = {
             Processing: 0,
-            confirmed: 0,
-            shipping: 0,
             Done: 0,
             cancelled: 0,
-            returned: 0,
         };
 
         table.getRowModel().rows.forEach((row) => {
@@ -266,48 +205,50 @@ export function Orders_table() {
     };
 
     const statusLabels: Record<string, string> = {
-        Processing: 'Chờ xác nhận',
-        confirmed: 'Đã xác nhận',
-        shipping: 'Đang giao',
+        Processing: 'Đang xử lý',
         Done: 'Đã giao',
         cancelled: 'Đã hủy',
-        returned: 'Trả hàng',
+    };
+
+    const fetchOrderData = async () => {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            console.error('No token found');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/order/orders`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            setData(result.orders);
+            console.log("Đã cập nhật danh sách đơn hàng:", result.orders);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleOrderUpdated = () => {
+        fetchOrderData();
+        toast.success("Đã cập nhật danh sách đơn hàng");
     };
 
     useEffect(() => {
-        const fetchData = async () => {
-            const token = localStorage.getItem('token');
-
-            if (!token) {
-                console.error('No token found');
-                return;
-            }
-
-            setLoading(true);
-            try {
-                const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/order/orders`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                const result = await response.json();
-                setData(result.orders);
-                console.log(result.orders);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
+        fetchOrderData();
     }, []);
 
     const table = useReactTable({
@@ -339,15 +280,14 @@ export function Orders_table() {
             }}
         >
             <div className="w-full p-4">
-                <EditOrder id={orderIdEdit} setId={setOrderIdEdit} onSubmitSuccess={() => {}} />
-                {/* <AlertDialogDeleteAccount
-                    accountDelete={accountDelete}
-                    setAccountDelete={setAccountDelete}
-                    setData={setData}
-                /> */}
+                <EditOrder 
+                    id={orderIdEdit} 
+                    setId={setOrderIdEdit} 
+                    onSubmitSuccess={handleOrderUpdated} 
+                />
             </div>
             <div className="w-full p-4">
-                <div className="flex items-center py-4 justify-between">
+                {/* <div className="flex items-center py-4 justify-between">
                     <div className="flex items-center justify-around gap-8 space-x-2  ">
                         <div className="flex items-center space-x-2 bg-[#0E1420] px-4 py-2 rounded-lg">
 
@@ -399,14 +339,10 @@ export function Orders_table() {
                                 Reset
                             </Button>
                         </div>
-                        <div className= 'bg-amber-50 rounded-lg text-black hover:bg-black'>
-                            <AddOrder />
-                        </div>
-                        
                     </div>
 
                     <Toaster />
-                </div>
+                </div> */}
                 <div className="mb-4 flex gap-8">
                     <Input
                         placeholder="Tên khách"
@@ -429,12 +365,9 @@ export function Orders_table() {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">Trạng Thái Đơn Hàng</SelectItem>
-                            <SelectItem value="Processing">Chờ xác nhận</SelectItem>
-                            <SelectItem value="confirmed">Đã xác nhận</SelectItem>
-                            <SelectItem value="shipping">Đang giao</SelectItem>
+                            <SelectItem value="Processing">Đang xử lý</SelectItem>
                             <SelectItem value="Done">Đã giao</SelectItem>
                             <SelectItem value="cancelled">Đã hủy</SelectItem>
-                            <SelectItem value="returned">Trả hàng</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>

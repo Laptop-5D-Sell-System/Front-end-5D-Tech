@@ -47,7 +47,7 @@ export default function NavLinks() {
           </Link>
 
           {menuItems
-            .filter((Item) => (Item.authApiRequired ? isAuth : true)) // 🛑 Lọc menu trước khi hiển thị
+            .filter((Item) => (Item.authApiRequired ? isAuth : true)) 
             .map((Item, index) => {
               const isActive = pathname === Item.href;
 
