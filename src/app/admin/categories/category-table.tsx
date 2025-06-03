@@ -18,30 +18,29 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
-import { AddUser } from './add-user';
 import { useState, useEffect, useContext, createContext } from 'react';
-import { AccountListResType } from '@/schemaValidations/account.schema';
-import EditAccount from './edit-user';
 import envConfig from '../../../../config';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { toast, Toaster } from "sonner";
+import { CategoryResType } from '@/schemaValidations/category.schema';
+import { AddCa } from './add-category';
 
-type AccountItem = AccountListResType['accounts'][0];
+type CategoryItem = CategoryResType['data'];
 
-const AccountTableContext = createContext<{
-    setAccountIdEdit: (value: string) => void;
-    accountIdEdit: string | undefined;
-    setAccountDelete: (value: AccountItem | null) => void;
-    accountDelete: AccountItem | null;
+const CategoryTableContext = createContext<{
+    setCategoryIdEdit: (value: string) => void;
+    categoryIdEdit: string | undefined;
+    setCategoryDelete: (value: CategoryItem | null) => void;
+    categoryDelete: CategoryItem | null;
 }>({
-    setAccountIdEdit: () => {},
-    accountIdEdit: undefined,
-    accountDelete: null,
-    setAccountDelete: () => {},
+    setCategoryIdEdit: () => {},
+    categoryIdEdit: undefined,
+    categoryDelete: null,
+    setCategoryDelete: () => {},
 });
 
-export const columns: ColumnDef<AccountItem>[] = [
+export const columns: ColumnDef<CategoryItem>[] = [
     {
         id: 'stt',
         header: 'STT',
@@ -54,40 +53,26 @@ export const columns: ColumnDef<AccountItem>[] = [
         header: 'ID',
     },
     {
-        accessorKey: 'avatar',
-        header: 'Avatar',
-        cell: ({ row }) => (
-            <div className="flex items-center space-x-2">
-                <img src={row.original.id_user.profile_picture} alt="avatar" className="w-20 h-20" />
-            </div>
-        ),
+        accessorKey: 'name',
+        header: 'Tên',
     },
     {
-        accessorKey: 'email',
-        header: ({ column }) => (
-            <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-                Email <ArrowUpDown />
-            </Button>
-        ),
-        cell: ({ row }) => <div className="lowercase">{row.getValue('email')}</div>,
-    },
-    {
-        accessorKey: 'role',
-        header: 'Quyền',
+        accessorKey: 'description',
+        header: 'Mô tả',
     },
     {
         id: 'actions',
         enableHiding: false,
         cell: ({ row }) => {
-            const accounts = row.original;
-            const { setAccountIdEdit, setAccountDelete } = useContext(AccountTableContext);
+            const categories = row.original;
+            const { setCategoryIdEdit, setCategoryDelete } = useContext(CategoryTableContext);
 
-            const openEditAccount = () => {
-                setAccountIdEdit(row.original.id);
+            const openEditCategory = () => {
+                setCategoryIdEdit(row.original.id);
             };
 
-            const openDeleteAccount = () => {
-                setAccountDelete(row.original);
+            const openDeleteCategory = () => {
+                setCategoryDelete(row.original);
             }
 
             return (
@@ -103,16 +88,16 @@ export const columns: ColumnDef<AccountItem>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 shadow-md rounded-lg bg-gray-900 border">
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(accounts.email)}
+                            onClick={() => navigator.clipboard.writeText(categories.name)}
                             className="hover:bg-gray-600 transition duration-200 p-2 rounded-md"
                         >
-                            Sao Chép Email
+                            Sao Chép Tên
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="hover:bg-red-100 text-red-600 transition duration-200 p-2 rounded-md"
-                            onClick={openDeleteAccount}
+                            onClick={openDeleteCategory}
                         >
-                            Xóa Tài Khoản
+                            Xóa Danh Mục
                         </DropdownMenuItem>
                         {/* <DropdownMenuItem
                             className="hover:bg-blue-100 text-blue-600 transition duration-200 p-2 rounded-md"
@@ -127,23 +112,23 @@ export const columns: ColumnDef<AccountItem>[] = [
     },
 ];
 
-function AlertDialogDeleteAccount({
-    accountDelete,
-    setAccountDelete,
+function AlertDialogDeleteCategory({
+    categoryDelete,
+    setCategoryDelete,
     setData,
 }: {
-    accountDelete: AccountItem | null;
-    setAccountDelete: (value: AccountItem | null) => void;
-    setData: React.Dispatch<React.SetStateAction<AccountItem[]>>;
+    categoryDelete: CategoryItem | null;
+    setCategoryDelete: (value: CategoryItem | null) => void;
+    setData: React.Dispatch<React.SetStateAction<CategoryItem[]>>;
 }) {
     
-    const deleteAcc = async () => {
+    const deleteCa = async () => {
         const token = localStorage.getItem("token");
-        console.log(accountDelete?.id);
-        const id = accountDelete?.id;
-        const email = accountDelete?.email;
+        console.log(categoryDelete?.id);
+        const id = categoryDelete?.id;
+        const name = categoryDelete?.name;
         try {
-            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/delete?id=${accountDelete?.id}`, {
+            const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/category/delete?id=${categoryDelete?.id}`, {
                 method: "DELETE",
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -154,48 +139,48 @@ function AlertDialogDeleteAccount({
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
             setData(prev => prev.filter(acc => acc.id !== id));
-            toast.success(`Tài khoản ${email} đã bị xoá`);
-            setAccountDelete(null);
+            toast.success(`Danh mục ${name} đã bị xoá`);
+            setCategoryDelete(null);
             
         } catch (error) {
-            console.error('Error deleting account:', error);
+            console.error('Error deleting category:', error);
         }
 
     }
     return (
         <AlertDialog
-            open={Boolean(accountDelete)}
+            open={Boolean(categoryDelete)}
             onOpenChange={(value) => {
                 if (!value) {
-                    setAccountDelete(null);
+                    setCategoryDelete(null);
                 }
             }}
         >
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Xoá tài khoản</AlertDialogTitle>
+                    <AlertDialogTitle>Xoá danh mục</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Tài khoản {' '}
-                        <span className="font-bold">{accountDelete?.email}</span> sẽ bị xoá vĩnh viễn. Bạn có chắc chắn muốn xoá không?
+                        Danh mục {' '}
+                        <span className="font-bold">{categoryDelete?.name}</span> sẽ bị xoá vĩnh viễn. Bạn có chắc chắn muốn xoá không?
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Hủy</AlertDialogCancel>
-                    <AlertDialogAction onClick={deleteAcc}>Xóa</AlertDialogAction>
+                    <AlertDialogAction onClick={deleteCa}>Xóa</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
     )
 }
 
-export function Accounts_table() {
+export function Categories_table() {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
-    const [accountIdEdit, setAccountIdEdit] = useState<string | undefined>();
-    const [accountDelete, setAccountDelete] = useState<AccountItem | null>(null);
-    const [data, setData] = React.useState<AccountItem[]>([]);
+    const [categoryIdEdit, setCategoryIdEdit] = useState<string | undefined>();
+    const [categoryDelete, setCategoryDelete] = useState<CategoryItem | null>(null);
+    const [data, setData] = React.useState<CategoryItem[]>([]);
     const [loading, setLoading] = React.useState(true);
 
     useEffect(() => {
@@ -209,11 +194,11 @@ export function Accounts_table() {
 
             setLoading(true);
             try {
-                const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/get-accounts`, {
+                const response = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/category/get-all-categories`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
+                        // "Authorization": `Bearer ${token}`
                     }
                 });
 
@@ -222,7 +207,8 @@ export function Accounts_table() {
                 }
 
                 const result = await response.json();
-                setData(result.accounts);
+                console.log("data", result)
+                setData(result);
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
@@ -253,31 +239,31 @@ export function Accounts_table() {
     });
 
     return (
-        <AccountTableContext.Provider
+        <CategoryTableContext.Provider
             value={{
-                accountIdEdit,
-                setAccountIdEdit,
-                accountDelete,
-                setAccountDelete,
+                categoryIdEdit,
+                setCategoryIdEdit,
+                categoryDelete,
+                setCategoryDelete,
             }}
         >
             <div className="w-full p-4">
-                <EditAccount id={accountIdEdit} setId={setAccountIdEdit} onSubmitSuccess={() => {}} />
-                <AlertDialogDeleteAccount
-                    accountDelete={accountDelete}
-                    setAccountDelete={setAccountDelete}
+                {/* <EditCategory id={categoryIdEdit} setId={setCategoryIdEdit} onSubmitSuccess={() => {}} /> */}
+                <AlertDialogDeleteCategory
+                    categoryDelete={categoryDelete}
+                    setCategoryDelete={setCategoryDelete}
                     setData={setData}
                 />
             </div>
             <div className="w-full p-4">
                 <div className="flex items-center py-4 justify-between">
                     <Input
-                        placeholder="Filter emails..."
-                        value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
-                        onChange={(event) => table.getColumn('email')?.setFilterValue(event.target.value)}
+                        placeholder="Filter name..."
+                        value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+                        onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
                         className="max-w-sm"
                     />
-                    <AddUser />
+                    <AddCa />
                     <Toaster />
 
                 </div>
@@ -366,6 +352,6 @@ export function Accounts_table() {
                     </Button>
                 </div>
             </div>
-        </AccountTableContext.Provider>
+        </CategoryTableContext.Provider>
     );
 }

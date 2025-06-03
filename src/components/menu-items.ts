@@ -34,21 +34,21 @@ const menuItems = [
 
   },
   {
-    title: "Phân Tích",
+    title: "Danh Mục",
     Ion: LineChart,
-    href: "/admin/analytics",
+    href: "/admin/categories",
     authApiRequired: true,
     role: [Role.admin]
 
   },
-  {
-    title: "Cài Đặt",
-    Ion: Settings,
-    href: "/admin/settings",
-    authApiRequired: true,
-    role: [Role.admin]
+  // {
+  //   title: "Cài Đặt",
+  //   Ion: Settings,
+  //   href: "/admin/settings",
+  //   authApiRequired: true,
+  //   role: [Role.admin]
 
-  }
+  // }
 ];
 
 export default menuItems;
