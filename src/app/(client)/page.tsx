@@ -34,7 +34,6 @@ interface Product {
     processWidth?: number;
 }
 
-
 export default function Home() {
     // Handle dialog
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,24 +59,24 @@ export default function Home() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/product/all-products?sortOrder=null`);
+                const response = await axios.get(
+                    `${envConfig.NEXT_PUBLIC_API_ENDPOINT}/product/all-products?sortOrder=null`,
+                );
                 const fetchedProducts: Product[] = response.data.products;
 
                 // Cập nhật processWidth dựa trên available và quantity
-                const updatedProducts = fetchedProducts.map(product => {
+                const updatedProducts = fetchedProducts.map((product) => {
                     const percent = product.stock_quantity > 0 ? (product.stock_quantity / 100) * 100 : 0;
                     return { ...product, processWidth: percent };
                 });
 
                 setProducts(updatedProducts.slice(0, 8));
-            }
-            catch (error) {
+            } catch (error) {
                 console.error(error);
             }
-        }; 
+        };
         fetchProducts();
     }, []);
-
 
     return (
         <div className="pt-5">
@@ -167,7 +166,9 @@ export default function Home() {
                     <div className="relative h-[300px] overflow-hidden rounded-sm group">
                         {/* Nội dung trên ảnh */}
                         <div className="about_menu_secondary absolute top-4 left-4 z-1">
-                            <span className="text-white text-center text-sm bg-green-500 rounded p-1">Ưu đãi hấp dẫn</span>
+                            <span className="text-white text-center text-sm bg-green-500 rounded p-1">
+                                Ưu đãi hấp dẫn
+                            </span>
                             <h2 className="font-semibold text-2xl mb-3 mt-3">
                                 Apple Smart <br /> Watch Pro
                             </h2>
@@ -217,7 +218,8 @@ export default function Home() {
                         <p className="text-red-500">DANH MỤC HÀNG ĐẦU</p>
                         <h2 className="text-3xl font-semibold mb-4">Danh Mục Phổ Biến</h2>
                         <p className="text-gray-500 font-light text-sm mb-8">
-                            Electronics stores are renowned for being the first to <br /> showcase new gadgets and devices.
+                            Electronics stores are renowned for being the first to <br /> showcase new gadgets and
+                            devices.
                         </p>
                         <Link href={'/product-list'}>
                             <Button className="bg-red-500 text-white hover:bg-black hover:text-white transition-all duration-500 cursor-pointer">
@@ -227,19 +229,27 @@ export default function Home() {
                     </div>
                     <div className="w-6/10">
                         <div className="menu_category_list grid grid-cols-4 grid-rows-2 gap-6">
-                            <Link href={'/product-list'} className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
+                            <Link
+                                href={'/product-list'}
+                                className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500"
+                            >
                                 <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
                                 <div className="relative z-10 transition-all duration-300 group-hover:text-white">
                                     <div className="icon border border-red-500 w-[50px] h-[50px] mx-auto mb-2 rounded-full flex items-center justify-center transition-all duration-300 group-hover:text-red-500 group-hover:bg-white">
                                         <Laptop color="currentColor" strokeWidth={1} />
                                     </div>
-                                    <p className="text-sm group-hover:text-white transition-all duration-200">Máy Tính</p>
+                                    <p className="text-sm group-hover:text-white transition-all duration-200">
+                                        Máy Tính
+                                    </p>
                                     <p className="text-gray-500 text-sm group-hover:text-white transition-all duration-200">
                                         8 sản phẩm
                                     </p>
                                 </div>
                             </Link>
-                            <Link href={'/product-list'} className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
+                            <Link
+                                href={'/product-list'}
+                                className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500"
+                            >
                                 <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
                                 <div className="relative z-10 transition-all duration-300 group-hover:text-white">
                                     <div className="icon border border-red-500 w-[50px] h-[50px] mx-auto mb-2 rounded-full flex items-center justify-center transition-all duration-300 group-hover:text-red-500 group-hover:bg-white">
@@ -253,43 +263,61 @@ export default function Home() {
                                     </p>
                                 </div>
                             </Link>
-                            <Link href={'/product-list'} className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
+                            <Link
+                                href={'/product-list'}
+                                className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500"
+                            >
                                 <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
                                 <div className="relative z-10 transition-all duration-300 group-hover:text-white">
                                     <div className="icon border border-red-500 w-[50px] h-[50px] mx-auto mb-2 rounded-full flex items-center justify-center transition-all duration-300 group-hover:text-red-500 group-hover:bg-white">
                                         <Keyboard color="currentColor" strokeWidth={1} />
                                     </div>
-                                    <p className="text-sm group-hover:text-white transition-all duration-200">Bàn phím</p>
+                                    <p className="text-sm group-hover:text-white transition-all duration-200">
+                                        Bàn phím
+                                    </p>
                                     <p className="text-gray-500 text-sm group-hover:text-white transition-all duration-200">
                                         5 sản phẩm
                                     </p>
                                 </div>
                             </Link>
-                            <Link href={'/product-list'} className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
+                            <Link
+                                href={'/product-list'}
+                                className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500"
+                            >
                                 <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
                                 <div className="relative z-10 transition-all duration-300 group-hover:text-white">
                                     <div className="icon border border-red-500 w-[50px] h-[50px] mx-auto mb-2 rounded-full flex items-center justify-center transition-all duration-300 group-hover:text-red-500 group-hover:bg-white">
                                         <Monitor color="currentColor" strokeWidth={1} />
                                     </div>
-                                    <p className="text-sm group-hover:text-white transition-all duration-200">Màn hình</p>
+                                    <p className="text-sm group-hover:text-white transition-all duration-200">
+                                        Màn hình
+                                    </p>
                                     <p className="text-gray-500 text-sm group-hover:text-white transition-all duration-200">
                                         7 sản phẩm
                                     </p>
                                 </div>
                             </Link>
-                            <Link href={'/product-list'} className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
+                            <Link
+                                href={'/product-list'}
+                                className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500"
+                            >
                                 <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
                                 <div className="relative z-10 transition-all duration-300 group-hover:text-white">
                                     <div className="icon border border-red-500 w-[50px] h-[50px] mx-auto mb-2 rounded-full flex items-center justify-center transition-all duration-300 group-hover:text-red-500 group-hover:bg-white">
                                         <Headphones color="currentColor" strokeWidth={1} />
                                     </div>
-                                    <p className="text-sm group-hover:text-white transition-all duration-200">Tai nghe</p>
+                                    <p className="text-sm group-hover:text-white transition-all duration-200">
+                                        Tai nghe
+                                    </p>
                                     <p className="text-gray-500 text-sm group-hover:text-white transition-all duration-200">
                                         5 sản phẩm
                                     </p>
                                 </div>
                             </Link>
-                            <Link href={'/product-list'} className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
+                            <Link
+                                href={'/product-list'}
+                                className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500"
+                            >
                                 <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
                                 <div className="relative z-10 transition-all duration-300 group-hover:text-white">
                                     <div className="icon border border-red-500 w-[50px] h-[50px] mx-auto mb-2 rounded-full flex items-center justify-center transition-all duration-300 group-hover:text-red-500 group-hover:bg-white">
@@ -303,25 +331,35 @@ export default function Home() {
                                     </p>
                                 </div>
                             </Link>
-                            <Link href={'/product-list'} className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
+                            <Link
+                                href={'/product-list'}
+                                className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500"
+                            >
                                 <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
                                 <div className="relative z-10 transition-all duration-300 group-hover:text-white">
                                     <div className="icon border border-red-500 w-[50px] h-[50px] mx-auto mb-2 rounded-full flex items-center justify-center transition-all duration-300 group-hover:text-red-500 group-hover:bg-white">
                                         <Camera color="currentColor" strokeWidth={1} />
                                     </div>
-                                    <p className="text-sm group-hover:text-white transition-all duration-200">Máy ảnh</p>
+                                    <p className="text-sm group-hover:text-white transition-all duration-200">
+                                        Máy ảnh
+                                    </p>
                                     <p className="text-gray-500 text-sm group-hover:text-white transition-all duration-200">
                                         4 sản phẩm
                                     </p>
                                 </div>
                             </Link>
-                            <Link href={'/product-list'} className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500">
+                            <Link
+                                href={'/product-list'}
+                                className="menu_category_item border border-red-500 rounded p-4 text-center cursor-pointer group transition-all duration-300 relative hover:bg-red-500"
+                            >
                                 <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
                                 <div className="relative z-10 transition-all duration-300 group-hover:text-white">
                                     <div className="icon border border-red-500 w-[50px] h-[50px] mx-auto mb-2 rounded-full flex items-center justify-center transition-all duration-300 group-hover:text-red-500 group-hover:bg-white">
                                         <PlugZap color="currentColor" strokeWidth={1} />
                                     </div>
-                                    <p className="text-sm group-hover:text-white transition-all duration-200">Dây sạc</p>
+                                    <p className="text-sm group-hover:text-white transition-all duration-200">
+                                        Dây sạc
+                                    </p>
                                     <p className="text-gray-500 text-sm group-hover:text-white transition-all duration-200">
                                         8 sản phẩm
                                     </p>
@@ -338,7 +376,9 @@ export default function Home() {
                         <div className="relative h-[350px] overflow-hidden rounded-sm group">
                             {/* Nội dung trên ảnh */}
                             <div className="about_menu_secondary absolute top-8 left-8 z-1">
-                                <span className="text-white text-sm bg-red-500 rounded p-1">Khuyến mãi lên đến 60%</span>
+                                <span className="text-white text-sm bg-red-500 rounded p-1">
+                                    Khuyến mãi lên đến 60%
+                                </span>
                                 <h2 className="font-semibold text-3xl mb-6 mt-6 text-white">
                                     Sản phẩm công <br /> nghệ đa dạng
                                 </h2>
@@ -397,13 +437,16 @@ export default function Home() {
                         {/* List items */}
                         <div className="featured_products_list grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5 mt-[50px]">
                             {products.map((product) => (
-                                <div key={product.id} className="featured_products_item group rounded border overflow-hidden">
+                                <div
+                                    key={product.id}
+                                    className="featured_products_item group rounded border overflow-hidden"
+                                >
                                     {/* Img item */}
                                     <div className="featured_products_img relative w-full h-[200px] overflow-hidden">
                                         {/* <div className="featured_products_sale absolute top-4 left-4 bg-red-500 text-white font-light z-10 text-sm p-1 rounded">
                                             -{product.discount}%
                                         </div> */}
-                                        
+
                                         <Image
                                             src={product.product_image}
                                             alt={product.name}
@@ -450,7 +493,11 @@ export default function Home() {
                                                 ))}
                                             </div>
                                             <div className="featured_products_quantity text-sm mb-2">
-                                                Có sẵn: <span className="text-red-500">{product.stock_quantity}/100</span>
+                                                {product.stock_quantity > 0 ? (
+                                                    <span>Có sẵn: {product.stock_quantity} / 100</span>
+                                                ) : (
+                                                    <span className="text-red-500">Hết hàng</span>
+                                                )}
                                             </div>
                                             <div className="w-full bg-gray-200 h-1 mb-4">
                                                 <div
@@ -459,7 +506,12 @@ export default function Home() {
                                                 ></div>
                                             </div>
                                             <div className="featured_products_price flex gap-2">
-                                                <div className="new_price text-red-500">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}</div>
+                                                <div className="new_price text-red-500">
+                                                    {new Intl.NumberFormat('vi-VN', {
+                                                        style: 'currency',
+                                                        currency: 'VND',
+                                                    }).format(product.price)}
+                                                </div>
                                                 {/* <div className="old_price text-gray-500 text-sm line-through">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.oldPrice)}</div> */}
                                             </div>
                                         </div>
@@ -509,43 +561,43 @@ export default function Home() {
                 <div className="brand_list grid grid-cols-5 grid-rows-2 gap-6 mt-[100px]">
                     <div className="brand_item border border-red-500 h-[100px] p-4 flex justify-center items-center cursor-pointer group transition-all duration-300 relative hover:bg-white">
                         <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
-                        <Image src="/images/brand-1.svg" alt='brand' width={150} height={80}></Image>
+                        <Image src="/images/brand-1.svg" alt="brand" width={150} height={80}></Image>
                     </div>
                     <div className="brand_item border border-red-500 h-[100px] p-4 flex justify-center items-center cursor-pointer group transition-all duration-300 relative hover:bg-white">
                         <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
-                        <Image src="/images/brand-2.svg" alt='brand' width={150} height={80}></Image>
+                        <Image src="/images/brand-2.svg" alt="brand" width={150} height={80}></Image>
                     </div>
                     <div className="brand_item border border-red-500 h-[100px] p-4 flex justify-center items-center cursor-pointer group transition-all duration-300 relative hover:bg-white">
                         <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
-                        <Image src="/images/brand-3-1-1.svg" alt='brand' width={150} height={80}></Image>
+                        <Image src="/images/brand-3-1-1.svg" alt="brand" width={150} height={80}></Image>
                     </div>
                     <div className="brand_item border border-red-500 h-[100px] p-4 flex justify-center items-center cursor-pointer group transition-all duration-300 relative hover:bg-white">
                         <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
-                        <Image src="/images/brand-4.svg" alt='brand' width={150} height={80}></Image>
+                        <Image src="/images/brand-4.svg" alt="brand" width={150} height={80}></Image>
                     </div>
                     <div className="brand_item border border-red-500 h-[100px] p-4 flex justify-center items-center cursor-pointer group transition-all duration-300 relative hover:bg-white">
                         <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
-                        <Image src="/images/brand-5.svg" alt='brand' width={150} height={80}></Image>
+                        <Image src="/images/brand-5.svg" alt="brand" width={150} height={80}></Image>
                     </div>
                     <div className="brand_item border border-red-500 h-[100px] p-4 flex justify-center items-center cursor-pointer group transition-all duration-300 relative hover:bg-white">
                         <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
-                        <Image src="/images/brand-6.svg" alt='brand' width={150} height={80}></Image>
+                        <Image src="/images/brand-6.svg" alt="brand" width={150} height={80}></Image>
                     </div>
                     <div className="brand_item border border-red-500 h-[100px] p-4 flex justify-center items-center cursor-pointer group transition-all duration-300 relative hover:bg-white">
                         <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
-                        <Image src="/images/brand-7.svg" alt='brand' width={150} height={80}></Image>
+                        <Image src="/images/brand-7.svg" alt="brand" width={150} height={80}></Image>
                     </div>
                     <div className="brand_item border border-red-500 h-[100px] p-4 flex justify-center items-center cursor-pointer group transition-all duration-300 relative hover:bg-white">
                         <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
-                        <Image src="/images/brand-8.svg" alt='brand' width={150} height={80}></Image>
+                        <Image src="/images/brand-8.svg" alt="brand" width={150} height={80}></Image>
                     </div>
                     <div className="brand_item border border-red-500 h-[100px] p-4 flex justify-center items-center cursor-pointer group transition-all duration-300 relative hover:bg-white">
                         <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
-                        <Image src="/images/brand-9.svg" alt='brand' width={150} height={80}></Image>
+                        <Image src="/images/brand-9.svg" alt="brand" width={150} height={80}></Image>
                     </div>
                     <div className="brand_item border border-red-500 h-[100px] p-4 flex justify-center items-center cursor-pointer group transition-all duration-300 relative hover:bg-white">
                         <div className="absolute inset-0 rounded blur-3xl opacity-0 group-hover:opacity-100 group-hover:bg-red-500/40 transition-all duration-300 -z-10"></div>
-                        <Image src="/images/brand-10.svg" alt='brand' width={150} height={80}></Image>
+                        <Image src="/images/brand-10.svg" alt="brand" width={150} height={80}></Image>
                     </div>
                 </div>
                 <div className="w-full h-[200px] mt-5 relative overflow-hidden">
@@ -554,21 +606,37 @@ export default function Home() {
                 {/* End brands */}
 
                 {/* Gọi Modal */}
-                <Modal isOpen={isModalOpen} onClose={handleModalClose} content={modalContent} product={selectedProduct} />
+                <Modal
+                    isOpen={isModalOpen}
+                    onClose={handleModalClose}
+                    content={modalContent}
+                    product={selectedProduct}
+                />
                 {/* End modal */}
             </div>
             {/* Start contact */}
             <div className="contact mt-[100px] relative w-full h-[400px] flex items-center justify-center gap-5 overflow-hidden bg-[#f3f4f8]">
-                <Image src="/images/drone.png" width={700} height={600} quality={100} className='object-cover' alt='cotact' />
+                <Image
+                    src="/images/drone.png"
+                    width={700}
+                    height={600}
+                    quality={100}
+                    className="object-cover"
+                    alt="cotact"
+                />
                 <div className="info_contact">
-                    <h2 className='font-[500] text-4xl mb-4'>Nhận Mọi Cập Nhật</h2>
-                    <p className='text-gray-500 text-sm mb-4'>Become a premium member and get 20% off your <br /> next purchase!</p>
-                    <form action="" className='w-full'>
+                    <h2 className="font-[500] text-4xl mb-4">Nhận Mọi Cập Nhật</h2>
+                    <p className="text-gray-500 text-sm mb-4">
+                        Become a premium member and get 20% off your <br /> next purchase!
+                    </p>
+                    <form action="" className="w-full">
                         <div className="flex gap-3 border border-black mb-4 flex items-center">
-                            <Mail color='currentColor' strokeWidth={1} className='ml-4' />
-                            <input type="text" placeholder='Enter your email' className='w-full p-3 outline-none' />
+                            <Mail color="currentColor" strokeWidth={1} className="ml-4" />
+                            <input type="text" placeholder="Enter your email" className="w-full p-3 outline-none" />
                         </div>
-                        <Button className='bg-red-500 text-white cursor-pointer hover:bg-black'>Đăng Ký <ArrowRight /></Button>
+                        <Button className="bg-red-500 text-white cursor-pointer hover:bg-black">
+                            Đăng Ký <ArrowRight />
+                        </Button>
                     </form>
                 </div>
             </div>
