@@ -297,9 +297,12 @@ export default function ProductListlPage() {
                                         ))}
                                     </div>
                                     <div className="featured_products_quantity text-sm mb-2">
-                                        Có sẵn:{' '}
                                         <span className="text-red-500">
-                                            {product.stock_quantity}/100
+                                            {product.stock_quantity > 0 ? (
+                                                <span>Có sẵn: {product.stock_quantity} / 100</span>
+                                            ):(
+                                                <span className="text-red-500">Hết hàng</span>
+                                            )}
                                         </span>
                                     </div>
                                     <div className="w-full bg-gray-200 h-1 mb-4">

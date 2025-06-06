@@ -44,7 +44,7 @@ export default function ClientLayout({
                 <link rel="shortcut icon" href="/images/favicon.png" type="image/x-icon" />
                 <title>{`${metadata.title}`}</title>
             </head>
-            <body className={`${montserrat.variable} antialiased`}>
+            <body className={`${montserrat.variable}`}>
 
                 <CartProvider>
                     <Header />
