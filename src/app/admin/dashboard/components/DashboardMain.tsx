@@ -213,49 +213,14 @@ export function Dashboard() {
                     {/* Date filters with Calendar Popover */}
                     <div className="flex flex-wrap items-center gap-2 bg-[#0E1420] px-4 py-2 rounded-lg">
                         <label className="text-white text-sm">Từ</label>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    className="w-[200px] justify-start text-left font-normal bg-transparent border-gray-600 text-white"
-                                >
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {fromDate ? format(fromDate, 'dd/MM/yyyy') : <span>Chọn ngày</span>}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 bg-black border-gray-600">
-                                <Calendar
-                                    mode="single"
-                                    selected={fromDate}
-                                    onSelect={setFromDate}
-                                    initialFocus
-                                    className="bg-[#0E1420] text-white"
-                                />
-                            </PopoverContent>
-                        </Popover>
+                        <div className="w-[200px]">
+                            <Calendar selected={fromDate} onChange={setFromDate} placeholderText="Chọn ngày" />
+                        </div>
 
                         <label className="text-white text-sm">Đến</label>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    className="w-[200px] justify-start text-left font-normal bg-transparent border-gray-600 text-white"
-                                >
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {toDate ? format(toDate, 'dd/MM/yyyy') : <span>Chọn ngày</span>}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0 bg-black border-gray-600">
-                                <Calendar
-                                    mode="single"
-                                    selected={toDate}
-                                    onSelect={setToDate}
-                                    initialFocus
-                                    className="bg-[#0E1420] text-white"
-                                    disabled={{ before: fromDate }}
-                                />
-                            </PopoverContent>
-                        </Popover>
+                        <div className="w-[200px]">
+                            <Calendar selected={toDate} onChange={setToDate} minDate={fromDate || undefined} placeholderText="Chọn ngày" />
+                        </div>
 
                         <Button
                             onClick={handleResetFilters}
@@ -270,7 +235,8 @@ export function Dashboard() {
                         <Button onClick={fetchDashboardData} className="bg-blue-600 hover:bg-blue-700 text-white">
                             Áp dụng
                         </Button>
-                    </div>
+                        </div>
+
                 </div>
             </DashboardCard>
 
