@@ -1,0 +1,314 @@
+{
+  "Account": [
+    {
+      "id": "1",
+      "username": "admin",
+      "password": "admin",
+      "email": "bdmin@duc.com"
+    },
+    {
+      "id": "2",
+      "avatar": "https://github.com/shadcn.png",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "2",
+      "username": "user",
+      "password": "user",
+      "email": "admin@duc.com",
+      "creat_at": "2021-01-01"
+    },
+    {
+      "id": "1742381195275",
+      "username": "Nguyễn Tiến Đức",
+      "email": "duc31200431@gmail.com",
+      "password": "11111"
+    },
+    {
+      "id": "1742381401612",
+      "username": "Nguyễn",
+      "email": "hongbanhbeo0301@gmail.com",
+      "password": "333"
+    },
+    {
+      "id": "1742381620114",
+      "username": "Nguyễn",
+      "email": "111@gmail.com",
+      "password": "1111"
+    },
+    {
+      "id": "1742452504811",
+      "name": "Nguyễn Tiến Đức",
+      "email": "duc31200431@gmail.com",
+      "password": "222222",
+      "confirmPassword": "222222",
+      "avatar": "blob:http://localhost:3000/c5878bc0-ed8f-4a5a-8be9-6ca3e5718bf9"
+    },
+    {
+      "id": "1742452532647",
+      "name": "1",
+      "email": "duc31200431@gmail.com",
+      "password": "111111",
+      "confirmPassword": "111111",
+      "avatar": "blob:http://localhost:3000/fe36c373-d741-45ad-b1fb-35103aa94c7c"
+    },
+    {
+      "id": "1742452686088",
+      "username": "1",
+      "email": "duc31200431@gmail.com",
+      "password": "111111",
+      "confirmPassword": "111111",
+      "avatar": ""
+    },
+    {
+      "id": "1742817051340",
+      "username": "Dương VQ",
+      "email": "iwsbci@gmail.com",
+      "password": "123456789",
+      "confirmPassword": "123456789",
+      "avatar": "blob:http://localhost:3000/e11d9d9e-f1de-462d-abb4-65aa9df59db2"
+    }
+  ],
+  "Products": [
+    {
+      "id": "1",
+      "name": "Laptop Dell XPS 13",
+      "description": "Laptop siêu mỏng, màn hình 4K, CPU Intel Core i7, RAM 16GB",
+      "price": 1299.99,
+      "product_image": "https://github.com/shadcn.png",
+      "stock_quantity": 10,
+      "category_name": 1,
+      "created_at": "2025-03-19T10:00:00",
+      "updated_at": "2025-03-19T10:00:00"
+    },
+    {
+      "id": "2",
+      "name": "iPhone 14 Pro Max",
+      "description": "Điện thoại Apple cao cấp với camera 48MP, màn hình ProMotion 120Hz",
+      "price": 1399.99,
+      "product_image": "https://github.com/shadcn.png",
+      "stock_quantity": 20,
+      "category_name": 2,
+      "created_at": "2025-03-19T11:00:00",
+      "updated_at": "2025-03-19T11:00:00"
+    },
+    {
+      "id": "3",
+      "name": "Samsung Galaxy S23 Ultra",
+      "description": "Smartphone Android mạnh mẽ, bút S-Pen, camera 200MP",
+      "price": 1299.99,
+      "product_image": "https://github.com/shadcn.png",
+      "stock_quantity": 15,
+      "category_name": 2,
+      "created_at": "2025-03-19T12:00:00",
+      "updated_at": "2025-03-19T12:00:00"
+    },
+    {
+      "id": "4",
+      "name": "Sony WH-1000XM5",
+      "description": "Tai nghe chống ồn hàng đầu, âm thanh Hi-Res, pin 30 giờ",
+      "price": 399.99,
+      "product_image": "https://github.com/shadcn.png",
+      "stock_quantity": 50,
+      "category_name": 3,
+      "created_at": "2025-03-19T13:00:00",
+      "updated_at": "2025-03-19T13:00:00"
+    },
+    {
+      "id": "5",
+      "name": "MacBook Air M2",
+      "description": "Laptop Apple siêu nhẹ, chip M2, màn hình Retina 13 inch",
+      "price": 1199.99,
+      "product_image": "https://github.com/shadcn.png",
+      "stock_quantity": 8,
+      "category_name": 1,
+      "created_at": "2025-03-19T14:00:00",
+      "updated_at": "2025-03-19T14:00:00"
+    }
+  ]
+}
