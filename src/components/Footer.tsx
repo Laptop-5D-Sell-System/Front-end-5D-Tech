@@ -1,7 +1,7 @@
 import '../styles/Footer.scss';
 import Link from "next/link";
-import { Separator } from "@/components/ui/separator";
-import { Facebook, Instagram, Mail, Phone, Printer, Twitter, Youtube } from 'lucide-react';
+// import { Separator } from "@/components/ui/separator";
+import { Facebook, Instagram, Mail, Phone, Twitter, Youtube } from 'lucide-react';
 
 export default function Footer() {
     return (
@@ -27,26 +27,26 @@ export default function Footer() {
                 </ul>
                 <ul className="flex-1">
                     <li className="font-semibold text-lg mb-4">Thông tin</li>
-                    <li className='mb-4 text-gray-500 text-md'><a href="/" className='hover:text-red-500'>Xu hướng</a></li>
-                    <li className='mb-4 text-gray-500 text-md'><a href="/" className='hover:text-red-500'>Bán chạy</a></li>
-                    <li className='mb-4 text-gray-500 text-md'><a href="/" className='hover:text-red-500'>Giảm giá</a></li>
-                    <li className='mb-4 text-gray-500 text-md'><a href="/" className='hover:text-red-500'>Sản phẩm mới</a></li>
-                    <li className='mb-4 text-gray-500 text-md'><a href="/" className='hover:text-red-500'>Còn hàng</a></li>
+                    <li className='mb-4 text-gray-500 text-md'><Link href="/" className='hover:text-red-500'>Xu hướng</Link></li>
+                    <li className='mb-4 text-gray-500 text-md'><Link href="/" className='hover:text-red-500'>Bán chạy</Link></li>
+                    <li className='mb-4 text-gray-500 text-md'><Link href="/" className='hover:text-red-500'>Giảm giá</Link></li>
+                    <li className='mb-4 text-gray-500 text-md'><Link href="/" className='hover:text-red-500'>Sản phẩm mới</Link></li>
+                    <li className='mb-4 text-gray-500 text-md'><Link href="/" className='hover:text-red-500'>Còn hàng</Link></li>
                 </ul>
                 <ul className="flex-1">
                     <li className="font-semibold text-lg mb-4">Danh mục</li>
-                    <li className='mb-4 text-gray-500 text-md'><a href="/" className='hover:text-red-500'>Trang chủ</a></li>
-                    <li className='mb-4 text-gray-500 text-md'><a href="/" className='hover:text-red-500'>Giới thiệu</a></li>
-                    <li className='mb-4 text-gray-500 text-md'><a href="/" className='hover:text-red-500'>Sản phẩm</a></li>
-                    <li className='mb-4 text-gray-500 text-md'><a href="/" className='hover:text-red-500'>Liên hệ</a></li>
+                    <li className='mb-4 text-gray-500 text-md'><Link href="/" className='hover:text-red-500'>Trang chủ</Link></li>
+                    <li className='mb-4 text-gray-500 text-md'><Link href="/" className='hover:text-red-500'>Giới thiệu</Link></li>
+                    <li className='mb-4 text-gray-500 text-md'><Link href="/" className='hover:text-red-500'>Sản phẩm</Link></li>
+                    <li className='mb-4 text-gray-500 text-md'><Link href="/" className='hover:text-red-500'>Liên hệ</Link></li>
                 </ul>
                 <ul className="flex-1">
                     <li className="font-semibold text-lg mb-4">Liên kết</li>
-                    <li className='mb-4 text-gray-500 text-md'><a href="/" className='hover:text-red-500'>Tài khoản</a></li>
-                    <li className='mb-4 text-gray-500 text-md'><a href="/" className='hover:text-red-500'>Đơn hàng</a></li>
-                    <li className='mb-4 text-gray-500 text-md'><a href="/" className='hover:text-red-500'>Mục yêu thích</a></li>
-                    <li className='mb-4 text-gray-500 text-md'><a href="/" className='hover:text-red-500'>Hoàn trả</a></li>
-                    <li className='mb-4 text-gray-500 text-md'><a href="/" className='hover:text-red-500'>Chính sách</a></li>
+                    <li className='mb-4 text-gray-500 text-md'><Link href="/" className='hover:text-red-500'>Tài khoản</Link></li>
+                    <li className='mb-4 text-gray-500 text-md'><Link href="/" className='hover:text-red-500'>Đơn hàng</Link></li>
+                    <li className='mb-4 text-gray-500 text-md'><Link href="/" className='hover:text-red-500'>Mục yêu thích</Link></li>
+                    <li className='mb-4 text-gray-500 text-md'><Link href="/" className='hover:text-red-500'>Hoàn trả</Link></li>
+                    <li className='mb-4 text-gray-500 text-md'><Link href="/" className='hover:text-red-500'>Chính sách</Link></li>
                 </ul>
                 <ul className="flex-2">
                     <li className="font-semibold text-lg mb-4">Thông tin cửa hàng</li>

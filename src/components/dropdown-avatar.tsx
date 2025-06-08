@@ -11,8 +11,8 @@ import {
 
 import { LogOut, Settings, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useLogoutMutation } from '@/queries/useAuth';
-import { use } from 'react';
+// import { useLogoutMutation } from '@/queries/useAuth';
+// import { use } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function DropdownAvatar() {

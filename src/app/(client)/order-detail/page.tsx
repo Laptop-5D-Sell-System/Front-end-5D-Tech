@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import Modal from '@/components/Modal';
+// import Modal from '@/components/Modal';
 import '../history/History.scss'; // Import your CSS file for styling
 import envConfig from '../../../../config';
 interface Product {
@@ -25,7 +25,7 @@ interface OrderDetail {
 export default function OrderDetailPage() {
     const [order, setOrder] = useState<OrderDetail | null>(null);
     const [loading, setLoading] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(false); 
+    // const [isModalOpen, setIsModalOpen] = useState(false); 
     const searchParams = useSearchParams();
     const router = useRouter();
     const orderId = searchParams.get('id');

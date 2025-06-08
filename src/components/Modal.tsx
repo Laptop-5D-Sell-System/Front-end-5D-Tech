@@ -30,7 +30,7 @@ interface ModalProps {
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, content, product }) => {
     const [quantity, setQuantity] = useState(1);
-    const { addToCart } = useCart();
+    // const { addToCart } = useCart();
     const { fetchCart } = useCart();
     const descriptionProduct = product?.description.split(". ").filter(item => item);
     const router = useRouter();

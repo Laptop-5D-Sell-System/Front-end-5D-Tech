@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useRef, useMemo } from "react"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import envConfig from "../../../../config"
-import { Beaker } from "lucide-react"
+// import { Beaker } from "lucide-react"
 
 const formSchema = z.object({
   name: z.string().min(1, "Tên không được để trống"),

@@ -4,7 +4,7 @@ import * as React from 'react';
 import NavLinks from '@/components/nav-links';
 import MobileNavLinks from '@/components/mobile-nav-links'; 
 import { ThemeProvider } from '@/components/ui/theme-provider';
-import { ModeToggle } from '@/components/mode';
+// import { ModeToggle } from '@/components/mode';
 import DropdownAvatar from '@/components/dropdown-avatar';
 import '../globals.css';
 import AppProvider from '@/components/app-provider';

@@ -4,9 +4,24 @@ import { Button } from './ui/button';
 import { Headset, MessageCircleQuestion, Send } from 'lucide-react';
 import axios from 'axios';
 
+type ProductInfo = {
+    productName: string;
+    quantity: number;
+    price: number;
+    total: number;
+};
+
+type ChatMessage = {
+    role: 'user' | 'assistant';
+    content: string | ProductInfo[];
+};
+
 export default function ChatBot() {
     const [isChatOpen, setIsChatOpen] = useState(false);
-    const [messages, setMessages] = useState<{ role: string; content: string | any[] }[]>([
+    // const [messages, setMessages] = useState<{ role: string; content: string | any[] }[]>([
+    //     { role: 'assistant', content: 'Xin chào! Tôi có thể giúp gì cho bạn?' },
+    // ]);
+    const [messages, setMessages] = useState<ChatMessage[]>([
         { role: 'assistant', content: 'Xin chào! Tôi có thể giúp gì cho bạn?' },
     ]);
     const [input, setInput] = useState('');
@@ -25,18 +40,13 @@ export default function ChatBot() {
         setIsLoading(true);
 
         try {
-            const response = await axios.post(
-                `http://localhost:8080/chat/${encodeURIComponent(input)}`
-            );
+            const response = await axios.post(`http://localhost:8080/chat/${encodeURIComponent(input)}`);
 
             const responseData = response.data.mess;
 
             // Check if the response contains product details
             if (Array.isArray(responseData)) {
-                setMessages((prev) => [
-                    ...prev,
-                    { role: 'assistant', content: responseData },
-                ]);
+                setMessages((prev) => [...prev, { role: 'assistant', content: responseData }]);
             } else {
                 setMessages((prev) => [
                     ...prev,
@@ -119,7 +129,9 @@ export default function ChatBot() {
                                 ) : (
                                     <p
                                         className={`inline-block p-2 rounded-sm ${
-                                            message.role === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'
+                                            message.role === 'user'
+                                                ? 'bg-blue-500 text-white'
+                                                : 'bg-gray-200 text-black'
                                         }`}
                                     >
                                         {message.content}

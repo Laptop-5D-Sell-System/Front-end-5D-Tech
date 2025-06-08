@@ -56,7 +56,7 @@ const request = async <Response>({
   url: string;
   options?: CustomOptions;
 }) => {
-  let body: FormData | string | undefined = options?.body instanceof FormData ? options.body : JSON.stringify(options?.body);
+  const body: FormData | string | undefined = options?.body instanceof FormData ? options.body : JSON.stringify(options?.body);
 
   const baseHeaders: Record<string, string> = body instanceof FormData ? {} : { "Content-Type": "application/json" };
 

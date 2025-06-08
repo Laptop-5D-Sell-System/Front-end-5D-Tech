@@ -1,8 +1,8 @@
 'use client';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon, DollarSign, Users, ShoppingCart, Activity } from 'lucide-react';
+import { Calendar as DollarSign, Users, ShoppingCart, Activity } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+// import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useEffect, useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -51,7 +51,7 @@ export function Dashboard() {
         { name: 'edge', value: 35, color: '#A142F4' },
         { name: 'other', value: 20, color: '#EA4C89' },
     ];
-    const color = [{ cl1: '#4285F4' }, { cl2: '#34A853' }, { cl3: '#FF9500' }, { cl4: '#A142F4' }, { cl5: '#EA4C89' }];
+    // const color = [{ cl1: '#4285F4' }, { cl2: '#34A853' }, { cl3: '#FF9500' }, { cl4: '#A142F4' }, { cl5: '#EA4C89' }];
 
     const fetchDashboardData = async () => {
         setLoading(true);

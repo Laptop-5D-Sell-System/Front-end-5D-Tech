@@ -1,6 +1,6 @@
 import http from "@/lib/http";
 import { LoginBodyType, LoginResType, LogoutBodyType } from "@/schemaValidations/auth.schema";
-import { log } from "console";
+// import { log } from "console";
 
 const authApiRequest = {
   

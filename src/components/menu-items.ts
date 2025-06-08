@@ -1,6 +1,6 @@
 'use client'
 import { Role } from "@/constants/type";
-import { Home, LineChart, ShoppingCart, User2, Salad, Settings } from "lucide-react";
+import { Home, LineChart, ShoppingCart, User2, Salad } from "lucide-react";
 
 const menuItems = [
   {

@@ -17,14 +17,14 @@ import {
     ChevronDown,
     LogIn,
     UserPlus,
-    SearchCheck,
+    // SearchCheck,
     Trash2,
 } from 'lucide-react';
 import {
     Sheet,
     SheetContent,
-    SheetDescription,
-    SheetFooter,
+    // SheetDescription,
+    // SheetFooter,
     SheetHeader,
     SheetTitle,
     SheetTrigger,
@@ -44,11 +44,19 @@ import { Button } from './ui/button';
 import { useRouter } from 'next/navigation';
 import envConfig from '../../config';
 
+type SearchResult = {
+    id: string | number;
+    image: string;
+    name: string;
+    price: number;
+};
+
 export default function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [showSearch, setShowSearch] = useState(false);
     const [userName, setUserName] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
+    // const [searchResults, setSearchResults] = useState([]);
+    const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
     const router = useRouter();
 
     // Check token in localStorage
@@ -306,7 +314,7 @@ export default function Header() {
                                 </Button>
                                 {searchResults.length > 0 && (
                                     <div className="absolute top-full left-0 w-full bg-white border rounded shadow-lg z-50 max-h-96 overflow-y-auto">
-                                        {searchResults.map((item: any) => (
+                                        {searchResults.map((item) => (
                                             <Link
                                                 key={item.id}
                                                 href={`/product/${item.id}`}

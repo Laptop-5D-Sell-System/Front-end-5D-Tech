@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Truck, Award, Headphones } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Card, CardContent } from '@/components/ui/card';
+// import { Card, CardContent } from '@/components/ui/card';
 
 const values = [
     {
@@ -123,7 +123,7 @@ export default function About() {
                     <div className="md:w-1/3">
                         <Accordion type="single" collapsible w-full>
                             {faqs.map((faq, name) => (
-                                <AccordionItem value={faq.question}>
+                                <AccordionItem key={name} value={faq.question}>
                                     <AccordionTrigger className="cursor-pointer">{faq.question}</AccordionTrigger>
                                     <AccordionContent>{faq.answer}</AccordionContent>
                                 </AccordionItem>

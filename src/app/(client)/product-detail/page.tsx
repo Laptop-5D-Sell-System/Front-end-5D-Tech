@@ -43,7 +43,7 @@ export default function ProductDetailPage() {
     const productId = searchParams.get('id');
     const [quantity, setQuantity] = useState(1);
     const router = useRouter();
-    const {fetchCart, addToCart} = useCart();
+    const {fetchCart} = useCart();
     const descriptionProduct = product?.description.split('. ').filter((item) => item);
 
     useEffect(() => {
